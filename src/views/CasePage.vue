@@ -22,14 +22,38 @@
 
     </div>
 
-    <vue-bpmn
-        :url="model"
-        :activities="caseActivities"
-        :options="options"
-        v-on:error="handleError"
-        v-on:shown="handleShown"
-        v-on:loading="handleLoading"
-    ></vue-bpmn>
+    <div class="tabs-container">
+      <input type="radio" id="tab-diagram" name="tabs-container" checked="checked">
+        <label for="tab-diagram" class="tab-label">Diagram</label>
+        <div class="tab">
+          <vue-bpmn
+            :url="model"
+            :activities="caseActivities"
+            :options="options"
+            v-on:error="handleError"
+            v-on:shown="handleShown"
+            v-on:loading="handleLoading"
+        ></vue-bpmn>
+        </div>
+
+        <input type="radio" id="tab-details" name="tabs-container">
+        <label for="tab-details" class="tab-label">Details</label>
+        <div class="tab details-tab">
+          <div v-if="selectedRec !== null" class="recommendation-details">
+            <h3>Perform "{{currentCase.interventions[selectedRec].name}}"</h3>
+            <h4> Description</h4>
+            <p> Based on the prediction, it is recommended to perform {{currentCase.interventions[selectedRec].name}}. [reasoning]</p>
+
+            <h4>Effect</h4>
+            <p> {{currentCase.interventions[selectedRec].effect}}.</p>
+
+            <h4>Stats</h4>
+            <p>Probability: {{currentCase.interventions[selectedRec].probability}}%</p>
+            <p>Uncertainty: {{currentCase.interventions[selectedRec].uncertainty}}%</p>
+          </div>
+        <h3 v-else>Please select a recommendation.</h3>
+        </div>
+    </div>
   </div>
 </div>
 </template>

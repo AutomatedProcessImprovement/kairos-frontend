@@ -46,7 +46,7 @@ import LegendComponent from './LegendComponent.vue';
         } else {
           self.$emit('shown', warnings);
         }
-        self.bpmnViewer.get('canvas').zoom('fit-viewport');
+        // self.bpmnViewer.get('canvas').zoom('fit-viewport');
         // self.bpmnViewer.get("minimap").open();
 
         var interventions = document.querySelectorAll("[data-element-id^=intervention]")
