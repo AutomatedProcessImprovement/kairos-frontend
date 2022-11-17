@@ -49,10 +49,10 @@ import LegendComponent from './LegendComponent.vue';
         // self.bpmnViewer.get('canvas').zoom('fit-viewport');
         // self.bpmnViewer.get("minimap").open();
 
-        var interventions = document.querySelectorAll("[data-element-id^=intervention]")
-        // console.log(interventions);
-        interventions.forEach(function (intervention) {
-          intervention.classList.add("intervention")
+        var recommendationnodes = document.querySelectorAll("[data-element-id^=recommendationnode]")
+        // console.log(recommendationnodes);
+        recommendationnodes.forEach(function (recommendationnodes) {
+          recommendationnodes.classList.add("recommendationnode")
         });
 
         var activityElements = document.querySelectorAll("[data-element-id^=activity] > .djs-visual > text")

@@ -243,8 +243,8 @@ td, th {
         font-family: $bs-font-sans-serif;
       }
     }
-    .selected-intervention .djs-visual > rect,
-    .selected-intervention .djs-visual > circle {
+    .selected-recommendationnode .djs-visual > rect,
+    .selected-recommendationnode .djs-visual > circle {
         stroke: $bs-blue !important;
       
     }
@@ -252,9 +252,9 @@ td, th {
 }
 
 
-// Intervention
+// recommendationnode
 
-.intervention .djs-visual {
+.recommendationnode .djs-visual {
   > rect,
   > circle {
     stroke: rgba(173, 173, 173, 0.7) !important;
@@ -262,7 +262,7 @@ td, th {
   }
 }
 
-// intervention connector
+// recommendationnode connector
 
 // .djs-group:last-of-type .djs-connection .djs-visual :last-of-type
 //, .djs-group:nth-last-of-type(2) .djs-connection .djs-visual :last-of-type 

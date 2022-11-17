@@ -71,7 +71,7 @@ export default {
                           status: "Ongoing",
                           startdate: "NaN",
                           duration: "NaN",
-                          recs: !el.interventions.length ? "No" : "Yes",
+                          recs: !el.recommendations.length ? "No" : "Yes",
                           update: "NaN"})
           continue;
         }
@@ -80,7 +80,7 @@ export default {
         this.cases.push({id: el.caseId, status: "Ongoing",
                           startdate: startDate.toLocaleDateString("en-GB"), 
                           duration: Math.round((endDate - startDate)/oneDay), 
-                          recs: !el.interventions.length ? "No" : "Yes",
+                          recs: !el.recommendations.length ? "No" : "Yes",
                           update: el.activities[el.activities.length - 1].name + ' ' + endDate.toLocaleDateString("en-GB")})
     }
     }

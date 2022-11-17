@@ -12,7 +12,7 @@
   <div class="diagram-container">
     <div class="recommendations-list">
       <h4>Recommendations list</h4>
-      <div class="recommendation" v-for="(r,index) in currentCase.interventions" :key="index" 
+      <div class="recommendation" v-for="(r,index) in currentCase.recommendations" :key="index" 
       @click="selectRecommendation(index)" :class="{selected: index === selectedRec}">
         <p>{{r.name}}</p>
         <small>Effect: {{r.effect}}</small>
@@ -40,16 +40,16 @@
         <label for="tab-details" class="tab-label">Details</label>
         <div class="tab details-tab">
           <div v-if="selectedRec !== null" class="recommendation-details">
-            <h3>Perform "{{currentCase.interventions[selectedRec].name}}"</h3>
+            <h3>Perform "{{currentCase.recommendations[selectedRec].name}}"</h3>
             <h4> Description</h4>
-            <p> Based on the prediction, it is recommended to perform {{currentCase.interventions[selectedRec].name}}. [reasoning]</p>
+            <p> Based on the prediction, it is recommended to perform {{currentCase.recommendations[selectedRec].name}}. [reasoning]</p>
 
             <h4>Effect</h4>
-            <p> {{currentCase.interventions[selectedRec].effect}}.</p>
+            <p> {{currentCase.recommendations[selectedRec].effect}}.</p>
 
             <h4>Stats</h4>
-            <p>Probability: {{currentCase.interventions[selectedRec].probability}}%</p>
-            <p>Uncertainty: {{currentCase.interventions[selectedRec].uncertainty}}%</p>
+            <p>Probability: {{currentCase.intervrecommendations[selectedRec].probability}}%</p>
+            <p>Uncertainty: {{currentCase.recommendations[selectedRec].uncertainty}}%</p>
           </div>
         <h3 v-else>Please select a recommendation.</h3>
         </div>
@@ -141,11 +141,11 @@
 
     selectRecommendation(index){
       this.selectedRec = index
-      var interventions = Array.from(document.getElementsByClassName("intervention"))
-      for (var i of interventions) {
-        i.classList.remove("selected-intervention")
+      var recommendationnodes = Array.from(document.getElementsByClassName("recommendationnode"))
+      for (var i of recommendationnodes) {
+        i.classList.remove("selected-recommendationnode")
       }
-      interventions[index].classList.add("selected-intervention")
+      recommendationnodes[index].classList.add("selected-recommendationnode")
     }
     
     },
