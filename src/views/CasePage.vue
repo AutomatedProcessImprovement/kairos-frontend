@@ -1,7 +1,7 @@
 <template>
 <div id="case">
   <div class="case-top">
-    <router-link :to="{name: 'cases'}"><i class="fa fa-angle-left"></i> Return</router-link>
+    <router-link :to="{name: 'cases'}"><ion-icon name="chevron-back-outline"></ion-icon> Return</router-link>
     <h2>Case #{{caseId}}</h2>
 
     <div class="case-small-text">
