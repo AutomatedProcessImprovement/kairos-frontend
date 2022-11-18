@@ -25,6 +25,18 @@ class ModelService {
     getCaseActivities(caseId){
         return http.get(`/cases/${caseId}/activities`)
     }
+    
+    getCaseRecommendations(caseId){
+        return http.get(`/cases/${caseId}/recommendations`)
+    }
+
+    getActivities(){
+        return http.get(`/activities`)
+    }
+
+    getRecommendations(){
+        return http.get(`/recommendations`)
+    }
 
     getResources(){
         return http.get(`/resources`)

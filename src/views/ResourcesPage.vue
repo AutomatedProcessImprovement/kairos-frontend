@@ -14,7 +14,7 @@
 
         <span>
           <p> Current workload </p>
-          {{available/(busy+available)*100}}% <small>resources</small> 
+          {{Math.round(available/(busy+available)*100)}}% <small>resources</small> 
         </span>
       </div>
 
@@ -47,7 +47,7 @@ export default {
 
   data(){
     return {
-      headers: ["Name","Available","Role"],
+      headers: ["ID","Name","Available","Role"],
       resources: null,
       available: 0,
       busy: 0
