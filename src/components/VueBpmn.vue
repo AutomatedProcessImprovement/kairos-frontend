@@ -59,7 +59,7 @@ import LegendComponent from './LegendComponent.vue';
         activityElements.forEach((activity, index) => {
           var options = {dateStyle:"short",timeStyle: "short"};
           var date = new Date(self.activities[index].timestamp).toLocaleString("en-GB",options)
-          activity.innerHTML = `<tspan x="43.0562499165535" y="25">${self.activities[index].name}</tspan>
+          activity.innerHTML = `<tspan y="25">${self.activities[index].name}</tspan>
                                 <tspan x="0" y="39">____________________</tspan>
                                 <tspan font-size="10px" x="8" y="53">${date}</tspan>
                                 <tspan font-size="10px" x="8" y="70">${self.activities[index].resource.name}</tspan>` 
