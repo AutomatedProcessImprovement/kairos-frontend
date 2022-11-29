@@ -9,10 +9,10 @@
 import BpmnJS from 'bpmn-js/dist/bpmn-navigated-viewer.production.min.js';
 import LegendComponent from './LegendComponent.vue';
 
-
   
   export default {
   components: { LegendComponent },
+
     name: 'vue-bpmn',
     props: {
       url: {
@@ -55,14 +55,13 @@ import LegendComponent from './LegendComponent.vue';
           recommendationnodes.classList.add("recommendationnode")
         });
 
-        var activityElements = document.querySelectorAll("[data-element-id^=activity] > .djs-visual > text")
-        activityElements.forEach((activity, index) => {
+        var activityNodes = document.querySelectorAll("[data-element-id^=activity]")
+        activityNodes.forEach((activity,index) => {
+          let activityNodeId = activity.getAttribute("data-element-id")
+          activity.setAttribute('id',activityNodeId)
           var options = {dateStyle:"short",timeStyle: "short"};
           var date = new Date(self.activities[index].timestamp).toLocaleString("en-GB",options)
-          activity.innerHTML = `<tspan y="25">${self.activities[index].name}</tspan>
-                                <tspan x="0" y="39">____________________</tspan>
-                                <tspan font-size="10px" x="8" y="53">${date}</tspan>
-                                <tspan font-size="10px" x="8" y="70">${self.activities[index].resource.name}</tspan>` 
+          activity.setAttribute('v-tippy',`'${date}\n ${self.activities[index].resource.name}'`)
         });
 
       });

@@ -8,7 +8,7 @@ We can import the variables from one file
 that contains all the variables.
 */
 @import '_variables.scss';
-@import 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css';
+@import '~tippy.js/dist/tippy.css';
 
 #app{
   height: 100vh;
@@ -56,6 +56,7 @@ th {
 
 table {
   border-collapse: collapse;
+  margin: 0px;
 }
 
 td, th {
@@ -82,6 +83,7 @@ td, th {
   background-color: $bs-white; 
   // box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
   border-right: 2px solid $bs-gray;
+  max-width: 300px;
 }
 
 // sidebar items container
@@ -97,6 +99,7 @@ td, th {
   color: $bs-black;
   padding: 5px 20px 5px 10px;
   text-decoration: none;
+  white-space: nowrap;
   
   &:hover{
   background-color: $bs-gray;
@@ -140,6 +143,7 @@ td, th {
 }
 
 .recommendations-list {
+  min-width: 200px;
 
   h4 {
     padding-right: 10px;
@@ -222,6 +226,18 @@ td, th {
         padding: 5px;
       }
 
+      .recommendation-details-column-container{
+        display: flex;
+        flex-direction: row;
+
+        .recommendation-details-column{
+          display: flex;
+          flex-direction: column;
+          padding-right: 30px;
+          max-width: 450px;
+          min-width: 250px;
+        }
+      }
     }
   }
 }
@@ -315,8 +331,13 @@ td, th {
 }
 
 .cases-table{
+  display:flex;
   flex: 1;
-  justify-content: center;
+  align-items: flex-start;
+
+  table{
+    width: 100%;
+  }
 }
 
 #home{
