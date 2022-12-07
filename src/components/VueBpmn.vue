@@ -53,15 +53,31 @@ import LegendComponent from './LegendComponent.vue';
         // console.log(recommendationnodes);
         recommendationnodes.forEach(function (recommendationnodes) {
           recommendationnodes.classList.add("recommendationnode")
-        });
+        }); 
 
-        var activityNodes = document.querySelectorAll("[data-element-id^=activity]")
-        activityNodes.forEach((activity,index) => {
-          let activityNodeId = activity.getAttribute("data-element-id")
-          activity.setAttribute('id',activityNodeId)
+        // var activityNodes = document.querySelectorAll("[data-element-id^=activity]")
+        // activityNodes.forEach((activity,index) => {
+        //   let activityNodeId = activity.getAttribute("data-element-id")
+        //   activity.setAttribute('id',activityNodeId)
+        //   var options = {dateStyle:"short",timeStyle: "short"};
+        //   var date = new Date(self.activities[index].timestamp).toLocaleString("en-GB",options)
+        //   activity.setAttribute('v-tippy',`'${date}\n ${self.activities[index].resource.name}'`)
+        // });
+
+        var activityElements = document.querySelectorAll("[data-element-id^=activity] > .djs-visual ")
+        activityElements.forEach((activity, index) => {
           var options = {dateStyle:"short",timeStyle: "short"};
           var date = new Date(self.activities[index].timestamp).toLocaleString("en-GB",options)
-          activity.setAttribute('v-tippy',`'${date}\n ${self.activities[index].resource.name}'`)
+          activity.innerHTML += `<tspan x="0" y="39">____________________</tspan>
+          <tspan font-size="10px" x="8" y="53">${date}</tspan>
+          <tspan font-size="10px" x="8" y="70">${self.activities[index].resource.name}</tspan>`
+
+          var activityName = document.createElement("p")
+          activityName.innerHTML = `${self.activities[index].name}`
+          activityName.setAttribute('x','0')
+          activityName.setAttribute('y','25')
+          activity.appendChild(activityName)
+           
         });
 
       });
