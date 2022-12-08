@@ -27,7 +27,6 @@
         <label for="tab-diagram" class="tab-label">Diagram</label>
         <div class="tab">
           <vue-bpmn
-            :url="model"
             :activities="caseActivities"
             :options="options"
             v-on:error="handleError"
@@ -74,7 +73,7 @@
 </template>
 
 <script>
-  import VueBpmn from '../components/VueBpmn';
+  import VueBpmn from '@/components/VueBpmn.vue';
   import minimapModule from 'diagram-js-minimap';
   import ModelService from "@/services/model.service";
 
@@ -96,8 +95,6 @@
           additionalModules: [minimapModule],
           moddleExtensions: []
         },
-        model: null,
-        baseUrl: "http://localhost:5000/cases/",
         caseActivities: null,
         caseRecommendations: null,
         selectedRec: null,
@@ -107,10 +104,6 @@
       }
     },
     methods: {
-      getCaseModel() {
-        this.model = this.baseUrl + `${this.caseId}` + '/model'
-        this.getAdditionalInformation()
-      },
 
       handleError: function(err) {
         console.error('failed to show diagram', err);
@@ -125,7 +118,6 @@
         this.caseId = (this.$route.params.caseId)
         ModelService.getCase(this.caseId).then(
           (response) => {
-            // console.log(response.data);
             this.currentCase = response.data;
             this.getCaseActivities(this.caseId);
           },
@@ -161,7 +153,7 @@
         ModelService.getCaseRecommendations(this.caseId).then(
           (response) => {
             this.caseRecommendations = response.data
-            this.getCaseModel();
+            this.getAdditionalInformation()
             },
           (error) => {
             this.content =
