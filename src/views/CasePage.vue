@@ -27,7 +27,6 @@
         <label for="tab-diagram" class="tab-label">Diagram</label>
         <div class="tab">
           <vue-bpmn
-            :url="model"
             :activities="caseActivities"
             :options="options"
             v-on:error="handleError"
@@ -41,15 +40,30 @@
         <div class="tab details-tab">
           <div v-if="selectedRec !== null" class="recommendation-details">
             <h3>Perform "{{caseRecommendations[selectedRec].name}}"</h3>
-            <h4> Description</h4>
-            <p> Based on the prediction, it is recommended to perform {{caseRecommendations[selectedRec].name}}. [reasoning]</p>
+            <div class = "recommendation-details-column-container">
+              <div class="recommendation-details-column">
+                <p>Predicted case duration</p>
 
-            <h4>Effect</h4>
-            <p> {{caseRecommendations[selectedRec].effect}}.</p>
+                <h4>Calculations explanation</h4>
 
-            <h4>Stats</h4>
-            <p>Probability: {{caseRecommendations[selectedRec].probability}}%</p>
-            <p>Uncertainty: {{caseRecommendations[selectedRec].uncertainty}}%</p>
+                <h5>Model description</h5>
+
+                <p>Accuracy: {{caseRecommendations[selectedRec].accuracy}}%</p>
+                <p>Recall: {{caseRecommendations[selectedRec].recall}}%</p>
+                <p>Precision: {{caseRecommendations[selectedRec].precision}}%</p>
+
+                <h5>Features contribution</h5>
+              </div>
+              <div class="recommendation-details-column">
+                <h4> Description</h4>
+                <p> Based on the prediction, it is recommended to perform {{caseRecommendations[selectedRec].name}}. [reasoning]</p>
+
+                <h4>Effect</h4>
+                <p> {{caseRecommendations[selectedRec].effect}}</p>
+                <p>Probability: {{caseRecommendations[selectedRec].probability}}%,
+                 uncertainty: {{caseRecommendations[selectedRec].uncertainty}}%</p>
+              </div>
+            </div>
           </div>
         <h3 v-else>Please select a recommendation.</h3>
         </div>
@@ -59,7 +73,7 @@
 </template>
 
 <script>
-  import VueBpmn from '../components/VueBpmn';
+  import VueBpmn from '@/components/VueBpmn.vue';
   import minimapModule from 'diagram-js-minimap';
   import ModelService from "@/services/model.service";
 
@@ -81,8 +95,6 @@
           additionalModules: [minimapModule],
           moddleExtensions: []
         },
-        model: null,
-        baseUrl: "http://localhost:5000/cases/",
         caseActivities: null,
         caseRecommendations: null,
         selectedRec: null,
@@ -92,10 +104,6 @@
       }
     },
     methods: {
-      getCaseModel() {
-        this.model = this.baseUrl + `${this.caseId}` + '/model'
-        this.getAdditionalInformation()
-      },
 
       handleError: function(err) {
         console.error('failed to show diagram', err);
@@ -110,7 +118,6 @@
         this.caseId = (this.$route.params.caseId)
         ModelService.getCase(this.caseId).then(
           (response) => {
-            // console.log(response.data);
             this.currentCase = response.data;
             this.getCaseActivities(this.caseId);
           },
@@ -146,7 +153,7 @@
         ModelService.getCaseRecommendations(this.caseId).then(
           (response) => {
             this.caseRecommendations = response.data
-            this.getCaseModel();
+            this.getAdditionalInformation()
             },
           (error) => {
             this.content =

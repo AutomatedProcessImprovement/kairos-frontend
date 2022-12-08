@@ -8,17 +8,14 @@
 <script>
 import BpmnJS from 'bpmn-js/dist/bpmn-navigated-viewer.production.min.js';
 import LegendComponent from './LegendComponent.vue';
-
+import ModelService from '@/services/model.service';
 
   
   export default {
   components: { LegendComponent },
+
     name: 'vue-bpmn',
     props: {
-      url: {
-        type: String,
-        required: true
-      },
       activities: {
         type: Object
       },
@@ -31,70 +28,71 @@ import LegendComponent from './LegendComponent.vue';
         diagramXML: null
       };
     },
-    mounted: function () {
-      var container = this.$refs.container;
-      var self = this;
-      var _options = Object.assign({
-        container: container
-      }, this.options)
-      this.bpmnViewer = new BpmnJS(_options);
-      this.bpmnViewer.on('import.done', function(event) {
-        var error = event.error;
-        var warnings = event.warnings;
-        if (error) {
-          self.$emit('error', error);
-        } else {
-          self.$emit('shown', warnings);
-        }
-        // self.bpmnViewer.get('canvas').zoom('fit-viewport');
-        // self.bpmnViewer.get("minimap").open();
 
-        var recommendationnodes = document.querySelectorAll("[data-element-id^=recommendationnode]")
-        // console.log(recommendationnodes);
-        recommendationnodes.forEach(function (recommendationnodes) {
-          recommendationnodes.classList.add("recommendationnode")
-        });
-
-        var activityElements = document.querySelectorAll("[data-element-id^=activity] > .djs-visual > text")
-        activityElements.forEach((activity, index) => {
-          var options = {dateStyle:"short",timeStyle: "short"};
-          var date = new Date(self.activities[index].timestamp).toLocaleString("en-GB",options)
-          activity.innerHTML = `<tspan y="25">${self.activities[index].name}</tspan>
-                                <tspan x="0" y="39">____________________</tspan>
-                                <tspan font-size="10px" x="8" y="53">${date}</tspan>
-                                <tspan font-size="10px" x="8" y="70">${self.activities[index].resource.name}</tspan>` 
-        });
-
-      });
-      if (this.url) {
-        this.fetchDiagram(this.url);
-      }
+    created(){
+      this.fetchDiagram()
     },
+
     beforeUnmount: function() {
       this.bpmnViewer.destroy();
     },
     watch: {
-      url: function(val) {
+      diagramXML: function() {
         this.$emit('loading');
-        this.fetchDiagram(val);
-      },
-      diagramXML: function(val) {
-        this.bpmnViewer.importXML(val);
+        this.displayDiagram();
       }
     },
     methods: {
-      fetchDiagram: function(url) {
+      fetchDiagram(){
+        ModelService.getCaseModel(this.$route.params.caseId).then(
+          (response) => {
+            this.diagramXML = response.data;
+          },
+          (error) => {
+            this.content =
+              (error.response &&
+                error.response.data &&
+                error.response.data.message) ||
+              error.message ||
+              error.toString();
+          }
+        );
+      },
+
+      displayDiagram(){
+        var container = this.$refs.container;
         var self = this;
-        fetch(url)
-          .then(function(response) {
-            return response.text();
-          })
-          .then(function(text) {
-            self.diagramXML = text;
-          })
-          .catch(function(err) {
-            self.$emit('error', err);
-          });
+        var _options = Object.assign({
+          container: container
+        }, this.options)
+        this.bpmnViewer = new BpmnJS(_options);
+        this.bpmnViewer.importXML(this.diagramXML);
+        this.bpmnViewer.on('import.done', function(event) {
+          var error = event.error;
+          var warnings = event.warnings;
+          if (error) {
+            self.$emit('error', error);
+          } else {
+            self.$emit('shown', warnings);
+          }
+          // self.bpmnViewer.get('canvas').zoom('fit-viewport');
+          // self.bpmnViewer.get("minimap").open();
+
+          var recommendationnodes = document.querySelectorAll("[data-element-id^=recommendationnode]")
+          recommendationnodes.forEach(function (recommendationnodes) {
+            recommendationnodes.classList.add("recommendationnode")
+          }); 
+
+          // var activityNodes = document.querySelectorAll("[data-element-id^=activity]")
+          // activityNodes.forEach((activity,index) => {
+          //   let activityNodeId = activity.getAttribute("data-element-id")
+          //   activity.setAttribute('id',activityNodeId)
+          //   var options = {dateStyle:"short",timeStyle: "short"};
+          //   var date = new Date(self.activities[index].timestamp).toLocaleString("en-GB",options)
+          //   activity.setAttribute('v-tippy',`'${date}\n ${self.activities[index].resource.name}'`)
+          // });
+
+        });
       }
     }
   };
