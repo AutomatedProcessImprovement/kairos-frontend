@@ -9,6 +9,7 @@
 import BpmnJS from 'bpmn-js/dist/bpmn-navigated-viewer.production.min.js';
 import LegendComponent from './LegendComponent.vue';
 import ModelService from '@/services/model.service';
+import $ from 'jquery'
 
   
   export default {
@@ -29,14 +30,17 @@ import ModelService from '@/services/model.service';
       };
     },
 
-    created(){
-      this.fetchDiagram()
-    },
+    // created(){
+    //   this.fetchDiagram()
+    // },
 
     beforeUnmount: function() {
       this.bpmnViewer.destroy();
     },
     watch: {
+      activities: function(){
+        this.fetchDiagram();
+      },
       diagramXML: function() {
         this.$emit('loading');
         this.displayDiagram();
@@ -75,7 +79,7 @@ import ModelService from '@/services/model.service';
           } else {
             self.$emit('shown', warnings);
           }
-          // self.bpmnViewer.get('canvas').zoom('fit-viewport');
+          self.bpmnViewer.get('canvas').zoom('fit-viewport');
           // self.bpmnViewer.get("minimap").open();
 
           var recommendationnodes = document.querySelectorAll("[data-element-id^=recommendationnode]")
@@ -83,14 +87,29 @@ import ModelService from '@/services/model.service';
             recommendationnodes.classList.add("recommendationnode")
           }); 
 
-          // var activityNodes = document.querySelectorAll("[data-element-id^=activity]")
-          // activityNodes.forEach((activity,index) => {
-          //   let activityNodeId = activity.getAttribute("data-element-id")
-          //   activity.setAttribute('id',activityNodeId)
-          //   var options = {dateStyle:"short",timeStyle: "short"};
-          //   var date = new Date(self.activities[index].timestamp).toLocaleString("en-GB",options)
-          //   activity.setAttribute('v-tippy',`'${date}\n ${self.activities[index].resource.name}'`)
-          // });
+          var overlays = self.bpmnViewer.get("overlays");
+
+          var activityNodes = document.querySelectorAll("[data-element-id^=activity]")
+          
+          activityNodes.forEach((activity,index) => {
+            var activityId = activity.getAttribute("data-element-id")
+            var options = {dateStyle:"short",timeStyle: "short"};
+            var date = new Date(self.activities[index].timestamp).toLocaleString("en-GB",options)
+            var html = `<div class="activity-tooltip"><div class="arrow-up"></div>${date}\n ${self.activities[index].resource.name}</div>`
+            overlays.add(activity,{
+              position: {
+                bottom: 0
+              },
+              html: html
+            })
+            $(`.djs-element[data-element-id=${activityId}]`).hover(
+              function(){
+                $(`.djs-overlays[data-container-id=${activityId}] .activity-tooltip`).css('opacity',1);
+              }, function(){
+                $(`.djs-overlays[data-container-id=${activityId}] .activity-tooltip`).css('opacity',0);
+              }
+            )
+          });
 
         });
       }

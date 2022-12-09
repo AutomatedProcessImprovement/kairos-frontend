@@ -8,7 +8,10 @@ We can import the variables from one file
 that contains all the variables.
 */
 @import '_variables.scss';
-@import '~tippy.js/dist/tippy.css';
+@import 'sidebar.scss';
+@import 'case.scss';
+@import 'diagram.scss';
+@import 'tooltip.scss';
 
 #app{
   height: 100vh;
@@ -32,7 +35,7 @@ body {
 }
 
 small{
-  color: $bs-secondary;
+  color: $bs-gray3;
 }
 
 h1,h2,h3,h4,h5,h6{
@@ -51,7 +54,7 @@ a{
 
 th {
   font-weight: normal;
-  background-color: $bs-gray;
+  background-color: $bs-gray2;
 }
 
 table {
@@ -71,255 +74,6 @@ td, th {
   span{
     padding: 10px 40px 20px 5px
   }
-}
-
-
-// sidebar container
-
-.sidebar {
-  height: 100%; 
-  display: flex;
-  align-items: center;
-  background-color: $bs-white; 
-  // box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
-  border-right: 2px solid $bs-gray;
-  max-width: 300px;
-}
-
-// sidebar items container
-.sidebar-items {
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-// sidebar item
-
-.sidebar-item {
-  color: $bs-black;
-  padding: 5px 20px 5px 10px;
-  text-decoration: none;
-  white-space: nowrap;
-  
-  &:hover{
-  background-color: $bs-gray;
-  color: $bs-black;
-  // text-decoration: none;
-  }
-
-}
-
-.active{
-  background-color: $bs-gray;
-}
-
-// case
-
-#case {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.case-small-text{
-  display: flex;
-  padding: 10px 0px;
-  
-  small{
-    padding: 0px 40px 0 0
-  }
-}
-
-.case-top{
-  padding: 20px 30px;
-}
-
-.diagram-container {
-  display: flex;
-  flex-direction: row;
-  border-top: 1px solid $bs-gray;
-  flex-grow: 1;
-  padding: 10px;
-}
-
-.recommendations-list {
-  min-width: 200px;
-
-  h4 {
-    padding-right: 10px;
-  }
-
-  .recommendation {
-    display: flex;
-    flex-direction: column;
-    margin: 10px;
-    padding: 10px;
-    border: 1px solid $bs-gray;
-    transition: .15s;
-
-    &:hover{
-      background-color: rgb(250, 250, 250);
-    }
-  }
-
-  .selected{
-    border: 1px solid $bs-blue;
-    border-right: 1px solid $bs-white;
-    margin: 10px 0px 0px 20px;
-  }
-}
-
-// tabs
-
-.tabs-container {
-  display: flex;
-  flex-flow: row wrap;
-  flex-grow: 1;
-
-  input[type="radio"] {
-    display: none;
-  }
-
-  .tab-label {
-    height: 40px;
-    padding: 5px 18px;
-    border: 1px solid $bs-gray;
-    cursor: pointer;
-
-    transition: 0.15s;
-    
-    &:hover{
-      background-color: $bs-light;
-    }
-  }
-
-  .tab {
-    display: none;
-  }
-
-  input[type='radio']:checked + .tab-label + .tab {
-    margin: -1px 0 0 0;
-    width: 100%;
-    height: 100%;
-    order: 1;
-    display: flex;
-    flex-grow: 1;
-    border: 1px solid $bs-gray;
-  }
-
-  input[type="radio"]:checked + .tab-label {
-    border: 1px solid $bs-blue;
-  }
-
-  .details-tab{
-    padding: 20px;
-
-    .recommendation-details{
-      display: flex;
-      flex-direction: column;
-
-      h4{
-        font-style: italic;
-      }
-
-      p{
-        padding: 5px;
-      }
-
-      .recommendation-details-column-container{
-        display: flex;
-        flex-direction: row;
-
-        .recommendation-details-column{
-          display: flex;
-          flex-direction: column;
-          padding-right: 30px;
-          max-width: 450px;
-          min-width: 250px;
-        }
-      }
-    }
-  }
-}
-
-
-
-//diagram
-
-.diagram {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  
-  .vue-bpmn-diagram-container { 
-    flex-grow: 1;
-  
-    .djs-visual{
-      tspan{
-        font-family: $bs-font-sans-serif;
-      }
-    }
-    .selected-recommendationnode .djs-visual > rect,
-    .selected-recommendationnode .djs-visual > circle {
-        stroke: $bs-blue !important;
-      
-    }
-  }
-}
-
-
-// recommendationnode
-
-.recommendationnode .djs-visual {
-  > rect,
-  > circle {
-    stroke: rgba(173, 173, 173, 0.7) !important;
-    stroke-dasharray: 4 4;
-  }
-}
-
-// recommendationnode connector
-
-// .djs-group:last-of-type .djs-connection .djs-visual :last-of-type
-//, .djs-group:nth-last-of-type(2) .djs-connection .djs-visual :last-of-type 
-// {
-//   stroke:rgba(173, 173, 173, 0.7) !important;
-//   stroke-dasharray: 5 5;
-// }
-
-// icons (erase for now)
-
-.djs-shape .djs-visual > path {
-  stroke: rgba(255, 255, 255,0) !important;
-  fill: rgba(255, 255, 255, 0) !important;
-}
-
-// mini-map
-
-.djs-minimap {
-  top: 0;
-  right: 5px;
-
-  .viewport-dom {
-  border: solid 1px $bs-blue;
-  }
-}
-
-// legend
-
-.legend {
-  // box-sizing: border-box;
-  padding: 5px 10px 0 0;
-}
-
-.legend .past-activity {
-  border-bottom: 2px solid $bs-black;
-  margin: 10px 15px;
-}
-
-.legend .recommendation {
-  border-bottom: 2px dashed rgb(173, 173, 173);
-  margin: 10px 15px;
 }
 
 // Cases
