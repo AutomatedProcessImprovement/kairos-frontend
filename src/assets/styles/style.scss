@@ -32,7 +32,7 @@ body {
 }
 
 small{
-  color: $bs-secondary;
+  color: $bs-gray3;
 }
 
 h1,h2,h3,h4,h5,h6{
@@ -51,7 +51,7 @@ a{
 
 th {
   font-weight: normal;
-  background-color: $bs-gray;
+  background-color: $bs-gray2;
 }
 
 table {
@@ -82,7 +82,7 @@ td, th {
   align-items: center;
   background-color: $bs-white; 
   // box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
-  border-right: 2px solid $bs-gray;
+  border-right: 2px solid $bs-gray2;
   max-width: 300px;
 }
 
@@ -102,7 +102,7 @@ td, th {
   white-space: nowrap;
   
   &:hover{
-  background-color: $bs-gray;
+  background-color: $bs-gray2;
   color: $bs-black;
   // text-decoration: none;
   }
@@ -110,7 +110,7 @@ td, th {
 }
 
 .active{
-  background-color: $bs-gray;
+  background-color: $bs-gray2;
 }
 
 // case
@@ -137,7 +137,7 @@ td, th {
 .diagram-container {
   display: flex;
   flex-direction: row;
-  border-top: 1px solid $bs-gray;
+  border-top: 1px solid $bs-gray2;
   flex-grow: 1;
   padding: 10px;
 }
@@ -154,7 +154,7 @@ td, th {
     flex-direction: column;
     margin: 10px;
     padding: 10px;
-    border: 1px solid $bs-gray;
+    border: 1px solid $bs-gray2;
     transition: .15s;
 
     &:hover{
@@ -183,13 +183,13 @@ td, th {
   .tab-label {
     height: 40px;
     padding: 5px 18px;
-    border: 1px solid $bs-gray;
+    border: 1px solid $bs-gray2;
     cursor: pointer;
 
     transition: 0.15s;
     
     &:hover{
-      background-color: $bs-light;
+      background-color: $bs-gray1;
     }
   }
 
@@ -204,7 +204,7 @@ td, th {
     order: 1;
     display: flex;
     flex-grow: 1;
-    border: 1px solid $bs-gray;
+    border: 1px solid $bs-gray2;
   }
 
   input[type="radio"]:checked + .tab-label {
