@@ -8,7 +8,7 @@ We can import the variables from one file
 that contains all the variables.
 */
 @import '_variables.scss';
-@import '~tippy.js/dist/tippy.css';
+@import 'tooltip.scss';
 
 #app{
   height: 100vh;

@@ -1,87 +1,23 @@
- 
- /* content */
- [tooltip]{
-    position: relative;
- 
-    &::after, &::before {
-      position: absolute;
-      z-index: 10;
-      
-      opacity: 0; // display: none/block, transition will not occur
-      transition: opacity 0.3s ease;
-      pointer-events: none;
-    }
- 
-    &::after {  // tooltip box
-      content: attr(tooltip); // 1. attr() get tooltip attr and set value
- 
-      max-width: 200px;
-      padding: 8px 15px;
-      border-radius: 4px;
- 
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      
-      border: 1px solid var(--tooltip-border-color);
-      background-color: var(--tooltip-bg-color);
-      color: var(--tooltip-text-color);
-    }
- 
-    &::before{ // tooltip arrow
-      content: '';
-      border: 5px solid transparent;
-      border-top-color: var(--tooltip-border-color);
-    }
- 
- 
-    &:hover{ // mouseenter, mouseleave
-      &::after, &::before{
-        opacity: 1;
-      }
-    }
-   
-    /* config */
-    &[effect="light"] { // 2. [effect="light"] get options and set themes
-       --tooltip-border-color: #313131;
-       --tooltip-text-color: #313131;
-       --tooltip-bg-color: #fff;
-    }
-   
-    @each $placement in top {
-      &[placement="#{$placement}"] {
-         &::after {
-           @extend .tooltip-placement-#{$placement};
-         }
- 
-         &::before {
-           @extend .triangle-placement-#{$placement};
-         }
-      }
-    }
- 
-    /* default config */
-   &:not([placement]), &[placement=""] {
-     &::after {
-       @extend .tooltip-placement-top;
-     }
-     
-     &::before {
-       @extend .triangle-placement-top;
-     }
-   }
- } 
- 
- /* positions */
- .tooltip-placement-top, .triangle-placement-top {
-   left: 50%;
-   transform: translate(-50%, 0);
- }
- 
- .tooltip-placement-top {
-   bottom: calc(100% + 10px);  // 3. 100% here is parent height, key point
- }
- 
- .triangle-placement-top {
-   bottom: calc(100%); // 4. no need add 5px, because transparent border also takes place
- }
+.activity-tooltip{
+  font-size: 0.7rem;
+  width: 100px;
+  opacity: 0;
+  transition: 0.2s;
+  border: 1px solid black;
+  border-radius: 6px;
+  padding: 6px 3px 3px 3px;
+  margin-top: 10px;
+
+  
+  .arrow-up {
+    width: 0; 
+    height: 0; 
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    margin-left: 45%;
+    margin-top: -12%;
+    
+    border-bottom: 5px solid black;
+  }
+}
+
