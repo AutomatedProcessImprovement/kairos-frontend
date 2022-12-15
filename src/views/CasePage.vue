@@ -8,11 +8,15 @@
         <small>Started: {{startDate}}</small>  <small>Last update: {{lastUpdate}}</small>
       </div>
     </div>
-    <operational-worker-view v-if="view===0"
+    <div class="switch-views">
+      <button class="btn" :class="{ active: view===1 }" @click="view=1">Analytical</button>
+      <button class="btn" :class="{ active: view===0 }" @click="view=0">Operational</button>
+    </div>
+    <operational-worker-view v-show="view===0"
     :caseRecommendations="caseRecommendations"
       :currentCase="currentCase"
       ></operational-worker-view>
-      <process-analyst-view v-else
+      <process-analyst-view v-show="view===1"
       :caseRecommendations="caseRecommendations"
       :caseActivities="caseActivities"
       :currentCase="currentCase"
@@ -42,7 +46,7 @@
           currentCase: null,
           startDate: null,
           lastUpdate: null,
-          view: 0
+          view: 1
         }
       },
       methods: {
