@@ -1,0 +1,92 @@
+.operational-view {
+  display: flex;
+  flex-direction: row;
+  border-top: 1px solid $bs-gray2;
+  flex-grow: 1;
+  padding: 10px;
+
+  .prediction-container{
+    small{
+      padding: 5px 10px;
+    }
+  }
+
+  .recommendation-details{
+    display: flex;
+    flex-direction: column;
+    border: 1px solid $bs-gray2;
+    padding: 10px;
+
+    h4{
+      font-style: italic;
+    }
+
+    p{
+      padding: 5px;
+    }
+
+    .recommendation-details-column-container{
+      display: flex;
+      flex-direction: row;
+
+      .recommendation-details-column{
+        display: flex;
+        flex-direction: column;
+        padding-right: 30px;
+        max-width: 450px;
+        min-width: 250px;
+      }
+    }
+  }
+  .recommendations-list {
+      min-width: 200px;
+    
+      h4 {
+        padding-right: 10px;
+      }
+    
+      .recommendation {
+        display: flex;
+        flex-direction: column;
+        margin: 10px;
+        padding: 10px;
+        border: 1px solid $bs-gray2;
+        transition: .15s;
+
+        .recommendation-heading{
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+
+          .btn{
+            background-color: $bs-white;
+            border: 1px solid $bs-gray2;
+
+            &:hover{
+              filter: brightness(98%);
+            }
+
+            &.selected{
+              border: 1px solid $bs-blue;
+            }
+          }
+        }
+
+        .similar-cases-table{
+          display: flex;
+          align-items: flex-end;
+          padding: 10px;
+          flex-direction: column;
+
+          .btn{
+            background-color: $bs-white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+          }
+        }
+    
+      }
+    
+    }
+}

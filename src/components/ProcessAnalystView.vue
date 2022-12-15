@@ -1,5 +1,5 @@
 <template>    
-    <div class="diagram-container">
+    <div class="analytical-view">
       <div class="recommendations-list">
         <h4>Recommendations list</h4>
         <div class="recommendation" v-for="(r,index) in caseRecommendations" :key="index" 

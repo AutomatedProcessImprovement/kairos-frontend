@@ -1,5 +1,5 @@
 <template>    
-    <div class="prediction-recommendations-container">
+    <div class="operational-view">
       <div class="column">
         <div class="prediction-container">
             <h4>Prediction</h4>
@@ -9,10 +9,33 @@
         </div>
         <div class="recommendations-list">
           <h4>Recommendations list</h4>
-          <div class="recommendation" v-for="(r,index) in caseRecommendations" :key="index" 
-          @click="selectRecommendation(index)" :class="{selected: index === selectedRec}">
-            <p>{{r.name}}</p>
+          <div class="recommendation" v-for="(r,index) in caseRecommendations" :key="index">
+            <div class="recommendation-heading">
+                <p>{{r.name}}</p>
+                <button class="btn" @click="selectRecommendation(index)" :class="{selected: index === selectedRec}">See details</button>
+            </div>
             <small>Predicted effect: {{r.effect}}</small>
+            <div class="similar-cases-table">
+                <button class="btn" @click="toggleSimilarCases(index)">
+                    Similar cases
+                    <ion-icon v-if="index===selectedSimilarCases" name="chevron-up-outline"></ion-icon>
+                    <ion-icon v-else name="chevron-down-outline"></ion-icon>
+                </button>
+                <table :class="{expanded: index === selectedSimilarCases}">
+                    <thead>
+                        <tr>
+                            <th v-for="header in ['ID','Purpose','Amount','Similarity','Effect']" :key="header"> {{ header }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="item in similarCases" :key='item'>
+                            <td v-for="value in item" :key='value'>
+                            {{ value }}
+                            </td>
+                        </tr>
+                        </tbody>
+                </table>
+            </div>
           </div>
     
         </div>
@@ -58,18 +81,23 @@
           currentCase: {type: Object},
           caseId: {type: Number},
           caseRecommendations: {type: Array},
+          similarCases: {type: Array}
         },
         
         data() {
           return {
             selectedRec: null,
+            selectedSimilarCases: null,
         }
       },
 
       methods: {
         selectRecommendation(index){
-          this.selectedRec = index
-          
+          this.selectedRec = index;
+        },
+
+        toggleSimilarCases(index){
+            this.selectedSimilarCases = index;
         }
       
       }
