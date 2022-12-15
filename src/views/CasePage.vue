@@ -11,6 +11,7 @@
     <div class="switch-views">
       <button class="btn" :class="{ active: view===1 }" @click="view=1">Analytical</button>
       <button class="btn" :class="{ active: view===0 }" @click="view=0">Operational</button>
+      <button class="btn" :class="{ active: view===3 }">Tactical</button>
     </div>
     <operational-worker-view v-show="view===0"
     :caseRecommendations="caseRecommendations"
