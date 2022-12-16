@@ -15,26 +15,30 @@
                 <button class="btn" @click="selectRecommendation(index)" :class="{selected: index === selectedRec}">See details</button>
             </div>
             <small>Predicted effect: {{r.effect}}</small>
-            <div class="similar-cases-table">
-                <button class="btn" @click="toggleSimilarCases(index)">
-                    Similar cases
-                    <ion-icon v-if="index===selectedSimilarCases" name="chevron-up-outline"></ion-icon>
-                    <ion-icon v-else name="chevron-down-outline"></ion-icon>
-                </button>
-                <table :class="{expanded: index === selectedSimilarCases}">
-                    <thead>
-                        <tr>
-                            <th v-for="header in ['ID','Purpose','Amount','Similarity','Effect']" :key="header"> {{ header }}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="item in similarCases" :key='item'>
-                            <td v-for="value in item" :key='value'>
-                            {{ value }}
-                            </td>
-                        </tr>
-                        </tbody>
-                </table>
+            <div class="similar-cases">
+                <accordion-component>
+                  <template v-slot:title>
+                    <span>Similar cases</span>
+                  </template>
+                  <template v-slot:content>
+                    <div class="similar-cases-table">
+                      <table :class="{expanded: index === selectedSimilarCases}">
+                          <thead>
+                              <tr>
+                                  <th v-for="header in ['ID','Purpose','Amount','Similarity','Effect']" :key="header"> {{ header }}</th>
+                              </tr>
+                              </thead>
+                              <tbody>
+                              <tr v-for="item in similarCases" :key='item'>
+                                  <td v-for="value in item" :key='value'>
+                                  {{ value }}
+                                  </td>
+                              </tr>
+                              </tbody>
+                      </table>
+                    </div>
+                  </template>
+                </accordion-component>
             </div>
           </div>
     
@@ -71,10 +75,14 @@
   </template>
   
   <script>
-  // import ModelService from '@/services/model.service';
+
+  import AccordionComponent from './AccordionComponent.vue';
   
     export default {
       name: 'OperationalWorkerView',
+      components:{
+        AccordionComponent
+      },
   
       props: {
           casePrediction: {type: Object},

@@ -33,8 +33,6 @@
         display: flex;
         flex-direction: column;
         padding-right: 30px;
-        max-width: 450px;
-        min-width: 250px;
       }
     }
   }
@@ -52,6 +50,7 @@
         padding: 10px;
         border: 1px solid $bs-gray2;
         transition: .15s;
+        min-width: 400px;
 
         .recommendation-heading{
           display: flex;
@@ -72,18 +71,34 @@
           }
         }
 
-        .similar-cases-table{
+        .similar-cases{
           display: flex;
-          align-items: flex-end;
           padding: 10px;
           flex-direction: column;
+          
+          .accordion{ 
+            display: flex;
+            align-items: flex-end;
+            flex-direction: column;
+            
+            .btn{
+              background-color: $bs-white;
+              border: none;
+              padding: 5px;
+              cursor: pointer;
+            }
 
-          .btn{
-            background-color: $bs-white;
-            border: none;
-            padding: 5px;
-            cursor: pointer;
-          }
+            ion-icon{
+              visibility: visible;
+              transition: 0.2s;
+
+              &.arrow-down{
+                transform: rotate(180deg);
+              }
+            }
+
+        }
+
         }
     
       }

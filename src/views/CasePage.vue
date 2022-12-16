@@ -27,8 +27,8 @@
   
   <script>
     import ModelService from "@/services/model.service";
-    import OperationalWorkerView from '@/components/OperationalWorkerView.vue';
-    import ProcessAnalystView from '@/components/ProcessAnalystView.vue';
+    import OperationalWorkerView from '@/components/OperationalView.vue';
+    import ProcessAnalystView from '@/components/AnalyticalView.vue';
     export default {
       name: 'CasePage',
       components: {
