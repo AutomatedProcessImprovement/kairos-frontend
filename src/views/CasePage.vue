@@ -9,15 +9,15 @@
       </div>
     </div>
     <div class="switch-views">
-      <button class="btn" :class="{ active: view===0 }" @click="selectView(0)">Analytical</button>
-      <button class="btn" :class="{ active: view===1 }" @click="selectView(1)">Operational</button>
-      <button class="btn" :class="{ active: view===2 }">Tactical</button>
+      <button class="btn" :class="{ active: view==='analytical' }" @click="selectView('analytical')">Analytical</button>
+      <button class="btn" :class="{ active: view==='operational' }" @click="selectView('operational')">Operational</button>
+      <button class="btn" :class="{ active: view==='tactical' }">Tactical</button>
     </div>
-    <operational-worker-view v-show="view===0"
+    <operational-worker-view v-show="view==='operational'"
     :caseRecommendations="caseRecommendations"
       :currentCase="currentCase"
       ></operational-worker-view>
-      <process-analyst-view v-show="view===1"
+      <process-analyst-view v-show="view==='analytical'"
       :caseRecommendations="caseRecommendations"
       :caseActivities="caseActivities"
       :currentCase="currentCase"
@@ -114,18 +114,18 @@
         },
 
         selectView(view){
-          // localStorage.setItem('view', view);
-          this.view=view;
+          localStorage.view = view;
+          this.view = view;
         }
         
       },
       created() {
         this.getCase();
-        // console.log(this.$store)
-        // const view = this.$store.state.auth.view;
-        // if (!view) {
-        //   this.selectView(0);
-        // }
+        if(!localStorage.view){
+          this.selectView('analytical')
+        } else{
+          this.view = localStorage.view
+        }
       }
     };
   </script>
