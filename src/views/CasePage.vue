@@ -9,9 +9,9 @@
       </div>
     </div>
     <div class="switch-views">
-      <button class="btn" :class="{ active: view===1 }" @click="view=1">Analytical</button>
-      <button class="btn" :class="{ active: view===0 }" @click="view=0">Operational</button>
-      <button class="btn" :class="{ active: view===3 }">Tactical</button>
+      <button class="btn" :class="{ active: view===0 }" @click="selectView(0)">Analytical</button>
+      <button class="btn" :class="{ active: view===1 }" @click="selectView(1)">Operational</button>
+      <button class="btn" :class="{ active: view===2 }">Tactical</button>
     </div>
     <operational-worker-view v-show="view===0"
     :caseRecommendations="caseRecommendations"
@@ -47,7 +47,7 @@
           currentCase: null,
           startDate: null,
           lastUpdate: null,
-          view: 1
+          view: null,
         }
       },
       methods: {
@@ -112,11 +112,20 @@
             this.lastUpdate = "Task " + lastActivity.name + " completed by " + lastActivity.resource.name + " on " + endDate
           }
         },
+
+        selectView(view){
+          // localStorage.setItem('view', view);
+          this.view=view;
+        }
         
-      
       },
       created() {
         this.getCase();
+        // console.log(this.$store)
+        // const view = this.$store.state.auth.view;
+        // if (!view) {
+        //   this.selectView(0);
+        // }
       }
     };
   </script>
