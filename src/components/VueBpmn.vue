@@ -30,9 +30,6 @@ import $ from 'jquery'
       };
     },
 
-    // created(){
-    //   this.fetchDiagram()
-    // },
 
     beforeUnmount: function() {
       this.bpmnViewer.destroy();
