@@ -19,10 +19,14 @@ import cytoscape from 'cytoscape';
           }
           
         },
+
         watch: {
-            activities: function(){
-                this.$emit('loading');
-                this.displayDiagram();
+          activities: function(){
+            this.$emit('loading');
+                
+          },
+          recommendations: function() {
+            this.displayDiagram();
           }
         },
         methods: {
@@ -68,7 +72,8 @@ import cytoscape from 'cytoscape';
             });
             
             var elems = [];
-            for (var i = 0; i < this.activities.length; i++) {
+
+            for (let i = 0; i < this.activities.length; i++) {
               elems.push({
                 group: "nodes",
                 data: {
@@ -88,6 +93,34 @@ import cytoscape from 'cytoscape';
                   source: this.activities[i].name,
                   target: this.activities[i+1].name,
                   label: "e" + i
+                }
+              });
+            }
+
+            var l = this.activities.length
+
+            for (let i=0; i < this.recommendations.length; i++) {
+              elems.push({
+                group: "nodes",
+                data: {
+                  id: this.recommendations[i].name,
+                },
+                position: {
+                  x: (100 + 150*l),
+                  y: (100 + 120*i)
+                },
+                style : {
+                  'border-style' : 'dashed',
+                  'border-color' : 'gray'
+                }
+              });
+
+              elems.push({
+                group: "edges",
+                data: {
+                  id: "e" + (i+l),
+                  source: this.activities[l-1].name,
+                  target: this.recommendations[i].name,
                 }
               });
             }
