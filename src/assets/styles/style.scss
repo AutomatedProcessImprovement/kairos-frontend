@@ -10,10 +10,11 @@ that contains all the variables.
 @import 'variables.scss';
 @import 'sidebar.scss';
 @import 'case.scss';
-@import 'diagram.scss';
+// @import 'diagram.scss';
 @import 'tooltip.scss';
 @import 'operationalView.scss';
 @import 'analyticalView.scss';
+@import 'cytoscape.scss';
 
 #app{
   height: 100vh;

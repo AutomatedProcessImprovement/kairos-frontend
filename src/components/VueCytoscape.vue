@@ -14,6 +14,9 @@ import cytoscape from 'cytoscape';
           activities: {
             type: Object
           },
+          recommendations: {
+            type: Object
+          }
           
         },
         watch: {

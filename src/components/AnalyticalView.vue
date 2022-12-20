@@ -9,25 +9,26 @@
           <small>Probability: {{r.probability}}%</small>
           <small>Uncertainty: {{r.uncertainty}}%</small>
         </div>
-  
       </div>
   
       <div class="tabs-container">
-        <input type="radio" id="tab-diagram" name="tabs-container" checked="checked">
-          <label for="tab-diagram" class="tab-label">Diagram</label>
-          <div class="tab">
-            <vue-bpmn
-              :activities="caseActivities"
-              :options="options"
-              v-on:error="handleError"
-              v-on:shown="handleShown"
-              v-on:loading="handleLoading"
-          ></vue-bpmn>
+        <div class="tabs-header">
+            <input type="radio" id="tab-diagram" name="tabs-container" checked="checked" @click="selectedTab='diagram'">
+            <label for="tab-diagram" class="tab-label">Diagram</label>
+            
+            <input type="radio" id="tab-details" name="tabs-container" @click="selectedTab='details'">
+            <label for="tab-details" class="tab-label">Details</label>
+        </div>
+
+          <div v-show="selectedTab==='diagram'" class="tab tab-diagram">
+            <vue-cytoscape
+            :activities="caseActivities"
+            :recommendations="caseRecommendations"
+            ></vue-cytoscape>
+            
           </div>
-  
-          <input type="radio" id="tab-details" name="tabs-container">
-          <label for="tab-details" class="tab-label">Details</label>
-          <div class="tab details-tab">
+
+          <div v-show="selectedTab==='details'" class="tab tab-details">
             <div v-if="selectedRec !== null" class="recommendation-details">
               <h3>Perform "{{caseRecommendations[selectedRec].name}}"</h3>
               <div class = "recommendation-details-column-container">
@@ -62,13 +63,12 @@
   </template>
   
   <script>
-    import VueBpmn from '@/components/VueBpmn.vue';
-    import minimapModule from 'diagram-js-minimap';
+  import VueCytoscape from './VueCytoscape.vue';
   
     export default {
       name: 'CasePage',
       components: {
-        VueBpmn
+        VueCytoscape
       },
   
       props: {
@@ -79,12 +79,8 @@
   
       data() {
         return {
-          options: {
-            propertiesPanel: {},
-            additionalModules: [minimapModule],
-            moddleExtensions: []
-          },
           selectedRec: null,
+          selectedTab: 'diagram',
         }
       },
       methods: {

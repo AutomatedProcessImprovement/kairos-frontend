@@ -1,6 +1,9 @@
-#cy{
+.diagram{
     display: flex;
     flex-grow: 1;
-    position: absolute;
-
+    
+     *{
+        display: flex;
+        flex-grow: 1;
+    }
 }
