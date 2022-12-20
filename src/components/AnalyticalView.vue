@@ -97,11 +97,11 @@
   
         selectRecommendation(index){
           this.selectedRec = index
-          var recommendationnodes = Array.from(document.getElementsByClassName("recommendationnode"))
-          for (var i of recommendationnodes) {
-            i.classList.remove("selected-recommendationnode")
-          }
-          recommendationnodes[index].classList.add("selected-recommendationnode")
+          // var recommendationnodes = Array.from(document.getElementsByClassName("recommendationnode"))
+          // for (var i of recommendationnodes) {
+          //   i.classList.remove("selected-recommendationnode")
+          // }
+          // recommendationnodes[index].classList.add("selected-recommendationnode")
         }
       
       },
