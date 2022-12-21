@@ -26,6 +26,7 @@
     "diagram-js-minimap": "3.0.0",
     "jquery": "^3.6.1",
     "popper.js": "^1.16.1",
+    "tippy.js": "^6.3.7",
     "tippy.vue": "^3.2.1",
     "vee-validate": "^4.5.11",
     "vue": "^3.2.13",

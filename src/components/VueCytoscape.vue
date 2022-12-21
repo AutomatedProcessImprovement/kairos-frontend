@@ -62,6 +62,7 @@ cytoscape.use( dagre );
                   {
                     selector: '.recommendation',
                     style : {
+                      'label' : 'data(id)',
                       'border-style' : 'dashed',
                       'border-color' : '#7e7e7e'
                     }
@@ -75,13 +76,13 @@ cytoscape.use( dagre );
                 {
                   selector: '.activity',
                     style : {
+                      'label': 'data(label)',
                       'border-color' : 'black',
                   }
                 },
                 {
                   selector: 'node',
                   style: {
-                    'label': 'data(id)',
                     'text-valign': 'center',
                     'text-halign': 'center',
                     'shape': 'round-rectangle',
@@ -91,7 +92,7 @@ cytoscape.use( dagre );
                     'text-max-width' : width-10,
                     'height' : height,
                     'width' : width,
-                    'font-size' : 12,
+                    'font-size' : 10,
                     'font-family' : 'arial'
                   }
                 },
@@ -111,10 +112,15 @@ cytoscape.use( dagre );
             var elems = [];
 
             for (let i = 0; i < this.activities.length; i++) {
+              const activity = this.activities[i];
+              var options = {dateStyle:"short",timeStyle: "short"};
+              var date = new Date(activity.timestamp).toLocaleString("en-GB",options);
+              var content = activity.name + "\n\n" + date + "\n" + activity.resource.name;
               elems.push({
                 group: "nodes",
                 data: {
-                  id: this.activities[i].name, 
+                  id: activity.name, 
+                  label: content,
                 },
                 classes: 'activity'
               });
@@ -124,7 +130,7 @@ cytoscape.use( dagre );
                 group: "edges",
                 data: {
                   id: "e" + i,
-                  source: this.activities[i].name,
+                  source: activity.name,
                   target: this.activities[i+1].name,
                   label: "e" + i
                 }
