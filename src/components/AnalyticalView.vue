@@ -24,6 +24,7 @@
             <vue-cytoscape
             :activities="caseActivities"
             :recommendations="caseRecommendations"
+            :selectedRec="selectedRec"
             ></vue-cytoscape>
             
           </div>
@@ -96,12 +97,7 @@
         },
   
         selectRecommendation(index){
-          this.selectedRec = index
-          // var recommendationnodes = Array.from(document.getElementsByClassName("recommendationnode"))
-          // for (var i of recommendationnodes) {
-          //   i.classList.remove("selected-recommendationnode")
-          // }
-          // recommendationnodes[index].classList.add("selected-recommendationnode")
+          this.selectedRec = index;
         }
       
       },

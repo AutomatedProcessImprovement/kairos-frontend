@@ -6,6 +6,9 @@
 
 <script>    
 import cytoscape from 'cytoscape';
+import dagre from 'cytoscape-dagre';
+
+cytoscape.use( dagre );
 
       export default {
     
@@ -16,51 +19,85 @@ import cytoscape from 'cytoscape';
           },
           recommendations: {
             type: Object
+          },  
+          selectedRec: {
+            type: Number
           }
           
         },
 
+        data: function() {
+          return {
+            cy: null
+          };
+        },
+
         watch: {
           activities: function(){
-            this.$emit('loading');
-                
+            this.$emit('loading');      
           },
           recommendations: function() {
+            this.createDiagram();
+          },
+          selectedRec: function(newVal,oldVal){
+            this.selectRecommendation(newVal,oldVal);
+          },
+          cy: function(){
             this.displayDiagram();
           }
         },
         methods: {
           displayDiagram(){
+            this.cy.layout({name:'dagre',rankDir: 'LR'}).run()
+          },
+
+          createDiagram(){
+            var width = 100;
+            var height = 80;
             var cy = cytoscape({
                 container: document.getElementById('cy'),
                 autoungrabify: true,
-                layout: {
-                  name: 'grid'
-                },
 
                 style: [
+                  {
+                    selector: '.recommendation',
+                    style : {
+                      'border-style' : 'dashed',
+                      'border-color' : '#7e7e7e'
+                    }
+                  },
+                  {
+                    selector: '.selected',
+                    style: {
+                      'border-color' : '#579aff',
+                    }
+                  },
+                {
+                  selector: '.activity',
+                    style : {
+                      'border-color' : 'black',
+                  }
+                },
                 {
                   selector: 'node',
-                  css: {
+                  style: {
                     'label': 'data(id)',
                     'text-valign': 'center',
                     'text-halign': 'center',
                     'shape': 'round-rectangle',
                     'background-color' : 'white',
                     'border-width' : 1,
-                    'border-color' : 'black',
-                    'padding' : 2,
                     'text-wrap' : 'wrap',
-                    'text-max-width' : 10,
-                    'height' : 80,
-                    'width' : 100,
+                    'text-max-width' : width-10,
+                    'height' : height,
+                    'width' : width,
                     'font-size' : 12,
                     'font-family' : 'arial'
                   }
                 },
                 {
                   selector: 'edge',
-                  css: {
+                  style: {
                     'curve-style': 'taxi',
                     'target-arrow-shape': 'triangle',
                     'line-color' : 'black',
@@ -79,10 +116,7 @@ import cytoscape from 'cytoscape';
                 data: {
                   id: this.activities[i].name, 
                 },
-                position:{
-                  x: (100 + 150*i),
-                  y: 100
-                }
+                classes: 'activity'
               });
               if(i == this.activities.length - 1) break;
 
@@ -105,14 +139,7 @@ import cytoscape from 'cytoscape';
                 data: {
                   id: this.recommendations[i].name,
                 },
-                position: {
-                  x: (100 + 150*l),
-                  y: (100 + 120*i)
-                },
-                style : {
-                  'border-style' : 'dashed',
-                  'border-color' : 'gray'
-                }
+                classes: 'recommendation',
               });
 
               elems.push({
@@ -125,10 +152,17 @@ import cytoscape from 'cytoscape';
               });
             }
 
-            cy.add(elems)
-
+            cy.add(elems);
+            this.cy = cy;
                             
             },
+          
+          selectRecommendation(newVal,oldVal){
+            if(oldVal !== null) {
+              this.cy.getElementById(this.recommendations[oldVal].name).removeClass('selected')
+            }
+            this.cy.getElementById(this.recommendations[newVal].name).addClass('selected')
+          }
                     
         }
       };
