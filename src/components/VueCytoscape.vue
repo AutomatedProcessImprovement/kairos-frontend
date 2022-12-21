@@ -48,7 +48,12 @@ cytoscape.use( dagre );
         },
         methods: {
           displayDiagram(){
-            this.cy.layout({name:'dagre',rankDir: 'LR'}).run()
+            this.cy.layout({
+              name:'dagre',
+              rankDir: 'LR', 
+              align: 'DR',
+              // acyclicer: 'greedy'
+                          }).run()
           },
 
           createDiagram(){
@@ -66,12 +71,7 @@ cytoscape.use( dagre );
                       'border-color' : 'black'
                     }
                   },
-                  {
-                    selector: '.selected',
-                    style: {
-                      'border-color' : '#579aff',
-                    }
-                  },
+                  
                 {
                   selector: '.activity',
                     style : {
@@ -87,6 +87,45 @@ cytoscape.use( dagre );
                     'border-color' : '#d7d7d7'
                   }
                 },
+
+                {
+                  selector: '.activityEdge',
+                  style: {
+                    'line-color' : '#d7d7d7',
+                    'target-arrow-color': '#d7d7d7',
+                  }
+                },
+
+                {
+                  selector: '.recommendationEdge',
+                  style: {
+                    'line-color' : 'black',
+                    'target-arrow-color': 'black',
+                  }
+                },
+
+                {
+                  selector: '.predictionEdge',
+                  style: {
+                    'line-color' : '#d7d7d7',
+                    'line-style': 'dashed',
+                    'target-arrow-color': '#d7d7d7',
+                  }
+                },
+
+                {
+                    selector: '.selectedRec',
+                    style: {
+                      'border-color' : '#579aff',
+                    }
+                  },
+                  {
+                    selector: '.selectedEdge',
+                    style: {
+                      'line-color' : '#579aff',
+                      'target-arrow-color': '#579aff',
+                    }
+                  },
                 {
                   selector: 'node',
                   style: {
@@ -106,9 +145,13 @@ cytoscape.use( dagre );
                 {
                   selector: 'edge',
                   style: {
-                    'curve-style': 'taxi',
+                    'curve-style': 'bezier',
                     'target-arrow-shape': 'triangle',
-                    'width': 1
+                    'width': 1,
+                    'label' : node => node.data('label') > 1 ? node.data('label') : "",
+                    'font-size' : 12,
+                    'font-family' : 'arial',
+                    'color' : '#7e7e7e'
                   }
                 }
               ],
@@ -129,20 +172,23 @@ cytoscape.use( dagre );
                 },
                 classes: 'activity'
               });
-              if(i == this.activities.length - 1) break;
+              if(i == 0) continue;
+
+              const oldEdge = elems.findIndex(e => e.data.source === this.activities[i-1].name && e.data.target === activity.name);
+              if(oldEdge > -1){
+                elems[oldEdge].data.label = elems[oldEdge].data.label + 1;
+                continue;
+              }
 
               elems.push({
                 group: "edges",
                 data: {
-                  id: "e" + i,
-                  source: activity.name,
-                  target: this.activities[i+1].name,
-                  label: "e" + i
+                  id: "ae" + i,
+                  source: this.activities[i-1].name,
+                  target: activity.name,
+                  label: 1
                 },
-                style: {
-                  'line-color' : '#d7d7d7',
-                  'target-arrow-color': '#d7d7d7',
-                }
+                classes: 'activityEdge'
               });
             }
 
@@ -160,14 +206,11 @@ cytoscape.use( dagre );
               elems.push({
                 group: "edges",
                 data: {
-                  id: "e" + (i+l),
+                  id: "re" + i,
                   source: this.activities[l-1].name,
                   target: this.recommendations[i].name,
                 },
-                style: {
-                  'line-color' : 'black',
-                  'target-arrow-color': 'black',
-                }
+                classes: 'recommendationEdge'
               });
             }
 
@@ -178,9 +221,11 @@ cytoscape.use( dagre );
           
           selectRecommendation(newVal,oldVal){
             if(oldVal !== null) {
-              this.cy.getElementById(this.recommendations[oldVal].name).removeClass('selected')
+              this.cy.getElementById(this.recommendations[oldVal].name).removeClass('selectedRec')
+              this.cy.getElementById("re" + oldVal).removeClass('selectedEdge')
             }
-            this.cy.getElementById(this.recommendations[newVal].name).addClass('selected')
+            this.cy.getElementById(this.recommendations[newVal].name).addClass('selectedRec')
+            this.cy.getElementById("re" + newVal).addClass('selectedEdge')
           }
                     
         }

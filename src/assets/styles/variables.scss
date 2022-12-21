@@ -23,3 +23,12 @@ $bs-gray5: #212529;
 $bs-black: black;
 $bs-font-sans-serif: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
 $bs-font-monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+
+:export{
+    bsBlue: $bs-black;
+    bsGray1: $bs-gray1;
+    bsGray2: $bs-gray2;
+    bsGray3: $bs-gray3;
+    bsGray4: $bs-gray4;
+    bsGray5: $bs-gray5;
+}
