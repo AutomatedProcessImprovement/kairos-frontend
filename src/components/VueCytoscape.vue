@@ -63,8 +63,7 @@ cytoscape.use( dagre );
                     selector: '.recommendation',
                     style : {
                       'label' : 'data(id)',
-                      'border-style' : 'dashed',
-                      'border-color' : '#7e7e7e'
+                      'border-color' : 'black'
                     }
                   },
                   {
@@ -77,7 +76,15 @@ cytoscape.use( dagre );
                   selector: '.activity',
                     style : {
                       'label': 'data(label)',
-                      'border-color' : 'black',
+                      'border-color' : '#d7d7d7',
+                  }
+                },
+                {
+                  selector: '.prediction',
+                  style: {
+                    'label' : 'data(id)',
+                    'border-style' : 'dashed',
+                    'border-color' : '#d7d7d7'
                   }
                 },
                 {
@@ -101,8 +108,6 @@ cytoscape.use( dagre );
                   style: {
                     'curve-style': 'taxi',
                     'target-arrow-shape': 'triangle',
-                    'line-color' : 'black',
-                    'target-arrow-color': 'black',
                     'width': 1
                   }
                 }
@@ -133,6 +138,10 @@ cytoscape.use( dagre );
                   source: activity.name,
                   target: this.activities[i+1].name,
                   label: "e" + i
+                },
+                style: {
+                  'line-color' : '#d7d7d7',
+                  'target-arrow-color': '#d7d7d7',
                 }
               });
             }
@@ -154,6 +163,10 @@ cytoscape.use( dagre );
                   id: "e" + (i+l),
                   source: this.activities[l-1].name,
                   target: this.recommendations[i].name,
+                },
+                style: {
+                  'line-color' : 'black',
+                  'target-arrow-color': 'black',
                 }
               });
             }
