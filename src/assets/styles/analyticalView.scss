@@ -33,4 +33,25 @@
       }
     }
   }
+
+  .tab-diagram{
+    flex-direction: column;
+  }
+
+  .legend {
+    padding: 5px 10px 0 0;
+    position:absolute;
+    z-index: 999;
+    background-color: rgba($color: #ffffff, $alpha: 0.9);
+  }
+  
+  .legend .past-activity {
+    border-bottom: 2px solid $bs-black;
+    margin: 10px 15px;
+  }
+  
+  .legend .recommendation {
+    border-bottom: 2px dashed rgb(173, 173, 173);
+    margin: 10px 15px;
+  }
   

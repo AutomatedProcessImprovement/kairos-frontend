@@ -21,6 +21,7 @@
         </div>
 
           <div v-show="selectedTab==='diagram'" class="tab tab-diagram">
+            <legend-component></legend-component>
             <vue-cytoscape
             :activities="caseActivities"
             :recommendations="caseRecommendations"
@@ -65,11 +66,13 @@
   
   <script>
   import VueCytoscape from './VueCytoscape.vue';
+  import LegendComponent from './LegendComponent.vue';
   
     export default {
       name: 'CasePage',
       components: {
-        VueCytoscape
+        VueCytoscape,
+        LegendComponent
       },
   
       props: {
