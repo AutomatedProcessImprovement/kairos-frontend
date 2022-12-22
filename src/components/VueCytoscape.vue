@@ -64,6 +64,7 @@ cytoscape.use( dagre );
                 autoungrabify: true,
 
                 style: [
+                
                   {
                     selector: '.recommendation',
                     style : {
@@ -153,7 +154,18 @@ cytoscape.use( dagre );
                     'font-family' : 'arial',
                     'color' : '#7e7e7e'
                   }
-                }
+                },
+                
+                {
+                    selector: '.start',
+                    style : {
+                      'shape': 'ellipse',
+                      'height' : 40,
+                      'width' : 40,
+                      'border-color' : '#d7d7d7',
+
+                    }
+                  },
               ],
             });
             
@@ -172,7 +184,27 @@ cytoscape.use( dagre );
                 },
                 classes: 'activity'
               });
-              if(i == 0) continue;
+              if(i == 0) {
+                elems.push({
+                  group: "nodes",
+                  data: {
+                    id: "start event", 
+                    label: content,
+                  },
+                  classes: 'start'
+                });
+                elems.push({
+                  group: "edges",
+                  data: {
+                    id: "ae" + i,
+                    source: "start event",
+                    target: activity.name,
+                    label: 1
+                  },
+                  classes: 'activityEdge'
+                });
+                continue;
+              }
 
               const oldEdge = elems.findIndex(e => e.data.source === this.activities[i-1].name && e.data.target === activity.name);
               if(oldEdge > -1){
