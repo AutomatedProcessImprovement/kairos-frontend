@@ -56,12 +56,14 @@ export default {
 
   methods:{
     getResources(){
-        Service.getResources().then(
+        Service.getCases().then(
           (response) => {
-            this.resources = response.data;
-            this.resources.forEach(element => {
-              element.available? this.available += 1 : this.busy += 1
-            });
+            const cases = response.data.cases;
+            this.resources = cases.foreach(e => {
+              e.activities.foreach(a => {
+                return a.resource;
+              })
+            })
           },
           (error) => {
             this.content =

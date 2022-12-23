@@ -56,7 +56,7 @@ cytoscape.use( dagre );
             var height = 80;
             var cy = cytoscape({
                 container: document.getElementById('cy'),
-                autoungrabify: true,
+                // autoungrabify: true,
 
                 style: [
                 
