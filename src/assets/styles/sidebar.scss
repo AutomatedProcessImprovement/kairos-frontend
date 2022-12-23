@@ -1,13 +1,10 @@
 // sidebar container
 
 .sidebar {
-    height: 100%; 
     display: flex;
     align-items: center;
     background-color: $bs-white; 
-    // box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
     border-right: 2px solid $bs-gray2;
-    max-width: 300px;
   }
   
   // sidebar items container
@@ -28,7 +25,6 @@
     &:hover{
     background-color: $bs-gray2;
     color: $bs-black;
-    // text-decoration: none;
     }
   
   }

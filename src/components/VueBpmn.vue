@@ -8,7 +8,7 @@
 <script>
 import BpmnJS from 'bpmn-js/dist/bpmn-navigated-viewer.production.min.js';
 import LegendComponent from './LegendComponent.vue';
-import ModelService from '@/services/model.service';
+import ModelService from '@/services/service';
 import $ from 'jquery'
 
   

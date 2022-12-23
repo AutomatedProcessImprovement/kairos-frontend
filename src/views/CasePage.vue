@@ -7,33 +7,53 @@
       <div class="case-small-text">
         <small>Started: {{startDate}}</small>  <small>Last update: {{lastUpdate}}</small>
       </div>
+      <div class="case-summary">
+        <div class="case-kpi">
+          <h4>Case {{ kpi.name }} </h4>
+          <div class="row">
+            <h5>{{ caseKpi }} {{ kpi.measurement }}
+              <small v-if="kpi.name === 'duration'">since case start</small>
+            </h5>
+            <h5> /{{ kpi.value }} {{ kpi.measurement }}
+              <small>target</small>
+            </h5>
+          </div>
+        </div>
+        <div class="case-details">
+          <h4>Case details</h4>
+          <div class="row">
+            <h5 v-for="(value,name) in caseDetails" :key='name'>{{ value }}
+              <small>{{ name }}</small>
+            </h5>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="switch-views">
       <button class="btn" :class="{ active: view==='analytical' }" @click="selectView('analytical')">Analytical</button>
       <button class="btn" :class="{ active: view==='operational' }" @click="selectView('operational')">Operational</button>
       <button class="btn" :class="{ active: view==='tactical' }">Tactical</button>
     </div>
-    <operational-worker-view v-show="view==='operational'"
-    :caseRecommendations="caseRecommendations"
+    <operational-view v-show="view==='operational'"
       :currentCase="currentCase"
-      ></operational-worker-view>
-      <process-analyst-view v-show="view==='analytical'"
-      :caseRecommendations="caseRecommendations"
-      :caseActivities="caseActivities"
+      :kpi="kpi"
+      ></operational-view>
+      <analytical-view v-show="view==='analytical'"
       :currentCase="currentCase"
-    ></process-analyst-view>
+      :kpi="kpi"
+    ></analytical-view>
   </div>
   </template>
   
   <script>
-    import ModelService from "@/services/model.service";
-    import OperationalWorkerView from '@/components/OperationalView.vue';
-    import ProcessAnalystView from '@/components/AnalyticalView.vue';
+    import Service from "@/services/service";
+    import OperationalView from '@/components/OperationalView.vue';
+    import AnalyticalView from '@/components/AnalyticalView.vue';
     export default {
       name: 'CasePage',
       components: {
-        OperationalWorkerView,
-        ProcessAnalystView
+        OperationalView,
+        AnalyticalView
       },
       params: {
           caseId:{
@@ -42,21 +62,23 @@
       },
       data() {
         return {
-          caseActivities: null,
-          caseRecommendations: null,
-          currentCase: null,
-          startDate: null,
-          lastUpdate: null,
+          currentCase: {},
+          kpi: {},
+          startDate: "None",
+          lastUpdate: "None",
           view: null,
+          caseKpi: null,
+          caseDetails: {},
         }
       },
       methods: {
         getCase(){
           this.caseId = (this.$route.params.caseId)
-          ModelService.getCase(this.caseId).then(
+          Service.getCase(this.caseId).then(
             (response) => {
-              this.currentCase = response.data;
-              this.getCaseActivities(this.caseId);
+              this.currentCase = response.data.case;
+              this.kpi = response.data.kpi;
+              this.getAdditionalInformation();
             },
             (error) => {
               this.content =
@@ -68,49 +90,26 @@
             }
           );
         },
-        getCaseActivities() {
-          ModelService.getCaseActivities(this.caseId).then(
-            (response) => {
-              this.caseActivities = response.data
-              this.getCaseRecommendations()
-              },
-            (error) => {
-              this.content =
-                (error.response &&
-                  error.response.data &&
-                  error.response.data.message) ||
-                error.message ||
-                error.toString();
-            }
-          );
-        },
-        getCaseRecommendations() {
-          ModelService.getCaseRecommendations(this.caseId).then(
-            (response) => {
-              this.caseRecommendations = response.data
-              this.getAdditionalInformation()
-              },
-            (error) => {
-              this.content =
-                (error.response &&
-                  error.response.data &&
-                  error.response.data.message) ||
-                error.message ||
-                error.toString();
-            }
-          );
-        },
+
         getAdditionalInformation(){
-          if (!this.caseActivities.length) {
-            this.startDate = "None"
-            this.lastUpdate = "None"
-          } else{
-            var options = {dateStyle:"medium",timeStyle: "short"};
-            this.startDate = new Date(this.caseActivities[0].timestamp).toLocaleString("en-GB",options)
-            var lastActivity = this.caseActivities[this.caseActivities.length - 1]
-            var endDate = new Date(lastActivity.timestamp).toLocaleString("en-GB",options)
-            this.lastUpdate = "Task " + lastActivity.name + " completed by " + lastActivity.resource.name + " on " + endDate
-          }
+          const arr = Object.entries(this.currentCase)
+          const obj = arr.filter(([key,value]) => {
+            return typeof value !== "object" && key !== "caseId"
+          });
+          this.caseDetails = Object.fromEntries(obj);
+
+          if (!this.currentCase.activities.length) {
+            return;
+          } 
+          var options = {dateStyle:"medium",timeStyle: "short"};
+          this.startDate = new Date(this.currentCase.activities[0].timestamp).toLocaleString("en-GB",options)
+          
+          var lastActivity = this.currentCase.activities[this.currentCase.activities.length - 1]
+          var endDate = new Date(lastActivity.timestamp).toLocaleString("en-GB",options)
+          this.lastUpdate = "Task " + lastActivity.name + " completed by " + lastActivity.resource.name + " on " + endDate;
+          
+          this.caseKpi = Math.ceil(Math.abs((new Date()) - (new Date(this.currentCase.activities[0].timestamp)))/(1000*60*60*24))    
+          
         },
 
         selectView(view){

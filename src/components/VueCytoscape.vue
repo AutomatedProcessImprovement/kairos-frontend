@@ -14,10 +14,7 @@ cytoscape.use( dagre );
     
         name: 'vue-cytoscape',
         props: {
-          activities: {
-            type: Object
-          },
-          recommendations: {
+          currentCase: {
             type: Object
           },  
           selectedRec: {
@@ -33,10 +30,8 @@ cytoscape.use( dagre );
         },
 
         watch: {
-          activities: function(){
+          currentCase: function(){
             this.$emit('loading');      
-          },
-          recommendations: function() {
             this.createDiagram();
           },
           selectedRec: function(newVal,oldVal){
@@ -83,7 +78,7 @@ cytoscape.use( dagre );
                 {
                   selector: '.prediction',
                   style: {
-                    'label' : 'data(id)',
+                    'label' : 'data(label)',
                     'border-style' : 'dashed',
                     'border-color' : '#d7d7d7'
                   }
@@ -168,11 +163,15 @@ cytoscape.use( dagre );
                   },
               ],
             });
+
+            const activities = this.currentCase.activities;
+            const recommendations = this.currentCase.recommendations;
+            const prediction = this.currentCase.prediction;
             
             var elems = [];
 
-            for (let i = 0; i < this.activities.length; i++) {
-              const activity = this.activities[i];
+            for (let i = 0; i < activities.length; i++) {
+              const activity = activities[i];
               var options = {dateStyle:"short",timeStyle: "short"};
               var date = new Date(activity.timestamp).toLocaleString("en-GB",options);
               var content = activity.name + "\n\n" + date + "\n" + activity.resource.name;
@@ -206,7 +205,7 @@ cytoscape.use( dagre );
                 continue;
               }
 
-              const oldEdge = elems.findIndex(e => e.data.source === this.activities[i-1].name && e.data.target === activity.name);
+              const oldEdge = elems.findIndex(e => e.data.source === activities[i-1].name && e.data.target === activity.name);
               if(oldEdge > -1){
                 elems[oldEdge].data.label = elems[oldEdge].data.label + 1;
                 continue;
@@ -216,7 +215,7 @@ cytoscape.use( dagre );
                 group: "edges",
                 data: {
                   id: "ae" + i,
-                  source: this.activities[i-1].name,
+                  source: activities[i-1].name,
                   target: activity.name,
                   label: 1
                 },
@@ -224,13 +223,33 @@ cytoscape.use( dagre );
               });
             }
 
-            var l = this.activities.length
+            var l = activities.length
 
-            for (let i=0; i < this.recommendations.length; i++) {
+            elems.push({
+              group: "nodes",
+              data: {
+                id: "prediction",
+                label: prediction.name
+              },
+              classes: 'prediction',
+            });
+
+            elems.push({
+              group: "edges",
+              data: {
+                id: "pe",
+                source: activities[l-1].name,
+                target: 'prediction',
+              },
+              classes: 'predictionEdge'
+            });
+           
+
+            for (let i=0; i < recommendations.length; i++) {
               elems.push({
                 group: "nodes",
                 data: {
-                  id: this.recommendations[i].name,
+                  id: recommendations[i].name,
                 },
                 classes: 'recommendation',
               });
@@ -239,8 +258,8 @@ cytoscape.use( dagre );
                 group: "edges",
                 data: {
                   id: "re" + i,
-                  source: this.activities[l-1].name,
-                  target: this.recommendations[i].name,
+                  source: activities[l-1].name,
+                  target: recommendations[i].name,
                 },
                 classes: 'recommendationEdge'
               });
@@ -253,10 +272,10 @@ cytoscape.use( dagre );
           
           selectRecommendation(newVal,oldVal){
             if(oldVal !== null) {
-              this.cy.getElementById(this.recommendations[oldVal].name).removeClass('selectedRec')
+              this.cy.getElementById(this.currentCase.recommendations[oldVal].name).removeClass('selectedRec')
               this.cy.getElementById("re" + oldVal).removeClass('selectedEdge')
             }
-            this.cy.getElementById(this.recommendations[newVal].name).addClass('selectedRec')
+            this.cy.getElementById(this.currentCase.recommendations[newVal].name).addClass('selectedRec')
             this.cy.getElementById("re" + newVal).addClass('selectedEdge')
           }
                     

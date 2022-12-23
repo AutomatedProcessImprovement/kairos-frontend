@@ -41,7 +41,7 @@
 
 <script>
 
-import ModelService from "@/services/model.service";
+import Service from "@/services/service";
 
 export default {
 
@@ -56,7 +56,7 @@ export default {
 
   methods:{
     getResources(){
-        ModelService.getResources().then(
+        Service.getResources().then(
           (response) => {
             this.resources = response.data;
             this.resources.forEach(element => {

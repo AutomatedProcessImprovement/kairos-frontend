@@ -2,10 +2,10 @@
     <div class="analytical-view">
       <div class="recommendations-list">
         <h4>Recommendations list</h4>
-        <div class="recommendation" v-for="(r,index) in caseRecommendations" :key="index" 
+        <div class="recommendation" v-for="(r,index) in currentCase.recommendations" :key="index" 
         @click="selectRecommendation(index)" :class="{selected: index === selectedRec}">
           <p>{{r.name}}</p>
-          <small>Effect: {{r.effect}}</small>
+          <small>Effect: case will last {{ r.effect }} {{ kpi.measurement }}. </small>
           <small>Probability: {{r.probability}}%</small>
           <small>Uncertainty: {{r.uncertainty}}%</small>
         </div>
@@ -23,8 +23,7 @@
           <div v-show="selectedTab==='diagram'" class="tab tab-diagram">
             <legend-component></legend-component>
             <vue-cytoscape
-            :activities="caseActivities"
-            :recommendations="caseRecommendations"
+            :currentCase="currentCase"
             :selectedRec="selectedRec"
             ></vue-cytoscape>
             
@@ -32,7 +31,7 @@
 
           <div v-show="selectedTab==='details'" class="tab tab-details">
             <div v-if="selectedRec !== null" class="recommendation-details">
-              <h3>Perform "{{caseRecommendations[selectedRec].name}}"</h3>
+              <h3>Perform "{{currentCase.recommendations[selectedRec].name}}"</h3>
               <div class = "recommendation-details-column-container">
                 <div class="recommendation-details-column">
                   <p>Predicted case duration</p>
@@ -41,20 +40,20 @@
   
                   <h5>Model description</h5>
   
-                  <p>Accuracy: {{caseRecommendations[selectedRec].accuracy}}%</p>
-                  <p>Recall: {{caseRecommendations[selectedRec].recall}}%</p>
-                  <p>Precision: {{caseRecommendations[selectedRec].precision}}%</p>
+                  <p>Accuracy: {{currentCase.recommendations[selectedRec].accuracy}}%</p>
+                  <p>Recall: {{currentCase.recommendations[selectedRec].recall}}%</p>
+                  <p>Precision: {{currentCase.recommendations[selectedRec].precision}}%</p>
   
                   <h5>Features contribution</h5>
                 </div>
                 <div class="recommendation-details-column">
                   <h4> Description</h4>
-                  <p> Based on the prediction, it is recommended to perform {{caseRecommendations[selectedRec].name}}. [reasoning]</p>
+                  <p> Based on the prediction, it is recommended to perform {{currentCase.recommendations[selectedRec].name}}. [reasoning]</p>
   
                   <h4>Effect</h4>
-                  <p> {{caseRecommendations[selectedRec].effect}}</p>
-                  <p>Probability: {{caseRecommendations[selectedRec].probability}}%,
-                   uncertainty: {{caseRecommendations[selectedRec].uncertainty}}%</p>
+                  <p> {{currentCase.recommendations[selectedRec].effect}}</p>
+                  <p>Probability: {{currentCase.recommendations[selectedRec].probability}}%,
+                   uncertainty: {{currentCase.recommendations[selectedRec].uncertainty}}%</p>
                 </div>
               </div>
             </div>
@@ -76,9 +75,8 @@
       },
   
       props: {
-          caseActivities:{ type: Array},
-          caseRecommendations:{ type: Array},
-          currentCase: {type: Object},
+          currentCase: Object,
+          kpi: Object
       },
   
       data() {

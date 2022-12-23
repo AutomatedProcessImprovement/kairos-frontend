@@ -3,18 +3,20 @@
       <div class="column">
         <div class="prediction-container">
             <h4>Prediction</h4>
-            <small>Case predicted to last 34 days.</small>
-            <br/>
-            <small>Probability: % Uncertainty: %</small>
+            <small>{{currentCase.prediction}}</small>
+            <!-- <small>Case predicted to last {{ currentCase.prediction.effect }} {{ kpi.measurement }}.</small> -->
+            <!-- <small v-show="currentCase.prediction.effect > kpi.value">This violates the target.</small> -->
+            <!-- <br/> -->
+            <!-- <small>Probability: {{currentCase.prediction.probability}}% Uncertainty: {{currentCase.prediction.uncertainty}}%</small> -->
         </div>
         <div class="recommendations-list">
           <h4>Recommendations list</h4>
-          <div class="recommendation" v-for="(r,index) in caseRecommendations" :key="index">
+          <div class="recommendation" v-for="(r,index) in currentCase.recommendations" :key="index">
             <div class="recommendation-heading">
                 <p>{{r.name}}</p>
                 <button class="btn" @click="selectRecommendation(index)" :class="{selected: index === selectedRec}">See details</button>
             </div>
-            <small>Predicted effect: {{r.effect}}</small>
+            <small>Predicted effect: case lasts {{r.effect}} {{ kpi.measurement }}</small>
             <div class="similar-cases">
                 <accordion-component>
                   <template v-slot:title>
@@ -25,14 +27,14 @@
                       <table :class="{expanded: index === selectedSimilarCases}">
                           <thead>
                               <tr>
-                                  <th v-for="header in ['ID','Purpose','Amount','Similarity','Effect']" :key="header"> {{ header }}</th>
+                                  <th v-for="header in ['ID','Similarity','Purpose','Amount','Effect']" :key="header"> {{ header }}</th>
                               </tr>
                               </thead>
                               <tbody>
-                              <tr v-for="item in similarCases" :key='item'>
-                                  <td v-for="value in item" :key='value'>
+                              <tr v-for="item in r.similarCases" :key='item'>
+                                <td v-for="value in item" :key='value'>
                                   {{ value }}
-                                  </td>
+                                </td>
                               </tr>
                               </tbody>
                       </table>
@@ -55,18 +57,18 @@
   
                   <h5>Model description</h5>
   
-                  <p>Accuracy: {{caseRecommendations[selectedRec].accuracy}}%</p>
-                  <p>Recall: {{caseRecommendations[selectedRec].recall}}%</p>
-                  <p>Precision: {{caseRecommendations[selectedRec].precision}}%</p>
+                  <p>Accuracy: {{currentCase.recommendations[selectedRec].accuracy}}%</p>
+                  <p>Recall: {{currentCase.recommendations[selectedRec].recall}}%</p>
+                  <p>Precision: {{currentCase.recommendations[selectedRec].precision}}%</p>
   
                   <h5>Features contribution</h5>
                 </div>
                 <div class="recommendation-details-column">
                   
                   <h4>Effect</h4>
-                  <p> {{caseRecommendations[selectedRec].effect}}</p>
-                  <p>Probability: {{caseRecommendations[selectedRec].probability}}%,
-                   uncertainty: {{caseRecommendations[selectedRec].uncertainty}}%</p>
+                  <p> {{currentCase.recommendations[selectedRec].effect}}</p>
+                  <p>Probability: {{currentCase.recommendations[selectedRec].probability}}%,
+                   uncertainty: {{currentCase.recommendations[selectedRec].uncertainty}}%</p>
                 </div>
               </div>
             </div>
@@ -85,11 +87,8 @@
       },
   
       props: {
-          casePrediction: {type: Object},
-          currentCase: {type: Object},
-          caseId: {type: Number},
-          caseRecommendations: {type: Array},
-          similarCases: {type: Array}
+          currentCase: Object,
+          kpi: Object
         },
         
         data() {
