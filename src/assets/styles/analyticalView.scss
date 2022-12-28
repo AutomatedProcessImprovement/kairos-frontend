@@ -33,6 +33,46 @@
     }
   }
 
+  .tab-details{
+    padding: 20px;
+
+    .recommendation-details{
+      display: flex;
+      flex-direction: column;
+  
+      h4{
+        font-style: italic;
+      }
+  
+      p{
+        padding: 5px;
+      }
+
+      small{
+        padding-left: 10px;
+
+      }
+  
+      .recommendation-details-column-container{
+        display: flex;
+        flex-direction: row;
+  
+        .recommendation-details-column{
+          display: flex;
+          flex-direction: column;
+          padding-right: 30px;
+          max-width: 450px;
+          min-width: 250px;
+
+          .recommendation-metrics{
+            display: flex;
+            flex-direction: column;
+          }
+        }
+      }
+    }
+  }
+
   .tab-diagram{
     flex-direction: column;
   }

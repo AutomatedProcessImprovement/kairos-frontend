@@ -225,24 +225,26 @@ cytoscape.use( dagre );
 
             var l = activities.length
 
-            elems.push({
-              group: "nodes",
-              data: {
-                id: "prediction",
-                label: prediction.name
-              },
-              classes: 'prediction',
-            });
-
-            elems.push({
-              group: "edges",
-              data: {
-                id: "pe",
-                source: activities[l-1].name,
-                target: 'prediction',
-              },
-              classes: 'predictionEdge'
-            });
+            if (prediction){
+              elems.push({
+                group: "nodes",
+                data: {
+                  id: "prediction",
+                  label: prediction.name
+                },
+                classes: 'prediction',
+              });
+  
+              elems.push({
+                group: "edges",
+                data: {
+                  id: "pe",
+                  source: activities[l-1].name,
+                  target: 'prediction',
+                },
+                classes: 'predictionEdge'
+              });
+            }
            
 
             for (let i=0; i < recommendations.length; i++) {

@@ -34,24 +34,33 @@
               <h3>Perform "{{currentCase.recommendations[selectedRec].name}}"</h3>
               <div class = "recommendation-details-column-container">
                 <div class="recommendation-details-column">
-                  <p>Predicted case duration</p>
-  
-                  <h4>Calculations explanation</h4>
-  
-                  <h5>Model description</h5>
-  
-                  <p>Accuracy: {{currentCase.recommendations[selectedRec].accuracy}}%</p>
-                  <p>Recall: {{currentCase.recommendations[selectedRec].recall}}%</p>
-                  <p>Precision: {{currentCase.recommendations[selectedRec].precision}}%</p>
-  
-                  <h5>Features contribution</h5>
+
+                  <p>Predicted case {{kpi.name}}</p>
+                  <div class="row">
+                    <div class="column center" v-if="currentCase.prediction.effect > kpi.value">
+                      <ion-icon name="alert-outline"></ion-icon>
+                      <h6>Violation</h6>
+                    </div>
+                    <h5>{{ currentCase.prediction.effect }} {{ kpi.measurement }}</h5>
+                    <h5> /{{ kpi.value }} {{ kpi.measurement }}
+                      <small>target</small>
+                    </h5>
+                  </div>
+                  <div class="recommendation-metrics">
+                    <h4>Calculations</h4>
+    
+                    <small>Accuracy: {{currentCase.recommendations[selectedRec].accuracy}}%</small>
+                    <small>Recall: {{currentCase.recommendations[selectedRec].recall}}%</small>
+                    <small>Precision: {{currentCase.recommendations[selectedRec].precision}}%</small>
+    
+                  </div>
                 </div>
                 <div class="recommendation-details-column">
                   <h4> Description</h4>
                   <p> Based on the prediction, it is recommended to perform {{currentCase.recommendations[selectedRec].name}}. [reasoning]</p>
   
                   <h4>Effect</h4>
-                  <p> {{currentCase.recommendations[selectedRec].effect}}</p>
+                  <p> Case will last for {{currentCase.recommendations[selectedRec].effect}} {{ kpi.measurement }}.</p>
                   <p>Probability: {{currentCase.recommendations[selectedRec].probability}}%,
                    uncertainty: {{currentCase.recommendations[selectedRec].uncertainty}}%</p>
                 </div>

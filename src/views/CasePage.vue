@@ -62,6 +62,7 @@
       },
       data() {
         return {
+          endDate: new Date("2022-12-22T10:30:00"),
           currentCase: {},
           kpi: {},
           startDate: "None",
@@ -108,7 +109,7 @@
           var endDate = new Date(lastActivity.timestamp).toLocaleString("en-GB",options)
           this.lastUpdate = "Task " + lastActivity.name + " completed by " + lastActivity.resource.name + " on " + endDate;
           
-          this.caseKpi = Math.ceil(Math.abs((new Date()) - (new Date(this.currentCase.activities[0].timestamp)))/(1000*60*60*24))    
+          this.caseKpi = Math.ceil(Math.abs(this.endDate - (new Date(this.currentCase.activities[0].timestamp)))/(1000*60*60*24))    
           
         },
 
