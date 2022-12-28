@@ -67,7 +67,7 @@
                 <div class="recommendation-details-column">
                   
                   <h4>Effect</h4>
-                  <p> {{currentCase.recommendations[selectedRec].effect}}</p>
+                  <p> Case will last for {{currentCase.recommendations[selectedRec].effect}} {{ kpi.measurement }}.</p>
                   <p>Probability: {{currentCase.recommendations[selectedRec].probability}}%,
                    uncertainty: {{currentCase.recommendations[selectedRec].uncertainty}}%</p>
                 </div>

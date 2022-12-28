@@ -47,7 +47,7 @@ export default {
 
   data(){
     return {
-      headers: ["ID","Name","Available","Role"],
+      headers: [],
       resources: null,
       available: 0,
       busy: 0
@@ -59,11 +59,21 @@ export default {
         Service.getCases().then(
           (response) => {
             const cases = response.data.cases;
-            this.resources = cases.foreach(e => {
-              e.activities.foreach(a => {
-                return a.resource;
-              })
-            })
+
+            const resources = []
+            for (const c of cases) {
+              for (const a of c.activities) {
+                resources.push(a.resource)
+              }
+            }
+            
+            this.resources = [...new Map(resources.map(v => [v.name, v])).values()]
+
+            if(this.resources){
+              this.headers = Object.keys(this.resources[0]).map(h => h.charAt(0).toUpperCase() + h.slice(1))
+
+              this.resources.forEach(r => r.available? this.available += 1 : this.busy += 1)
+            }
           },
           (error) => {
             this.content =
