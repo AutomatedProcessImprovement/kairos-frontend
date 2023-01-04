@@ -16,12 +16,11 @@ that contains all the variables.
 @import 'cytoscape.scss';
 
 #app{
-  height: 100vh;
   display: flex;
+  min-height: 100vh;
 }
 
 body {
-  // display: flex;
   margin: 0;
   font-family: $bs-font-sans-serif;
   font-size: 1rem;
