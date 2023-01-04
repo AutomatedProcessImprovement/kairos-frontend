@@ -176,7 +176,7 @@ cytoscape.use( dagre );
               elems.push({
                 group: "nodes",
                 data: {
-                  id: activity.name, 
+                  id: "an"+ i, 
                   label: content,
                 },
                 classes: 'activity'
@@ -195,7 +195,7 @@ cytoscape.use( dagre );
                   data: {
                     id: "ae" + i,
                     source: "start event",
-                    target: activity.name,
+                    target: "an"+i,
                     label: 1
                   },
                   classes: 'activityEdge'
@@ -203,19 +203,12 @@ cytoscape.use( dagre );
                 continue;
               }
 
-              const oldEdge = elems.findIndex(e => e.data.source === activities[i-1].name && e.data.target === activity.name);
-              if(oldEdge > -1){
-                elems[oldEdge].data.label = elems[oldEdge].data.label + 1;
-                continue;
-              }
-
               elems.push({
                 group: "edges",
                 data: {
                   id: "ae" + i,
-                  source: activities[i-1].name,
-                  target: activity.name,
-                  label: 1
+                  source: "an" + (i-1),
+                  target: "an" + i,
                 },
                 classes: 'activityEdge'
               });
@@ -227,7 +220,7 @@ cytoscape.use( dagre );
               elems.push({
                 group: "nodes",
                 data: {
-                  id: "prediction",
+                  id: "pn",
                   label: prediction.name
                 },
                 classes: 'prediction',
@@ -237,8 +230,8 @@ cytoscape.use( dagre );
                 group: "edges",
                 data: {
                   id: "pe",
-                  source: activities[l-1].name,
-                  target: 'prediction',
+                  source: "an" + (l-1),
+                  target: 'pn',
                 },
                 classes: 'predictionEdge'
               });
@@ -258,7 +251,7 @@ cytoscape.use( dagre );
                 group: "edges",
                 data: {
                   id: "re" + i,
-                  source: activities[l-1].name,
+                  source: "an" + (l-1),
                   target: recommendations[i].name,
                 },
                 classes: 'recommendationEdge'
