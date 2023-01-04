@@ -47,7 +47,6 @@ cytoscape.use( dagre );
               name:'dagre',
               rankDir: 'LR', 
               align: 'DR',
-              // acyclicer: 'greedy'
                           }).run()
           },
 
@@ -56,10 +55,9 @@ cytoscape.use( dagre );
             var height = 80;
             var cy = cytoscape({
                 container: document.getElementById('cy'),
-                // autoungrabify: true,
+                // autoungrabify: true, // lets you grab nodes in the diagram
 
                 style: [
-                
                   {
                     selector: '.recommendation',
                     style : {

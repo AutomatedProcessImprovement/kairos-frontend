@@ -62,10 +62,10 @@
       },
       data() {
         return {
-          endDate: new Date("2022-12-22T10:30:00"),
           currentCase: {},
           kpi: {},
           startDate: "None",
+          endDate: new Date("2022-12-22T10:30:00"),
           lastUpdate: "None",
           view: null,
           caseKpi: null,
