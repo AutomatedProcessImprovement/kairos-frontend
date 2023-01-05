@@ -4,18 +4,13 @@ so that the color must not be duplicated
 and can be easily changed from one place only.
 */
 
-$bs-blue: #579aff;
-$bs-indigo: #6610f2;
-$bs-purple: #6f42c1;
-$bs-pink: #d63384;
-$bs-red: #dc3545;
+$bs-blue: #074EE8;
+$bs-faded-blue: #67748E;
+$bs-red: #F5222D;
 $bs-orange: #fd7e14;
-$bs-yellow: #ffc107;
-$bs-green: #198754;
-$bs-teal: #20c997;
-$bs-cyan: #0dcaf0;
+$bs-green: #82D616;
 $bs-white: #fff;
-$bs-gray1: #f7f7f7;
+$bs-gray1: #F8F9FA;
 $bs-gray2: #d7d7d7;
 $bs-gray3: #7e7e7e;
 $bs-gray4: #474747;
@@ -23,12 +18,3 @@ $bs-gray5: #212529;
 $bs-black: black;
 $bs-font-sans-serif: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
 $bs-font-monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-
-:export{
-    bsBlue: $bs-black;
-    bsGray1: $bs-gray1;
-    bsGray2: $bs-gray2;
-    bsGray3: $bs-gray3;
-    bsGray4: $bs-gray4;
-    bsGray5: $bs-gray5;
-}
