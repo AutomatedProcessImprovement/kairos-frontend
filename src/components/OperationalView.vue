@@ -1,6 +1,6 @@
 <template>    
     <div class="operational-view">
-      <div class="column">
+      <div class="column shadow">
         <div class="prediction-container" v-if="currentCase.prediction !== undefined">
             <h4>Prediction</h4>
             <div class="prediction-details">
@@ -11,11 +11,11 @@
             </div>
         </div>
         <div class="recommendations-list">
-          <h4>Recommendations list</h4>
+          <h4>Recommendations</h4>
           <div class="recommendation" v-for="(r,index) in currentCase.recommendations" :key="index">
             <div class="recommendation-heading">
               <p>{{r.name}}</p>
-              <button class="btn" @click="selectRecommendation(index)" :class="{selected: index === selectedRec}">See details</button>
+              <button class="btn shadow" @click="selectRecommendation(index)" :class="{selected: index === selectedRec}">See details</button>
             </div>
             <small>Predicted effect: case lasts {{r.effect}} {{ kpi.measurement }}</small>
             <div class="similar-cases">
