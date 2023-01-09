@@ -92,6 +92,30 @@ td, th {
   box-shadow: 0px 10px 27px rgba(0, 0, 0, 0.05);
 }
 
+.bold{
+  font-weight: bold;
+}
+.column{
+  display: flex;
+  flex-direction: column;
+}
+
+.row{
+  display: flex;
+  flex-direction: row;
+}
+
+.center{
+  align-items: center;
+}
+
+.divider{
+  height: 2px;
+  background-color: $bs-blue2;
+  margin: 5px 0px;
+  border-radius: 2px;
+}
+
 
 // Cases
 .stats{
@@ -167,16 +191,3 @@ td, th {
   flex: 1;
 }
 
-.column{
-  display: flex;
-  flex-direction: column;
-}
-
-.row{
-  display: flex;
-  flex-direction: row;
-}
-
-.center{
-  align-items: center;
-}

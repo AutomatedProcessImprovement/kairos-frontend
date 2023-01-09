@@ -38,42 +38,26 @@
   }
 
   .tab-details{
-    padding: 20px;
+    padding: 10px;
 
     .recommendation-details{
       display: flex;
       flex-direction: column;
   
       h4{
-        font-style: italic;
-      }
-  
-      p{
-        padding: 5px;
+        font-weight: bold;
       }
 
-      small{
-        padding-left: 10px;
+      .row{
+        padding: 10px 0px;
 
-      }
-  
-      .recommendation-details-column-container{
-        display: flex;
-        flex-direction: row;
-  
-        .recommendation-details-column{
-          display: flex;
-          flex-direction: column;
-          padding-right: 30px;
-          max-width: 450px;
-          min-width: 250px;
-
-          .recommendation-metrics{
-            display: flex;
-            flex-direction: column;
+        &:nth-child(2){
+          .column{
+            padding-right: 40px;
           }
         }
       }
+  
     }
   }
 

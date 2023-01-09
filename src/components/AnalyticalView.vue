@@ -5,16 +5,17 @@
         <div class="recommendation" v-for="(r,index) in currentCase.recommendations" :key="index" 
         @click="selectRecommendation(index)" :class="{selected: index === selectedRec}">
           <p>{{r.name}}</p>
-          <small>Effect: case will last {{ r.effect }} {{ kpi.measurement }}. </small>
-          <small>Probability: {{r.probability}}%</small>
-          <small>Uncertainty: {{r.uncertainty}}%</small>
+          <small>Predicted effect: <span class="bold">{{ r.effect }} {{ kpi.measurement }}</span> </small>
+          <div class="divider"></div>
+          <small>Type: <span class="bold"></span> </small>
+          <small>Aspect: <span class="bold">Control-flow</span> </small>
         </div>
       </div>
   
       <div class="tabs-container shadow">
         <div class="tabs-header">
             <input type="radio" id="tab-diagram" name="tabs-container" checked="checked" @click="selectedTab='diagram'">
-            <label for="tab-diagram" class="tab-label">Process map</label>
+            <label for="tab-diagram" class="tab-label">Process model</label>
             
             <input type="radio" id="tab-details" name="tabs-container" @click="selectedTab='details'">
             <label for="tab-details" class="tab-label">Details</label>
@@ -31,41 +32,40 @@
 
           <div v-show="selectedTab==='details'" class="tab tab-details">
             <div v-if="selectedRec !== null" class="recommendation-details">
-              <h3>Perform "{{currentCase.recommendations[selectedRec].name}}"</h3>
-              <div class = "recommendation-details-column-container">
-                <div class="recommendation-details-column">
-
-                  <p>Predicted case {{kpi.name}}</p>
+              
                   <div class="row">
-                    <div class="column center" v-if="currentCase.prediction.effect > kpi.value">
-                      <ion-icon name="alert-outline"></ion-icon>
-                      <h6>Violation</h6>
+                    <div class="column">
+                      <h4> Description</h4>
+                      <div class="norb-text">
+                        <span>Case predicted to last {{ currentCase.prediction.effect }} {{ kpi.measurement }}. </span>
+                        <span v-if="currentCase.prediction.effect > kpi.value">This violates the target. </span>
+                        <span>It is recommended to perform {{currentCase.recommendations[selectedRec].name}}. </span>
+                        <br/>
+                        <span>Probability: {{currentCase.prediction.probability}}% Uncertainty: {{currentCase.prediction.uncertainty}}%</span>
+                      </div>
                     </div>
-                    <h5>{{ currentCase.prediction.effect }} {{ kpi.measurement }}</h5>
-                    <h5> /{{ kpi.value }} {{ kpi.measurement }}
-                      <small>target</small>
-                    </h5>
                   </div>
-                  <div class="recommendation-metrics">
-                    <h4>Calculations</h4>
-    
-                    <small>Accuracy: {{currentCase.recommendations[selectedRec].accuracy}}%</small>
-                    <small>Recall: {{currentCase.recommendations[selectedRec].recall}}%</small>
-                    <small>Precision: {{currentCase.recommendations[selectedRec].precision}}%</small>
-    
-                  </div>
-                </div>
-                <div class="recommendation-details-column">
-                  <h4> Description</h4>
-                  <p> Based on the prediction, it is recommended to perform {{currentCase.recommendations[selectedRec].name}}. [reasoning]</p>
+                  <div class="row">
+                    <div class="column">
+                      <h4>Model Description</h4>
+      
+                      <p>Accuracy: {{currentCase.recommendations[selectedRec].accuracy}}%</p>
+                      <p>Recall: {{currentCase.recommendations[selectedRec].recall}}%</p>
+                      <p>Precision: {{currentCase.recommendations[selectedRec].precision}}%</p>
+      
+                    </div>
   
-                  <h4>Effect</h4>
-                  <p> Case will last for {{currentCase.recommendations[selectedRec].effect}} {{ kpi.measurement }}.</p>
-                  <p>Probability: {{currentCase.recommendations[selectedRec].probability}}%,
-                   uncertainty: {{currentCase.recommendations[selectedRec].uncertainty}}%</p>
-                </div>
+                    <div class="column">
+                      <h4>Predicted Effect</h4>
+                      <p> Case {{ kpi.name }} is predicted to 
+                        <span v-if="currentCase.prediction.effect - currentCase.recommendations[selectedRec].effect > 0">decrease</span>
+                        <span v-else>increase</span>
+                        by {{currentCase.prediction.effect - currentCase.recommendations[selectedRec].effect}} {{ kpi.measurement }}.</p>
+                      <p>Probability: {{currentCase.recommendations[selectedRec].probability}}%,
+                      uncertainty: {{currentCase.recommendations[selectedRec].uncertainty}}%</p>
+                    </div>
+                  </div>                  
               </div>
-            </div>
           <h3 v-else>Please select a recommendation.</h3>
           </div>
       </div>
