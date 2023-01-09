@@ -1,7 +1,7 @@
 <template>    
     <div class="analytical-view">
-      <div class="recommendations-list">
-        <h4>Recommendations list</h4>
+      <div class="recommendations-list shadow">
+        <h4>Recommendations</h4>
         <div class="recommendation" v-for="(r,index) in currentCase.recommendations" :key="index" 
         @click="selectRecommendation(index)" :class="{selected: index === selectedRec}">
           <p>{{r.name}}</p>
@@ -11,10 +11,10 @@
         </div>
       </div>
   
-      <div class="tabs-container">
+      <div class="tabs-container shadow">
         <div class="tabs-header">
             <input type="radio" id="tab-diagram" name="tabs-container" checked="checked" @click="selectedTab='diagram'">
-            <label for="tab-diagram" class="tab-label">Diagram</label>
+            <label for="tab-diagram" class="tab-label">Process map</label>
             
             <input type="radio" id="tab-details" name="tabs-container" @click="selectedTab='details'">
             <label for="tab-details" class="tab-label">Details</label>

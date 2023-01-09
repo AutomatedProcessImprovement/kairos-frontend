@@ -2,34 +2,37 @@
   <div id="case">
     <div class="case-top">
       <router-link :to="{name: 'cases'}"><ion-icon name="chevron-back-outline"></ion-icon> Return</router-link>
-      <h2>Case #{{caseId}}</h2>
-  
-      <div class="case-small-text">
-        <small>Started: {{startDate}}</small>  <small>Last update: {{lastUpdate}}</small>
-      </div>
-      <div class="case-summary">
-        <div class="case-kpi">
-          <h4>Case {{ kpi.name }} </h4>
-          <div class="row">
-            <h5>{{ caseKpi }} {{ kpi.measurement }}
-              <small v-if="kpi.name === 'duration'">since case start</small>
-            </h5>
-            <h5> /{{ kpi.value }} {{ kpi.measurement }}
-              <small>target</small>
-            </h5>
-          </div>
+      <h2>Case #{{caseId}}
+        <div class="status" :class="[currentCase.status === 'Open' ? 'open' : 'completed']">
+          {{ currentCase.status }}
         </div>
-        <div class="case-details">
-          <h4>Case details</h4>
-          <div class="row">
-            <h5 v-for="(value,name) in caseDetails" :key='name'>{{ value }}
-              <small>{{ name }}</small>
-            </h5>
+      </h2>
+  
+      <div class="stats">
+        <div class="stats-card column">
+          <h4>KPI</h4>
+          <h3>{{ kpi.value }} {{ kpi.measurement }}</h3>
+          <small>Case {{ kpi.name }}</small>
+        </div>
+        <div class="stats-card">
+          <div class="case-performance">
+            <h4>Case performance</h4>
+            <p>{{ caseKpi }} {{ kpi.measurement }}</p>
+            <small>Case {{ kpi.name }}</small>
+          </div>
+          <div class="case-details">
+            <h4>Case details</h4>
+            <div class="row">
+              <div class="column" v-for="(value,name) in caseDetails" :key='name'>
+                <p>{{ value }}</p>
+                <small>{{ name }}</small>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="switch-views">
+    <div class="switch-views shadow">
       <button class="btn" :class="{ active: view==='analytical' }" @click="selectView('analytical')">Analytical</button>
       <button class="btn" :class="{ active: view==='operational' }" @click="selectView('operational')">Operational</button>
       <button class="btn" :class="{ active: view==='tactical' }">Tactical</button>
@@ -95,7 +98,7 @@
         getAdditionalInformation(){
           const arr = Object.entries(this.currentCase)
           const obj = arr.filter(([key,value]) => {
-            return typeof value !== "object" && key !== "caseId"
+            return typeof value !== "object" && key !== "caseId" && key !== 'status'
           });
           this.caseDetails = Object.fromEntries(obj);
 

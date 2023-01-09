@@ -86,7 +86,7 @@ export default {
         let caseRecommendations = el.recommendations;
         if (!caseActivities.length) {
           this.formattedCases.push({id: el.caseId,
-                          status: "Open",
+                          status: el.status,
                           startdate: "NaN",
                           duration: "NaN",
                           recs: caseRecommendations.length ? "No" : "Yes",
@@ -97,7 +97,7 @@ export default {
         }
         var startDate = new Date(caseActivities[0].timestamp)
         var endDate = new Date(caseActivities[caseActivities.length - 1].timestamp)
-        this.formattedCases.push({id: el.caseId, status: "Open",
+        this.formattedCases.push({id: el.caseId, status: el.status,
                           startdate: startDate.toLocaleDateString("en-GB"), 
                           duration: Math.round((endDate - startDate)/oneDay), 
                           recs: !caseRecommendations.length ? "No" : "Yes",
