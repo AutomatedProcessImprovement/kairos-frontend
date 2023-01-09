@@ -22,7 +22,7 @@ that contains all the variables.
 
 body {
   margin: 0;
-  font-family: $bs-font-sans-serif;
+  font-family: 'Open Sans',sans-serif;
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
@@ -32,10 +32,13 @@ body {
 
 *, ::after, ::before {
   box-sizing: border-box;
+  color: $bs-black;
+  padding: 0;
+  margin: 0;
 }
 
 small{
-  color: $bs-gray3;
+  color: $bs-blue2;
 }
 
 h1,h2,h3,h4,h5,h6{
@@ -43,8 +46,8 @@ h1,h2,h3,h4,h5,h6{
   margin: 5px
 }
 
-p {
-  margin: 0;
+p,th,a,div {
+  font-size: 14px;
 }
 
 a{
@@ -53,30 +56,83 @@ a{
 }
 
 th {
-  font-weight: normal;
-  background-color: $bs-gray2;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: $bs-blue2;
 }
 
 table {
+  background-color: $bs-white;
   border-collapse: collapse;
   margin: 0px;
+  border-radius: 10px;
 }
 
 td, th {
-  border: 1px solid rgb(196, 196, 196);
-  padding: 6px 10px;
+  border-bottom: 1px solid $bs-gray1;
+  padding: 15px 10px;
   text-align: center;
 }
 
+.status{
+  border-radius: 5px;
+  color: $bs-white;
+  text-transform: uppercase;
+  display: inline;
+  padding: 0px 5px;
+  
+  &.open{
+    background: linear-gradient(135deg, $bs-green1 5%, $bs-green2 100%);
+  }
+
+  &.completed{
+    background: linear-gradient(135deg, #EC722D 0%, #EC2D2D 100%, #CF1010 100%);    }
+}
+
+
+// Cases
 .stats{
   display: flex;
+
+  .stats-card{
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin: 10px 20px 20px 0px;
+    background-color: $bs-white;
+    box-shadow: 0px 1px 5px $bs-gray2;
+    color: $bs-black;
+    border-radius: 10px;
+
+    .column{
+      padding-right: 10px;
+
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      .row{
+        *{
+          font-weight: bold;
+        }
+      }
+    }
+
+      ion-icon{
+        color: $bs-white;
+        background-color: $bs-blue;
+        width: 20px;
+        height: 20px;
+        padding: 5px;
+        border-radius: 5px;
+      }
+  }
 
   span{
     padding: 10px 40px 20px 5px
   }
 }
 
-// Cases
 #cases {
   padding: 20px 30px;
   display: flex;
@@ -106,4 +162,13 @@ td, th {
   display: flex;
   flex-direction: column;
   flex: 1;
+}
+
+.column{
+  display: flex;
+  flex-direction: column;
+}
+
+.center{
+  align-items: center;
 }

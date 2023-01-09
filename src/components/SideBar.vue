@@ -1,7 +1,7 @@
 <template>
   <div class="sidebar">
     <div class="sidebar-heading">
-      <ion-icon name="laptop"></ion-icon>
+      <ion-icon name="laptop-outline"></ion-icon>
       <h4>PrPM</h4>
     </div>
         <div class="sidebar-items">

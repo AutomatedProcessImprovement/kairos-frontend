@@ -2,19 +2,25 @@
 <div id="cases">
   <h2>Cases</h2>
   <div class="stats">
-    <span>
-      <p>Ongoing</p>
-       {{formattedCases.filter(i => i.status == "Ongoing").length}} <small>cases</small> 
-    </span>
+    <div class="stats-card">
+      <div class="column">
+        <small>Ongoing applications</small>
+        <div class="row">
+          <h4> {{formattedCases.filter(i => i.status === "Open").length}}</h4>        
+        </div>
+      </div>
+      <ion-icon name="albums"></ion-icon>
+    </div>
 
-    <span>
-      <p> Cases with recommendations</p>
-       {{formattedCases.filter(i => i.recs == "Yes").length}} <small>cases</small> 
-       </span>
-    <span>
-      <p> KPI <small>{{ kpi.name }}</small> </p>
-      {{ kpi.value }}  {{ kpi.measurement }}
-    </span>
+    <div class="stats-card">
+      <div class="column">
+        <small> Completed applications</small>
+        <div class="row">
+          <h4> {{formattedCases.filter(i => i.status !== "Open").length}}</h4>
+        </div>
+      </div>
+      <ion-icon name="albums"></ion-icon>
+    </div>
   </div>
 
 
@@ -29,6 +35,7 @@
       <tr v-for="item in formattedCases" :key='item'>
         <td v-for="(value,name) in item" :key='name'>
           <router-link v-if="name=='id'" :to="{ name: 'case', params: {caseId: value} }">{{value}}</router-link>
+          <div v-else-if="name=='status'" class="status" :class="[value === 'Open'? 'open' : 'completed']"> {{ value }}</div>
           <p v-else>{{ value }}</p>
           </td>
       </tr>
@@ -79,7 +86,7 @@ export default {
         let caseRecommendations = el.recommendations;
         if (!caseActivities.length) {
           this.formattedCases.push({id: el.caseId,
-                          status: "Ongoing",
+                          status: "Open",
                           startdate: "NaN",
                           duration: "NaN",
                           recs: caseRecommendations.length ? "No" : "Yes",
@@ -90,7 +97,7 @@ export default {
         }
         var startDate = new Date(caseActivities[0].timestamp)
         var endDate = new Date(caseActivities[caseActivities.length - 1].timestamp)
-        this.formattedCases.push({id: el.caseId, status: "Ongoing",
+        this.formattedCases.push({id: el.caseId, status: "Open",
                           startdate: startDate.toLocaleDateString("en-GB"), 
                           duration: Math.round((endDate - startDate)/oneDay), 
                           recs: !caseRecommendations.length ? "No" : "Yes",

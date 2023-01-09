@@ -30,15 +30,14 @@
   // sidebar item
   
   .sidebar-item {
-    color: $bs-black;
-    padding: 10px 30px 10px 10px;
+    padding: 10px 50px 10px 10px;
     text-decoration: none;
     white-space: nowrap;
     display: flex;
     align-items: center;
     border-radius: 5px;
     transition: 0.2s;
-    color: $bs-faded-blue;
+    color: $bs-blue2;
     
     &:hover{
     background-color: $bs-white;
