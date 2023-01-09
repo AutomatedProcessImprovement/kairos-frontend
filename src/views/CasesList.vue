@@ -25,7 +25,7 @@
 
 
   <div class="cases-table">
-    <table>
+    <table class="shadow">
       <thead>
       <tr>
         <th v-for="header in headers" :key="header"> {{ header }}</th>
