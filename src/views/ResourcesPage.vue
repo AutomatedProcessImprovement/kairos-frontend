@@ -2,20 +2,29 @@
   <div id="resources">
       <h2>Resources</h2>
       <div class="stats">
-        <span>
-          <p>Available</p>
-          {{available}} <small>resources</small> 
-        </span>
+        <div class="stats-card">
+          <div class="column">
+            <p>Available</p>
+            <p>{{available}}</p>
+          </div>
+          <ion-icon name="person"></ion-icon>
+        </div>
 
-        <span>
-          <p> Busy </p>
-          {{busy}} <small>resources</small> 
-        </span>
+        <div class="stats-card">
+          <div class="column">
+            <p> Busy </p>
+            <p>{{busy}}</p>
+          </div>
+          <ion-icon name="person"></ion-icon>
+        </div>
 
-        <span>
-          <p> Current workload </p>
-          {{Math.round(available/(busy+available)*100)}}% <small>resources</small> 
-        </span>
+        <div class="stats-card">
+          <div class="column">
+            <p>Current workload </p>
+            <p>{{Math.round(available/(busy+available)*100)}}%</p>
+          </div>
+          <ion-icon name="analytics"></ion-icon>
+        </div>
       </div>
 
 
