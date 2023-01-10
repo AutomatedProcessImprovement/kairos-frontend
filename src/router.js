@@ -1,4 +1,5 @@
-import {createRouter, createWebHistory} from "vue-router";
+import {createRouter, createWebHistory, RouterView} from "vue-router";
+import {h} from 'vue';
 import CasePage from "./views/CasePage.vue"
 import CasesList from "./views/CasesList.vue"
 import HomePage from "./views/HomePage"
@@ -12,15 +13,22 @@ const routes = [
     },
     {
         path: "/cases",
-        name: "cases",
-        component: CasesList
+        component: { render: () => h(RouterView)},
+        children: [
+            {
+                path: '',
+                name: 'cases',
+                component: CasesList
+            },
+            {
+                path: ":caseId",
+                name: "case",
+                component: CasePage,
+                params: true
+            },
+        ]
     },
-    {
-        path: "/cases/:caseId",
-        name: "case",
-        component: CasePage,
-        params: true
-    },
+    
     {
         path: "/resources",
         name: "resources",
@@ -30,8 +38,7 @@ const routes = [
 
 const router = createRouter({
     history: createWebHistory(),
-    routes,
-    linkActiveClass: "active"
+    routes
 });
 
 export default router;

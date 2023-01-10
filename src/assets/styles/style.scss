@@ -22,7 +22,7 @@ that contains all the variables.
 
 body {
   margin: 0;
-  font-family: 'Open Sans',sans-serif;
+  font-family: $bs-font-sans-serif;
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
@@ -67,8 +67,11 @@ table {
 
 }
 
+td{
+  border-top: 1px solid $bs-gray1;
+}
+
 td, th {
-  border-bottom: 1px solid $bs-gray1;
   padding: 15px 10px;
   text-align: center;
 }
