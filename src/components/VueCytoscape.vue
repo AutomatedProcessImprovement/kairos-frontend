@@ -58,6 +58,7 @@ cytoscape.use( dagre );
                 // autoungrabify: true, // lets you grab nodes in the diagram
 
                 style: [
+                
                   {
                     selector: '.recommendation',
                     style : {
@@ -148,7 +149,6 @@ cytoscape.use( dagre );
                     'color' : '#7e7e7e'
                   }
                 },
-                
                 {
                     selector: '.start',
                     style : {
@@ -156,6 +156,17 @@ cytoscape.use( dagre );
                       'height' : 40,
                       'width' : 40,
                       'border-color' : '#d7d7d7',
+
+                    }
+                  },
+                  {
+                    selector: '.end',
+                    style : {
+                      'shape': 'ellipse',
+                      'height' : 40,
+                      'width' : 40,
+                      'border-color' : '#d7d7d7',
+                      'border-width': 4,
 
                     }
                   },
@@ -168,11 +179,43 @@ cytoscape.use( dagre );
             
             var elems = [];
 
-            for (let i = 0; i < activities.length; i++) {
+            elems.push({
+                  group: "nodes",
+                  data: {
+                    id: "an0", 
+                  },
+                  classes: 'start'
+                });
+
+            for (let i = 1; i < activities.length; i++) {
               const activity = activities[i];
+
+              if(activity.name === 'End Event'){
+                elems.push({
+                  group: "nodes",
+                  data: {
+                    id: "an"+ i, 
+                    label: content,
+                  },
+                  classes: 'end'
+                });
+
+                elems.push({
+                  group: "edges",
+                  data: {
+                    id: "ae" + i,
+                    source: "an" + (i-1),
+                    target: "an" + i,
+                  },
+                  classes: 'activityEdge'
+                });
+                break;
+              }
+
               var options = {dateStyle:"short",timeStyle: "short"};
               var date = new Date(activity.timestamp).toLocaleString("en-GB",options);
               var content = activity.name + "\n\n" + date + "\n" + activity.resource.name;
+
               elems.push({
                 group: "nodes",
                 data: {
@@ -181,27 +224,6 @@ cytoscape.use( dagre );
                 },
                 classes: 'activity'
               });
-              if(i == 0) {
-                elems.push({
-                  group: "nodes",
-                  data: {
-                    id: "start event", 
-                    label: content,
-                  },
-                  classes: 'start'
-                });
-                elems.push({
-                  group: "edges",
-                  data: {
-                    id: "ae" + i,
-                    source: "start event",
-                    target: "an"+i,
-                    label: 1
-                  },
-                  classes: 'activityEdge'
-                });
-                continue;
-              }
 
               elems.push({
                 group: "edges",
@@ -216,46 +238,48 @@ cytoscape.use( dagre );
 
             var l = activities.length
 
-            if (prediction){
-              elems.push({
-                group: "nodes",
-                data: {
-                  id: "pn",
-                  label: prediction.name
-                },
-                classes: 'prediction',
-              });
+            if (this.currentCase.status === 'Open'){
+              if (prediction){
+                elems.push({
+                  group: "nodes",
+                  data: {
+                    id: "pn",
+                    label: prediction.name
+                  },
+                  classes: 'prediction',
+                });
+    
+                elems.push({
+                  group: "edges",
+                  data: {
+                    id: "pe",
+                    source: "an" + (l-1),
+                    target: 'pn',
+                  },
+                  classes: 'predictionEdge'
+                });
+              }
+             
   
-              elems.push({
-                group: "edges",
-                data: {
-                  id: "pe",
-                  source: "an" + (l-1),
-                  target: 'pn',
-                },
-                classes: 'predictionEdge'
-              });
-            }
-           
-
-            for (let i=0; i < recommendations.length; i++) {
-              elems.push({
-                group: "nodes",
-                data: {
-                  id: recommendations[i].name,
-                },
-                classes: 'recommendation',
-              });
-
-              elems.push({
-                group: "edges",
-                data: {
-                  id: "re" + i,
-                  source: "an" + (l-1),
-                  target: recommendations[i].name,
-                },
-                classes: 'recommendationEdge'
-              });
+              for (let i=0; i < recommendations.length; i++) {
+                elems.push({
+                  group: "nodes",
+                  data: {
+                    id: recommendations[i].name,
+                  },
+                  classes: 'recommendation',
+                });
+  
+                elems.push({
+                  group: "edges",
+                  data: {
+                    id: "re" + i,
+                    source: "an" + (l-1),
+                    target: recommendations[i].name,
+                  },
+                  classes: 'recommendationEdge'
+                });
+              }
             }
 
             cy.add(elems);

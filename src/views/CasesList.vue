@@ -64,6 +64,7 @@ export default {
       Service.getCases().then(
         (response) => {
           this.cases = response.data.cases;
+          console.log(this.cases);
           this.kpi = response.data.kpi;
           this.formatCases();
           },

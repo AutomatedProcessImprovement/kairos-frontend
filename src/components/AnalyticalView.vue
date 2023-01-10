@@ -18,7 +18,7 @@
             <label for="tab-diagram" class="tab-label">Process model</label>
             
             <input type="radio" id="tab-details" name="tabs-container" @click="selectedTab='details'">
-            <label for="tab-details" class="tab-label">Details</label>
+            <label for="tab-details" class="tab-label">Calculation details</label>
         </div>
 
           <div v-show="selectedTab==='diagram'" class="tab tab-diagram">
