@@ -72,7 +72,7 @@ export default {
             const resources = []
             for (const c of cases) {
               for (const a of c.activities) {
-                resources.push(a.resource)
+                if (a.name !== "End Event" && a.name !== "Start Event") resources.push(a.resource)
               }
             }
             
