@@ -43,7 +43,21 @@ import Service from "@/services/service.js"
 
 export default {
     name: "CSVPage",
-    data: function () {
+
+    components: {
+        Loading,
+    },
+
+    params: {
+          fileId:{
+              type: String
+          },
+          delimiter: {
+            type: String
+          }
+      },
+
+    data () {
         return {
             typeList: [
                 {type: undefined, text: "Choose a type", disabled: true},
@@ -63,22 +77,11 @@ export default {
         }
     },
 
-    components: {
-        Loading,
-    },
-
-    params: {
-          fileId:{
-              type: String
-          },
-          delimiter: {
-            type: String
-          }
-      },
-    watch:{
-        fileId: function(){
-            this.loadCols();
-          }
+    created() {
+        this.fileId = this.$route.params.fileId;
+        console.log(this.$route.params);
+        this.delimiter = this.$route.params.delimiter;
+        this.loadCols();
     },
 
     methods: {
@@ -87,23 +90,23 @@ export default {
 
             formData.append('delimiter', this.delimiter);
             console.log(this.fileId)
-            Service.parseFile(this.fileId,formData)
-            .then(response => {
-                this.headers = response.data.headers;
-                this.headers.forEach((head) => {
-                    this.types[head] = null;
-                })
-                this.values = response.data.rows;
-                console.log(response.data)
+            // Service.parseFile(this.fileId,formData)
+            // .then(response => {
+            //     this.headers = response.data.headers;
+            //     this.headers.forEach((head) => {
+            //         this.types[head] = null;
+            //     })
+            //     this.values = response.data.rows;
+            //     console.log(response.data)
 
-                this.isLoading = false;
-            })
-            .catch(error => {
-              const resMessage =
-                (error.response && error.response.data && error.response.data.message) ||
-                error.message || error.toString();
-                console.log(resMessage)
-            });
+            //     this.isLoading = false;
+            // })
+            // .catch(error => {
+            //   const resMessage =
+            //     (error.response && error.response.data && error.response.data.message) ||
+            //     error.message || error.toString();
+            //     console.log(resMessage)
+            // });
         },
         submit() {
             let formData = new FormData();

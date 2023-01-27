@@ -4,9 +4,8 @@
       <div class="center column ">
         <loading v-if="isLoading"></loading>
         <h3>Select file to upload (.csv or .xes):</h3>
-        <div class="custom-file">
-            <input class="custom-file-input" type="file" name="fileToUpload" ref="file" id="fileToUpload" v-on:change="handleFileUpload()" />
-            <!-- <label class="custom-file-label" for="fileToUpload">{{file.name}}</label> -->
+        <div class="center">
+            <input type="file" name="fileToUpload" ref="file" id="fileToUpload" v-on:change="handleFileUpload()" />
         </div>
         <div v-if="extension == 'csv'">
             <span>Separator for .csv:</span>
@@ -55,7 +54,6 @@ export default {
             let formData = new FormData();
 
             formData.append('file', this.file);
-
             Service.uploadFile(formData)
             .then(response => {
               this.isLoading = false;
