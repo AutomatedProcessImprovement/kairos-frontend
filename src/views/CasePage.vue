@@ -80,6 +80,7 @@
           this.caseId = (this.$route.params.caseId)
           Service.getCase(this.caseId).then(
             (response) => {
+              console.log(response.data);
               this.currentCase = response.data.case;
               this.kpi = response.data.kpi;
               this.getAdditionalInformation();
@@ -98,7 +99,7 @@
         getAdditionalInformation(){
           const arr = Object.entries(this.currentCase)
           const obj = arr.filter(([key,value]) => {
-            return typeof value !== "object" && key !== "caseId" && key !== 'status'
+            return typeof value !== "object" && key !== "_id" && key !== 'status'
           });
           this.caseDetails = Object.fromEntries(obj);
 

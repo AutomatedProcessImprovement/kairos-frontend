@@ -64,7 +64,6 @@ export default {
       Service.getCases().then(
         (response) => {
           this.cases = response.data.cases;
-          console.log(this.cases);
           this.kpi = response.data.kpi;
           this.formatCases();
           },
@@ -86,7 +85,7 @@ export default {
         let caseActivities = el.activities;
         let caseRecommendations = el.recommendations;
         if (!caseActivities.length) {
-          this.formattedCases.push({id: el.caseId,
+          this.formattedCases.push({id: el._id,
                           status: el.status,
                           startdate: "NaN",
                           duration: "NaN",
@@ -98,7 +97,8 @@ export default {
         }
         var startDate = new Date(caseActivities[0].timestamp)
         var endDate = new Date(caseActivities[caseActivities.length - 1].timestamp)
-        this.formattedCases.push({id: el.caseId, status: el.status,
+        this.formattedCases.push({id: el._id, 
+                          status: el.status,
                           startdate: startDate.toLocaleDateString("en-GB"), 
                           duration: Math.round((endDate - startDate)/oneDay), 
                           recs: !caseRecommendations.length ? "No" : "Yes",
