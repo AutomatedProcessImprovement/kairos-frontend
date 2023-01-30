@@ -18,8 +18,8 @@ class Service {
         return http.post(`/upload`,file,{ headers: { 'Content-Type': 'multipart/form-data'} })
     }
 
-    parseFile(fileId,delimiter){
-        return http.post(`/parse/${fileId}`,delimiter)
+    parseFile(fileId){
+        return http.put(`/parse/${fileId}`)
     }
 
     updateTypes(fileId,data){

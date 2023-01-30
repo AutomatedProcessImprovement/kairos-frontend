@@ -1,24 +1,24 @@
 <template>
     <div>
-        <loading v-if="isLoading"></loading>
+        <!-- <loading v-if="isLoading"></loading> -->
         <div>
-            <table class="table is-striped">
+            <table>
                 <thead>
-                    <tr class="bg-dark">
-                        <th class="has-text-center text-white" v-for="head in headers" :key="head">
+                    <tr>
+                        <th v-for="head in header" :key="head">
                             {{head}}
                         </th>
                     </tr>
-                    <tr class="table-success">
-                        <th class="text-center" v-for="head in headers" :key="head">
-                            <select class="form-control" v-model="types[head]" required>
+                    <tr>
+                        <th v-for="head in header" :key="head">
+                            <select v-model="types[head]" required>
                                 <option v-for="type in typeList" :key="type" :value="type.type" :selected="type.type == types[head]" :disabled="type.disabled"> {{type.text}} </option>
                             </select>
                         </th>
                     </tr>
-                    <tr class="table-success">
-                        <th class="text-center" v-for="head in headers" :key="head">
-                            <input v-if="types[head] == 'timestamp'" placeholder="Date format" class="form-control" type="text" ref="dateFormat" v-model="dateFormat" required />
+                    <tr>
+                        <th v-for="head in header" :key="head">
+                            <input v-if="types[head] == 'timestamp'" placeholder="Date format" type="text" v-model="dateFormat" required />
                         </th>
                     </tr>
                 </thead>
@@ -32,30 +32,21 @@
         </div>
 
         <div class="btn">
-            <p><input class="btn btn-success" @click.self="isLoading = true;" type="submit" value="Continue" name="submit" v-on:click="submit" /></p>
+            <p><input class="btn btn-success"  type="submit" value="Submit" name="submit" v-on:click="submit" /></p>
         </div>
     </div>
 </template>
 
 <script>
-import Loading from "@/components/LoadingComponent.vue";
+// import Loading from "@/components/LoadingComponent.vue";
 import Service from "@/services/service.js"
 
 export default {
     name: "CSVPage",
 
     components: {
-        Loading,
+        // Loading,
     },
-
-    params: {
-          fileId:{
-              type: String
-          },
-          delimiter: {
-            type: String
-          }
-      },
 
     data () {
         return {
@@ -67,56 +58,54 @@ export default {
                 {type: 'resource', text: 'resource', disabled: false},
                 {type: 'case_attribute', text: 'case attribute', disabled: false},
                 {type: 'event_attribute', text: 'event attribute', disabled: false}],
-            headers: [],
+            header: [],
             types: [],
             values: [],
-            fileId: '',
-            delimiter: '',
             dateFormat: '',
             isLoading: true,
         }
     },
 
+    props: {
+        delimiter: String
+    },
+
     created() {
-        this.fileId = this.$route.params.fileId;
-        console.log(this.$route.params);
-        this.delimiter = this.$route.params.delimiter;
         this.loadCols();
     },
 
     methods: {
         loadCols() {
-            let formData = new FormData();
-
-            formData.append('delimiter', this.delimiter);
-            console.log(this.fileId)
-            // Service.parseFile(this.fileId,formData)
-            // .then(response => {
-            //     this.headers = response.data.headers;
-            //     this.headers.forEach((head) => {
-            //         this.types[head] = null;
-            //     })
-            //     this.values = response.data.rows;
-            //     console.log(response.data)
-
-            //     this.isLoading = false;
-            // })
-            // .catch(error => {
-            //   const resMessage =
-            //     (error.response && error.response.data && error.response.data.message) ||
-            //     error.message || error.toString();
-            //     console.log(resMessage)
-            // });
+            let fileId = localStorage.fileId;
+ 
+            Service.parseFile(fileId)
+            .then(response => {
+                this.header = response.data.header;
+                this.header.forEach((head) => {
+                    this.types[head] = null;
+                })
+                for (const r of response.data.rows) {
+                    for (const v of r) {
+                        this.values.push(v)
+                    }
+                }
+                this.isLoading = false;
+            })
+            .catch(error => {
+              const resMessage =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message || error.toString();
+                console.log(resMessage)
+            });
         },
         submit() {
             let formData = new FormData();
             formData.append('types', JSON.stringify(this.types));
             formData.append('dateFormat', this.dateFormat);
-            Service.updateTypes(this.fileId,formData)
+            Service.updateTypes(localStorage.fileId,formData)
             .then(response => {
                 console.log(response)
                 this.isLoading = false;
-                localStorage.fileId = this.fileId;
                 this.$router.push({name: 'cases'})
             })
             .catch(error => {

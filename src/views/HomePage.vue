@@ -54,14 +54,13 @@ export default {
             let formData = new FormData();
 
             formData.append('file', this.file);
+            formData.append('delimiter',this.delimiter);
             Service.uploadFile(formData)
             .then(response => {
               this.isLoading = false;
-              console.log(response.data.fileId);
-              this.$router.push({name: this.extension, params: {
-                                                              fileId: response.data.fileId,
-                                                              delimiter: this.delimiter
-                                                          }});
+              localStorage.fileId = response.data.fileId;
+              localStorage.delimiter = this.delimiter;
+              this.$router.push({name: this.extension});
             })
             .catch(error => {
               const resMessage =
