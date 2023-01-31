@@ -10,7 +10,7 @@
         <input class='btn' type="file" name="fileToUpload" ref="file" id="fileToUpload" v-on:change="handleFileUpload()" />
         
         <div v-if="extension == 'csv'">
-            <span>Separator for .csv:</span>
+            <span>Separator for .csv: </span>
             <span  class="center">
                 <input type="text" v-model="delimiter" ref="delimiter" minlength="1" maxlength="1" size="1" v-on:change="handleSeparator()" required />
             </span>

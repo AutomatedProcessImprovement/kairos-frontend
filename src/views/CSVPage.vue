@@ -106,7 +106,7 @@ export default {
             .then(response => {
                 console.log(response)
                 this.isLoading = false;
-                this.$router.push({name: 'cases'})
+                this.$router.push({name: 'dashboard'})
             })
             .catch(error => {
               const resMessage =
