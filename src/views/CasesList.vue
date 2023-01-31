@@ -1,4 +1,5 @@
 <template>
+<side-bar></side-bar>
 <div id="cases">
   <h2>Cases</h2>
   <div class="stats">
@@ -48,9 +49,15 @@
 <script>
 
 import Service from "../services/service";
+import SideBar from '@/components/SideBar.vue';
 
 export default {
   name: 'CasesList',
+
+  components: {
+        SideBar
+      },
+
   data() {
     const cases = [];
     const kpi = [];

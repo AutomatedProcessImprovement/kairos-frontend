@@ -5,6 +5,7 @@ import CasesList from "./views/CasesList.vue"
 import HomePage from "./views/HomePage"
 import ResourcesPage from "./views/ResourcesPage"
 import CSVPage from "./views/CSVPage"
+import DashBoard from './views/DashBoard'
 // import XESPage from "./views/XESPage"
 import LoadingComponent from "./components/LoadingComponent"
 
@@ -13,6 +14,11 @@ const routes = [
         path: "/",
         name: "home",
         component: HomePage,
+    },
+    {
+        path: "/dashboard",
+        name: "dashboard",
+        component: DashBoard,
     },
     {
         path: '/csv',

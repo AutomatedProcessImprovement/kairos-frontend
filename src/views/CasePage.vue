@@ -1,4 +1,5 @@
 <template>
+  <side-bar></side-bar>
   <div id="case">
     <div class="case-top">
       <router-link :to="{name: 'cases'}"><ion-icon name="chevron-back-outline"></ion-icon> Return</router-link>
@@ -52,9 +53,12 @@
     import Service from "@/services/service";
     import OperationalView from '@/components/OperationalView.vue';
     import AnalyticalView from '@/components/AnalyticalView.vue';
+    import SideBar from '@/components/SideBar.vue';
+
     export default {
       name: 'CasePage',
       components: {
+        SideBar,
         OperationalView,
         AnalyticalView
       },

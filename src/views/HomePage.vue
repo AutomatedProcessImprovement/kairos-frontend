@@ -1,6 +1,6 @@
 <template>
   <div id="home">
-      <h2>Home</h2>
+      <!-- <h2>Home</h2> -->
       <div class="center column ">
         <loading v-if="isLoading"></loading>
         <h3>Select file to upload (.csv or .xes):</h3>

@@ -1,4 +1,5 @@
 <template>
+<side-bar></side-bar>
   <div id="resources">
       <h2>Resources</h2>
       <div class="stats">
@@ -51,8 +52,15 @@
 <script>
 
 import Service from "@/services/service";
+import SideBar from '@/components/SideBar.vue';
+
 
 export default {
+  name: "ResourcesPage",
+
+  components: {
+        SideBar
+      },
 
   data(){
     return {
