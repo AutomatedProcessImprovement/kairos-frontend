@@ -6,13 +6,14 @@
         <loading v-if="isLoading"></loading>
         <h2>Upload</h2>
         <p>Upload an eventlog to start:</p>
+        <small>Supported file types: .csv and .xes</small>
         
         <input class='btn' type="file" name="fileToUpload" ref="file" id="fileToUpload" v-on:change="handleFileUpload()" />
         
         <div v-if="extension == 'csv'">
             <span>Separator for .csv: </span>
             <span  class="center">
-                <input type="text" v-model="delimiter" ref="delimiter" minlength="1" maxlength="1" size="1" v-on:change="handleSeparator()" required />
+                <input class="input-text" type="text" v-model="delimiter" ref="delimiter" minlength="1" maxlength="1" size="1" v-on:change="handleSeparator()" required />
             </span>
         </div>
         

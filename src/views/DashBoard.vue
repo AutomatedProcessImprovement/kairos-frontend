@@ -2,11 +2,12 @@
 <side-bar></side-bar>
   <div id="dashboard">
       <h2>Dashboard</h2>
-      <div class="center column ">
+      <div class="column">
         <p>Event logs</p>
-        <div class='center row'>
-            <div class='log-card' v-for="log in eventLogs" :key='log'>
-                {{log}}
+        <div class='wrap center row'>
+            <div class='log-card' :class="{'selected': log._id === selectedLog}" v-for="log in eventlogs" :key='log' @click="selectLog(log._id)">
+                <h4>{{ log.filename }}</h4>
+                <small>{{ log.uploadDate }}</small>
             </div>
         </div>
     </div>
@@ -19,9 +20,10 @@ import SideBar from '@/components/SideBar.vue';
 
 export default {
     name: "DashBoard",
-    data: function () {
+    data () {
         return {
-            eventLogs: []
+            eventlogs: [],
+            selectedLog: null
         }
     },
 
@@ -29,13 +31,18 @@ export default {
         SideBar
       },
 
+      created() {
+        this.selectedLog = localStorage.fileId;
+        this.getLogs();
+      },
+
     methods: {
 
         getLogs() {
             Service.getLogs().then(
                 (response) => {
-                    console.log(response.data)
-                    this.eventLogs = response.data.logs
+                    this.eventlogs = response.data.eventlogs;
+                    console.log(this.eventlogs);
                 },
                 (error) => {
                 this.content =
@@ -45,9 +52,12 @@ export default {
                     error.message ||
                     error.toString();
                 }
-      );
-          
-            
+            );      
+        },
+
+        selectLog(fileId){
+            localStorage.fileId = fileId;
+            this.selectedLog = fileId;
         }
     }
 }

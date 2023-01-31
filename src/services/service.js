@@ -14,6 +14,14 @@ class Service {
         return http.get(`/cases/${caseId}`)
     }
 
+    getLogs() {
+        return http.get('/eventlogs');
+    }
+
+    getLog(fileId){
+        return http.get(`/eventlogs/${fileId}`)
+    }
+
     uploadFile(file){
         return http.post(`/upload`,file,{ headers: { 'Content-Type': 'multipart/form-data'} })
     }

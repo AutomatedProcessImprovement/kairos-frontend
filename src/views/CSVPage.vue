@@ -1,7 +1,7 @@
 <template>
-    <div>
-        <!-- <loading v-if="isLoading"></loading> -->
-        <div>
+    <div id="csv">
+        <loading v-if="isLoading"></loading>
+        <div class="csv-table shadow">
             <table>
                 <thead>
                     <tr>
@@ -11,16 +11,12 @@
                     </tr>
                     <tr>
                         <th v-for="head in header" :key="head">
-                            <select v-model="types[head]" required>
+                            <select class="dropdown" v-model="types[head]" required>
                                 <option v-for="type in typeList" :key="type" :value="type.type" :selected="type.type == types[head]" :disabled="type.disabled"> {{type.text}} </option>
                             </select>
                         </th>
                     </tr>
-                    <tr>
-                        <th v-for="head in header" :key="head">
-                            <input v-if="types[head] == 'timestamp'" placeholder="Date format" type="text" v-model="dateFormat" required />
-                        </th>
-                    </tr>
+
                 </thead>
 
                 <tbody>
@@ -29,35 +25,36 @@
                 </tr>
                 </tbody>
             </table>
+            <div class="buttons">
+                <button class="btn" v-on:click="submit">Upload log</button>
+                <button class="btn" v-on:click="goToHome">Cancel</button>
+            </div>
         </div>
 
-        <div class="btn">
-            <p><input class="btn btn-success"  type="submit" value="Submit" name="submit" v-on:click="submit" /></p>
-        </div>
     </div>
 </template>
 
 <script>
-// import Loading from "@/components/LoadingComponent.vue";
+import Loading from "@/components/LoadingComponent.vue";
 import Service from "@/services/service.js"
 
 export default {
     name: "CSVPage",
 
     components: {
-        // Loading,
+        Loading,
     },
 
     data () {
         return {
             typeList: [
                 {type: undefined, text: "Choose a type", disabled: true},
-                {type: 'caseId', text: 'case id', disabled: false},
-                {type: 'activity', text: 'activity', disabled: false},
-                {type: 'timestamp', text: 'timestamp', disabled: false},
-                {type: 'resource', text: 'resource', disabled: false},
-                {type: 'case_attribute', text: 'case attribute', disabled: false},
-                {type: 'event_attribute', text: 'event attribute', disabled: false}],
+                {type: 'caseId', text: 'Case id', disabled: false},
+                {type: 'activity', text: 'Activity', disabled: false},
+                {type: 'timestamp', text: 'Timestamp', disabled: false},
+                {type: 'resource', text: 'Resource', disabled: false},
+                {type: 'case_attribute', text: 'Case attribute', disabled: false},
+                {type: 'event_attribute', text: 'Event attribute', disabled: false}],
             header: [],
             types: [],
             values: [],
@@ -115,6 +112,9 @@ export default {
                 console.log(resMessage)
             });
 
+        },
+        goToHome(){
+            this.$router.push({name: 'home'});
         }
     },
 }

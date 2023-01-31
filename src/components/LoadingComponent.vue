@@ -2,10 +2,8 @@
     <transition name="modal">
         <div v-if="modalIsOpen">
             <div class="overlay">
-                <div class="modal-div shadow">
-                    <div>
-                        <span>Loading...</span>
-                    </div>
+                <div id="loading">
+                    Please wait...
                 </div>
             </div>
         </div>

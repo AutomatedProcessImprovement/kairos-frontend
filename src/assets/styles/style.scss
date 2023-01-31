@@ -11,12 +11,13 @@ that contains all the variables.
 @import 'sidebar.scss';
 @import 'case.scss';
 @import 'cases.scss';
-@import 'tooltip.scss';
 @import 'operationalView.scss';
 @import 'analyticalView.scss';
 @import 'cytoscape.scss';
 @import 'loading.scss';
 @import 'home.scss';
+@import 'csv.scss';
+@import 'dashboard.scss';
 
 #app{
   display: flex;
@@ -75,7 +76,7 @@ td{
 }
 
 td, th {
-  padding: 15px 10px;
+  padding: 10px 10px;
   text-align: center;
 }
 
@@ -113,6 +114,10 @@ td, th {
 
 .center{
   align-items: center;
+}
+
+.wrap{
+  flex-wrap: wrap;
 }
 
 .divider{

@@ -46,6 +46,17 @@
                 cursor: auto;
             }
           }
+
+          .input-text{
+            margin: 0px 5px;
+            padding: 1px;
+            outline: 1px solid $bs-blue;
+            background-color: $bs-white;
+            border: none;
+            border-radius: 4px;
+            text-align: center;
+          }
+
     }
 
   }
