@@ -10,11 +10,13 @@ that contains all the variables.
 @import 'variables.scss';
 @import 'sidebar.scss';
 @import 'case.scss';
+@import 'cases.scss';
 @import 'tooltip.scss';
 @import 'operationalView.scss';
 @import 'analyticalView.scss';
 @import 'cytoscape.scss';
 @import 'loading.scss';
+@import 'home.scss';
 
 #app{
   display: flex;
@@ -118,74 +120,6 @@ td, th {
   background-color: $bs-blue2;
   margin: 5px 0px;
   border-radius: 2px;
-}
-
-
-// Cases
-.stats{
-  display: flex;
-
-  .stats-card{
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    margin: 10px 20px 10px 0px;
-    background-color: $bs-white;
-    box-shadow: 0px 10px 27px rgba(0, 0, 0, 0.05);
-    color: $bs-black;
-    border-radius: 10px;
-
-    .column{
-      padding-right: 10px;
-
-      * {
-        padding: 0;
-        margin: 0;
-      }
-      .row{
-        *{
-          font-weight: bold;
-        }
-      }
-    }
-
-      ion-icon{
-        color: $bs-white;
-        background-color: $bs-blue;
-        width: 20px;
-        height: 20px;
-        padding: 5px;
-        border-radius: 5px;
-      }
-  }
-
-  span{
-    padding: 10px 40px 20px 5px
-  }
-}
-
-#cases {
-  padding: 20px 30px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.cases-table{
-  display:flex;
-  flex: 1;
-  align-items: flex-start;
-
-  table{
-    width: 100%;
-  }
-}
-
-#home{
-  padding: 20px 30px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
 }
 
 #resources{

@@ -1,21 +1,22 @@
 <template>
   <div id="home">
-      <!-- <h2>Home</h2> -->
-      <div class="center column ">
+      <h1>PrPM</h1>
+      <small>PrPM is a tool... bla bla</small>
+      <div class="upload-file">
         <loading v-if="isLoading"></loading>
-        <h3>Select file to upload (.csv or .xes):</h3>
-        <div class="center">
-            <input type="file" name="fileToUpload" ref="file" id="fileToUpload" v-on:change="handleFileUpload()" />
-        </div>
+        <h2>Upload</h2>
+        <p>Upload an eventlog to start:</p>
+        
+        <input class='btn' type="file" name="fileToUpload" ref="file" id="fileToUpload" v-on:change="handleFileUpload()" />
+        
         <div v-if="extension == 'csv'">
             <span>Separator for .csv:</span>
             <span  class="center">
                 <input type="text" v-model="delimiter" ref="delimiter" minlength="1" maxlength="1" size="1" v-on:change="handleSeparator()" required />
             </span>
-          </div>
-        <div class="center">
-            <td><input type="button" value="Upload" name="submit" @click.self="isLoading = true;" v-on:click="submit" class="btn btn-success"/></td>
         </div>
+        
+        <input class='submit-btn' type="button" value="Upload" name="submit" @click.self="isLoading = true;" v-on:click="submit" :disabled="isDisabled"/>
         
     </div>
   </div>
@@ -33,6 +34,7 @@ export default {
             extension: '',
             delimiter: ',',
             isLoading: false,
+            isDisabled: true
         }
     },
 
@@ -47,6 +49,7 @@ export default {
         handleFileUpload(){
             this.file = this.$refs.file.files[0];
             this.extension = this.file.name.split('.').pop();
+            this.isDisabled = false;
         },
 
         submit() {
