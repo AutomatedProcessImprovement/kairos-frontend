@@ -18,6 +18,8 @@ that contains all the variables.
 @import 'home.scss';
 @import 'csv.scss';
 @import 'dashboard.scss';
+@import 'parameters.scss';
+
 
 #app{
   display: flex;
@@ -126,6 +128,15 @@ td, th {
   margin: 5px 0px;
   border-radius: 2px;
 }
+
+.warning{
+  color: $bs-red;
+}
+
+.bold-h2{
+  font-weight: bold;
+  color: $bs-blue;
+} 
 
 #resources{
   padding: 20px 30px;

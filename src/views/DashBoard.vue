@@ -42,7 +42,9 @@ export default {
             Service.getLogs().then(
                 (response) => {
                     this.eventlogs = response.data.eventlogs;
-                    console.log(this.eventlogs);
+                    if(this.eventlogs.length === 0){
+                        localStorage.fileId == null;
+                    }
                 },
                 (error) => {
                 this.content =

@@ -33,6 +33,10 @@ class Service {
     updateTypes(fileId,data){
         return http.post(`/update/${fileId}`,data)
     }
+
+    parameters(fileId,data){
+        return http.post(`/parameters/${fileId}`,data)
+    }
     
 }
 

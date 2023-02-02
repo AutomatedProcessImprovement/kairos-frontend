@@ -1,36 +1,43 @@
 <template>
     <div id="csv">
         <loading v-if="isLoading"></loading>
-        <div class="csv-table shadow">
-            <table>
-                <thead>
-                    <tr>
-                        <th v-for="head in header" :key="head">
-                            {{head}}
-                        </th>
-                    </tr>
-                    <tr>
-                        <th v-for="head in header" :key="head">
-                            <select class="dropdown" v-model="types[head]" required>
-                                <option v-for="type in typeList" :key="type" :value="type.type" :selected="type.type == types[head]" :disabled="type.disabled"> {{type.text}} </option>
-                            </select>
-                        </th>
-                    </tr>
+        <div v-else class="column">
 
-                </thead>
+            <h2 class="bold-h2">Column definition</h2>
+            <div v-if="values.length === 0">
+                <h3 class="warning">Please upload a log first.</h3>
+            </div>
+            <div v-else class="csv-table shadow">
+                <table>
+                    <thead>
+                        <tr>
+                            <th v-for="head in header" :key="head">
+                                {{head}}
+                            </th>
+                        </tr>
+                        <tr>
+                            <th v-for="head in header" :key="head">
+                                <select class="dropdown" v-model="types[head]" required>
+                                    <option v-for="type in typeList" :key="type" :value="type.type" :disabled="type.disabled"> {{type.text}} </option>
+                                </select>
+                            </th>
+                        </tr>
+    
+                    </thead>
+    
+                    <tbody>
+                    <tr v-for="row in values" :key="row">
+                        <td v-for="cell in row" :key="cell">{{cell}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="buttons">
+                    <button class="btn" v-on:click="submit">Upload log</button>
+                    <button class="btn" v-on:click="goToHome">Cancel</button>
+                </div>
 
-                <tbody>
-                <tr v-for="row in values" :key="row">
-                    <td v-for="cell in row" :key="cell">{{cell}}</td>
-                </tr>
-                </tbody>
-            </table>
-            <div class="buttons">
-                <button class="btn" v-on:click="submit">Upload log</button>
-                <button class="btn" v-on:click="goToHome">Cancel</button>
             </div>
         </div>
-
     </div>
 </template>
 
@@ -49,8 +56,10 @@ export default {
         return {
             typeList: [
                 {type: undefined, text: "Choose a type", disabled: true},
-                {type: 'caseId', text: 'Case id', disabled: false},
+                {type: 'case_id', text: 'Case id', disabled: false},
                 {type: 'activity', text: 'Activity', disabled: false},
+                {type: 'start_time', text: 'Start time', disabled: false},
+                {type: 'end_time', text: 'End time', disabled: false},
                 {type: 'timestamp', text: 'Timestamp', disabled: false},
                 {type: 'resource', text: 'Resource', disabled: false},
                 {type: 'case_attribute', text: 'Case attribute', disabled: false},
@@ -61,10 +70,6 @@ export default {
             dateFormat: '',
             isLoading: true,
         }
-    },
-
-    props: {
-        delimiter: String
     },
 
     created() {
@@ -82,9 +87,10 @@ export default {
                     this.types[head] = null;
                 })
                 for (const r of response.data.rows) {
-                    for (const v of r) {
-                        this.values.push(v)
-                    }
+                    // for (const v of r) {
+                    //     this.values.push(v)
+                    // }
+                    this.values.push(r)
                 }
                 this.isLoading = false;
             })
@@ -93,6 +99,7 @@ export default {
                 (error.response && error.response.data && error.response.data.message) ||
                 error.message || error.toString();
                 console.log(resMessage)
+                this.isLoading = false;
             });
         },
         submit() {
@@ -103,7 +110,7 @@ export default {
             .then(response => {
                 console.log(response)
                 this.isLoading = false;
-                this.$router.push({name: 'dashboard'})
+                this.$router.push({name: 'parameters'})
             })
             .catch(error => {
               const resMessage =

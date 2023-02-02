@@ -6,7 +6,8 @@ import HomePage from "./views/HomePage"
 import ResourcesPage from "./views/ResourcesPage"
 import CSVPage from "./views/CSVPage"
 import DashBoard from './views/DashBoard'
-// import XESPage from "./views/XESPage"
+import ParametersPage from './views/ParametersPage'
+import XESPage from "./views/XESPage"
 import LoadingComponent from "./components/LoadingComponent"
 
 const routes = [
@@ -21,17 +22,22 @@ const routes = [
         component: DashBoard,
     },
     {
+        path: "/parameters",
+        name: "parameters",
+        component: ParametersPage,
+    },
+    {
         path: '/csv',
         name: 'csv',
         component: CSVPage,
         props: true
     }, 
-    // {
-    //     path: '/xes',
-    //     name: 'xes',
-    //     component: XESPage,
-    //     props: true
-    // },
+    {
+        path: '/xes',
+        name: 'xes',
+        component: XESPage,
+        props: true
+    },
     {
         path: "/cases",
         component: { render: () => h(RouterView)},

@@ -1,31 +1,40 @@
 <template>
-    <div>
+    <div id="csv">
         <loading v-if="isLoading"></loading>
-        <div>
-            <table class="table is-striped">
-                <thead>
-                    <tr class="bg-dark">
-                        <th class="has-text-center text-white" v-for="head in headers">
-                            {{head}}
-                        </th>
-                    </tr>
-                    <tr class="table-success">
-                        <th class="has-text-center" v-for="type in types">
-                            {{type}}
-                        </th>
-                    </tr>
-                </thead>
+        <div v-else class="column">
 
-                <tbody>
-                <tr v-for="row in values">
-                    <td v-for="cell in row">{{cell}}</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+            <h2 class="bold-h2">Column definition</h2>
+            <div v-if="values.length === 0">
+                <h3 class="warning">Please upload a log first.</h3>
+            </div>
+            <div v-else class="csv-table shadow">
+                <table>
+                    <thead>
+                        <tr>
+                            <th v-for="head in header" :key="head">
+                                {{head}}
+                            </th>
+                        </tr>
+                        <tr>
+                            <th v-for="t in types" :key="t">
+                                {{ t }}
+                            </th>
+                        </tr>
+    
+                    </thead>
+    
+                    <tbody>
+                    <tr v-for="row in values" :key="row">
+                        <td v-for="cell in row" :key="cell">{{cell}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="buttons">
+                    <button class="btn" v-on:click="submit">Upload log</button>
+                    <button class="btn" v-on:click="goToHome">Cancel</button>
+                </div>
 
-        <div class="btn">
-            <p><input type="submit" @click.self="isLoading = true;" class="btn btn-success" value="Continue" name="submit" v-on:click="submit" /></p>
+            </div>
         </div>
     </div>
 </template>
@@ -35,63 +44,56 @@ import Loading from "@/components/LoadingComponent.vue";
 import Service from "@/services/service.js"
 
 export default {
-    name: "columns",
-    data: function () {
-        return {
-            headers: [],
-            types: [],
-            values: [],
-            token: '',
-            sep: '',
-            dateformat: '',
-            isLoading: true,
-        }
-    },
+    name: "XESPage",
 
     components: {
         Loading,
     },
 
-    beforeMount() {
-        this.token = this.$route.params.token;
-        this.sep = this.$route.params.sep;
-
-        const types = {}
-        this.headers.forEach((head) => {
-            types[head[1]] = null;
-        })
-        this.types = types;
-
-        this.loadCols();
-
+    data () {
+        return {
+            header: [],
+            types: [],
+            values: [],
+            isLoading: true,
+        }
     },
 
-    computed: {
-        typesArr () {
-            return Object.keys(this.types).reduce((acc, itemKey) => {
-                    acc[itemKey] = this.types[itemKey];
-                    return acc;
-            }, new Map())
-        }
+    created() {
+        this.loadCols();
     },
 
     methods: {
         loadCols() {
-            let formData = new FormData();
-            formData.append('sep', this.sep);
-            Request.getAxios().post(this.$hostname + "/parse/" + this.token, formData)
+            let fileId = localStorage.fileId;
+ 
+            Service.parseFile(fileId)
             .then(response => {
-                this.headers = response.data.content[0].names;
-                this.types = response.data.content[0].types;
-
-                response.data.content.forEach(x => {this.values.push(x.values)});
-
+                this.header = response.data.header;
+                this.types = response.data.types;
+                for (const r of response.data.rows) {
+                    // for (const v of r) {
+                    //     this.values.push(v)
+                    // }
+                    this.values.push(r)
+                }
+                this.isLoading = false;
+            })
+            .catch(error => {
+              const resMessage =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message || error.toString();
+                console.log(resMessage)
                 this.isLoading = false;
             });
         },
         submit() {
-            this.$router.push({name: "discovery-settings", params: {token: this.token}});
+            this.$router.push({name: 'parameters'})
+        },
+        
+        goToHome(){
+            this.$router.push({name: 'home'});
         }
-    }
+    },
 }
 </script>
