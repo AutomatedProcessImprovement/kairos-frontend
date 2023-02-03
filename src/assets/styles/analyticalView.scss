@@ -1,13 +1,16 @@
 .analytical-view {
     display: flex;
     flex-direction: row;
-    border-top: 1px solid $bs-gray2;
     flex-grow: 1;
-    padding: 10px;
+    padding-top: 10px;
     
     .recommendations-list {
-      min-width: 200px;
-    
+      background-color: $bs-white;
+      padding: 15px;
+      margin-right: 10px;
+      border-radius: 10px;
+      transition: 0.2s;
+
       h4 {
         padding-right: 10px;
       }
@@ -15,21 +18,68 @@
       .recommendation {
         display: flex;
         flex-direction: column;
-        margin: 10px;
+        margin: 10px 0px;
         padding: 10px;
-        border: 1px solid $bs-gray2;
         transition: .15s;
-    
+        min-width: 250px;
+        background-color: $bs-blue3;
+        border-radius: 10px;
+
         &:hover{
-          background-color: rgb(250, 250, 250);
+          filter: brightness(98%);
+          cursor: pointer;
         }
       }
     
       .selected{
-        border: 1px solid $bs-blue;
-        border-right: 1px solid $bs-white;
-        margin: 10px 0px 0px 20px;
+        background-color: $bs-blue4;
       }
     }
   }
+
+  .tab-details{
+    padding: 10px;
+
+    .recommendation-details{
+      display: flex;
+      flex-direction: column;
   
+      h4{
+        font-weight: bold;
+      }
+
+      .row{
+        padding: 10px 0px;
+
+        &:nth-child(2){
+          .column{
+            padding-right: 40px;
+          }
+        }
+      }
+  
+    }
+  }
+
+
+  .legend {
+    padding: 5px 10px 5px 5px;
+    position:absolute;
+    z-index: 1;
+    background-color: rgba($color: #ffffff, $alpha: 0.9);
+
+    .past-activity {
+      border-bottom: 2px solid $bs-gray2;
+      margin: 10px 15px;
+
+    }
+    .recommendation {
+      border-bottom: 2px solid $bs-black;
+      margin: 10px 15px;
+    }
+
+    .prediction {
+      border-bottom: 2px dashed $bs-gray2;
+      margin: 10px 15px;
+    }
+  }

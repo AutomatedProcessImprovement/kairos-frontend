@@ -1,21 +1,28 @@
 .operational-view {
   display: flex;
   flex-direction: row;
-  border-top: 1px solid $bs-gray2;
-  flex-grow: 1;
-  padding: 10px;
+  padding-top: 10px;
 
   .prediction-container{
-    small{
+    .prediction-details{
       padding: 5px 10px;
     }
   }
 
+  .column{
+    padding: 15px;
+    background-color: $bs-white;
+    border-radius: 10px;
+    margin-right: 10px;
+  }
+
   .recommendation-details{
+    background-color: $bs-white;
+    border-radius: 10px;
     display: flex;
     flex-direction: column;
-    border: 1px solid $bs-gray2;
     padding: 10px;
+    max-height: 400px;
 
     h4{
       font-style: italic;
@@ -37,7 +44,6 @@
     }
   }
   .recommendations-list {
-      min-width: 200px;
     
       h4 {
         padding-right: 10px;
@@ -46,11 +52,12 @@
       .recommendation {
         display: flex;
         flex-direction: column;
-        margin: 10px;
+        margin: 10px 0px;
         padding: 10px;
-        border: 1px solid $bs-gray2;
-        transition: .15s;
-        min-width: 400px;
+        transition: .2s;
+        min-width: 420px;
+        background-color: $bs-blue3;
+        border-radius: 10px;
 
         .recommendation-heading{
           display: flex;
@@ -59,14 +66,16 @@
 
           .btn{
             background-color: $bs-white;
-            border: 1px solid $bs-gray2;
+            padding: 5px;
+            border-radius: 5px;
+            border: none;
 
             &:hover{
               filter: brightness(98%);
             }
 
             &.selected{
-              border: 1px solid $bs-blue;
+              background-color: $bs-blue4;
             }
           }
         }
@@ -83,9 +92,11 @@
             
             .btn{
               background-color: $bs-white;
+              border-radius: 5px;
               border: none;
               padding: 5px;
               cursor: pointer;
+              margin-bottom: 5px;
             }
 
             ion-icon{

@@ -2,26 +2,35 @@
   <div id="resources">
       <h2>Resources</h2>
       <div class="stats">
-        <span>
-          <p>Available</p>
-          {{available}} <small>resources</small> 
-        </span>
+        <div class="stats-card">
+          <div class="column">
+            <p>Available</p>
+            <p>{{available}}</p>
+          </div>
+          <ion-icon name="person"></ion-icon>
+        </div>
 
-        <span>
-          <p> Busy </p>
-          {{busy}} <small>resources</small> 
-        </span>
+        <div class="stats-card">
+          <div class="column">
+            <p> Busy </p>
+            <p>{{busy}}</p>
+          </div>
+          <ion-icon name="person"></ion-icon>
+        </div>
 
-        <span>
-          <p> Current workload </p>
-          {{Math.round(available/(busy+available)*100)}}% <small>resources</small> 
-        </span>
+        <div class="stats-card">
+          <div class="column">
+            <p>Current workload </p>
+            <p>{{Math.round(available/(busy+available)*100)}}%</p>
+          </div>
+          <ion-icon name="analytics"></ion-icon>
+        </div>
       </div>
 
 
 
       <div class="resources-table">
-      <table>
+      <table class="shadow">
         <thead>
         <tr>
           <th v-for="header in headers" :key="header"> {{ header }}</th>
@@ -41,13 +50,13 @@
 
 <script>
 
-import ModelService from "@/services/model.service";
+import Service from "@/services/service";
 
 export default {
 
   data(){
     return {
-      headers: ["ID","Name","Available","Role"],
+      headers: [],
       resources: null,
       available: 0,
       busy: 0
@@ -56,12 +65,24 @@ export default {
 
   methods:{
     getResources(){
-        ModelService.getResources().then(
+        Service.getCases().then(
           (response) => {
-            this.resources = response.data;
-            this.resources.forEach(element => {
-              element.available? this.available += 1 : this.busy += 1
-            });
+            const cases = response.data.cases;
+
+            const resources = []
+            for (const c of cases) {
+              for (const a of c.activities) {
+                if (a.name !== "End Event" && a.name !== "Start Event") resources.push(a.resource)
+              }
+            }
+            
+            this.resources = [...new Map(resources.map(v => [v.name, v])).values()]
+
+            if(this.resources){
+              this.headers = Object.keys(this.resources[0]).map(h => h.charAt(0).toUpperCase() + h.slice(1))
+
+              this.resources.forEach(r => r.available? this.available += 1 : this.busy += 1)
+            }
           },
           (error) => {
             this.content =

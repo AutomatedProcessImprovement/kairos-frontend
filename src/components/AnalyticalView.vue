@@ -1,60 +1,71 @@
 <template>    
     <div class="analytical-view">
-      <div class="recommendations-list">
-        <h4>Recommendations list</h4>
-        <div class="recommendation" v-for="(r,index) in caseRecommendations" :key="index" 
+      <div class="recommendations-list shadow">
+        <h4>Recommendations</h4>
+        <div class="recommendation" v-for="(r,index) in currentCase.recommendations" :key="index" 
         @click="selectRecommendation(index)" :class="{selected: index === selectedRec}">
           <p>{{r.name}}</p>
-          <small>Effect: {{r.effect}}</small>
-          <small>Probability: {{r.probability}}%</small>
-          <small>Uncertainty: {{r.uncertainty}}%</small>
+          <small>Predicted effect: <span class="bold">{{ r.effect }} {{ kpi.measurement }}</span> </small>
+          <div class="divider"></div>
+          <small>Type: <span class="bold"></span> </small>
+          <small>Aspect: <span class="bold">Control-flow</span> </small>
         </div>
-  
       </div>
   
-      <div class="tabs-container">
-        <input type="radio" id="tab-diagram" name="tabs-container" checked="checked">
-          <label for="tab-diagram" class="tab-label">Diagram</label>
-          <div class="tab">
-            <vue-bpmn
-              :activities="caseActivities"
-              :options="options"
-              v-on:error="handleError"
-              v-on:shown="handleShown"
-              v-on:loading="handleLoading"
-          ></vue-bpmn>
+      <div class="tabs-container shadow">
+        <div class="tabs-header">
+            <input type="radio" id="tab-diagram" name="tabs-container" checked="checked" @click="selectedTab='diagram'">
+            <label for="tab-diagram" class="tab-label">Process model</label>
+            
+            <input type="radio" id="tab-details" name="tabs-container" @click="selectedTab='details'">
+            <label for="tab-details" class="tab-label">Calculation details</label>
+        </div>
+
+          <div v-show="selectedTab==='diagram'" class="tab tab-diagram">
+            <legend-component></legend-component>
+            <vue-cytoscape
+            :currentCase="currentCase"
+            :selectedRec="selectedRec"
+            ></vue-cytoscape>
+            
           </div>
-  
-          <input type="radio" id="tab-details" name="tabs-container">
-          <label for="tab-details" class="tab-label">Details</label>
-          <div class="tab details-tab">
+
+          <div v-show="selectedTab==='details'" class="tab tab-details">
             <div v-if="selectedRec !== null" class="recommendation-details">
-              <h3>Perform "{{caseRecommendations[selectedRec].name}}"</h3>
-              <div class = "recommendation-details-column-container">
-                <div class="recommendation-details-column">
-                  <p>Predicted case duration</p>
+              
+                  <div class="row">
+                    <div class="column">
+                      <h4> Description</h4>
+                      <div class="norb-text">
+                        <span>Case predicted to last {{ currentCase.prediction.effect }} {{ kpi.measurement }}. </span>
+                        <span v-if="currentCase.prediction.effect > kpi.value">This violates the target. </span>
+                        <span>It is recommended to perform {{currentCase.recommendations[selectedRec].name}}. </span>
+                        <br/>
+                        <span>Probability: {{currentCase.prediction.probability}}% Uncertainty: {{currentCase.prediction.uncertainty}}%</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="column">
+                      <h4>Model Description</h4>
+      
+                      <p>Accuracy: {{currentCase.recommendations[selectedRec].accuracy}}%</p>
+                      <p>Recall: {{currentCase.recommendations[selectedRec].recall}}%</p>
+                      <p>Precision: {{currentCase.recommendations[selectedRec].precision}}%</p>
+      
+                    </div>
   
-                  <h4>Calculations explanation</h4>
-  
-                  <h5>Model description</h5>
-  
-                  <p>Accuracy: {{caseRecommendations[selectedRec].accuracy}}%</p>
-                  <p>Recall: {{caseRecommendations[selectedRec].recall}}%</p>
-                  <p>Precision: {{caseRecommendations[selectedRec].precision}}%</p>
-  
-                  <h5>Features contribution</h5>
-                </div>
-                <div class="recommendation-details-column">
-                  <h4> Description</h4>
-                  <p> Based on the prediction, it is recommended to perform {{caseRecommendations[selectedRec].name}}. [reasoning]</p>
-  
-                  <h4>Effect</h4>
-                  <p> {{caseRecommendations[selectedRec].effect}}</p>
-                  <p>Probability: {{caseRecommendations[selectedRec].probability}}%,
-                   uncertainty: {{caseRecommendations[selectedRec].uncertainty}}%</p>
-                </div>
+                    <div class="column">
+                      <h4>Predicted Effect</h4>
+                      <p> Case {{ kpi.name }} is predicted to 
+                        <span v-if="currentCase.prediction.effect - currentCase.recommendations[selectedRec].effect > 0">decrease</span>
+                        <span v-else>increase</span>
+                        by {{currentCase.prediction.effect - currentCase.recommendations[selectedRec].effect}} {{ kpi.measurement }}.</p>
+                      <p>Probability: {{currentCase.recommendations[selectedRec].probability}}%,
+                      uncertainty: {{currentCase.recommendations[selectedRec].uncertainty}}%</p>
+                    </div>
+                  </div>                  
               </div>
-            </div>
           <h3 v-else>Please select a recommendation.</h3>
           </div>
       </div>
@@ -62,29 +73,25 @@
   </template>
   
   <script>
-    import VueBpmn from '@/components/VueBpmn.vue';
-    import minimapModule from 'diagram-js-minimap';
+  import VueCytoscape from './VueCytoscape.vue';
+  import LegendComponent from './LegendComponent.vue';
   
     export default {
       name: 'CasePage',
       components: {
-        VueBpmn
+        VueCytoscape,
+        LegendComponent
       },
   
       props: {
-          caseActivities:{ type: Array},
-          caseRecommendations:{ type: Array},
-          currentCase: {type: Object},
+          currentCase: Object,
+          kpi: Object
       },
   
       data() {
         return {
-          options: {
-            propertiesPanel: {},
-            additionalModules: [minimapModule],
-            moddleExtensions: []
-          },
           selectedRec: null,
+          selectedTab: 'diagram',
         }
       },
       methods: {
@@ -100,12 +107,7 @@
         },
   
         selectRecommendation(index){
-          this.selectedRec = index
-          var recommendationnodes = Array.from(document.getElementsByClassName("recommendationnode"))
-          for (var i of recommendationnodes) {
-            i.classList.remove("selected-recommendationnode")
-          }
-          recommendationnodes[index].classList.add("selected-recommendationnode")
+          this.selectedRec = index;
         }
       
       },
