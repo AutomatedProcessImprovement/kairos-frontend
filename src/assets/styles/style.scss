@@ -58,6 +58,7 @@ p,th,a,div {
 a{
   text-decoration: none;
   color: $bs-black;
+  cursor: pointer;
 }
 
 th {
@@ -133,7 +134,7 @@ td, th {
   color: $bs-red;
 }
 
-.bold-h2{
+.bold-blue{
   font-weight: bold;
   color: $bs-blue;
 } 

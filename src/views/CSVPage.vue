@@ -3,7 +3,7 @@
         <loading v-if="isLoading"></loading>
         <div v-else class="column">
 
-            <h2 class="bold-h2">Column definition</h2>
+            <h2 class="bold-blue">Column definition</h2>
             <div v-if="values.length === 0">
                 <h3 class="warning">Please upload a log first.</h3>
             </div>
@@ -65,7 +65,7 @@ export default {
                 {type: 'case_attribute', text: 'Case attribute', disabled: false},
                 {type: 'event_attribute', text: 'Event attribute', disabled: false}],
             header: [],
-            types: [],
+            types: {},
             values: [],
             dateFormat: '',
             isLoading: true,
@@ -86,6 +86,7 @@ export default {
                 this.header.forEach((head) => {
                     this.types[head] = null;
                 })
+                console.log(this.types);
                 for (const r of response.data.rows) {
                     // for (const v of r) {
                     //     this.values.push(v)
@@ -103,10 +104,7 @@ export default {
             });
         },
         submit() {
-            let formData = new FormData();
-            formData.append('types', JSON.stringify(this.types));
-            formData.append('dateFormat', this.dateFormat);
-            Service.updateTypes(localStorage.fileId,formData)
+            Service.updateTypes(localStorage.fileId,this.types)
             .then(response => {
                 console.log(response)
                 this.isLoading = false;

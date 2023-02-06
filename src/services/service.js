@@ -27,15 +27,19 @@ class Service {
     }
 
     parseFile(fileId){
-        return http.put(`/parse/${fileId}`)
+        return http.get(`/parse/${fileId}`)
     }
 
-    updateTypes(fileId,data){
-        return http.post(`/update/${fileId}`,data)
+    updateTypes(fileId,types){
+        return http.post(`/update/${fileId}`,types, {headers: {
+            'Content-Type': 'application/json'
+          }})
     }
 
-    parameters(fileId,data){
-        return http.post(`/parameters/${fileId}`,data)
+    parameters(fileId,parameters){
+        return http.post(`/parameters/${fileId}`,parameters,{headers: {
+            'Content-Type': 'application/json'
+          }})
     }
     
 }

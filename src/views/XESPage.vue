@@ -3,7 +3,7 @@
         <loading v-if="isLoading"></loading>
         <div v-else class="column">
 
-            <h2 class="bold-h2">Column definition</h2>
+            <h2 class="bold-blue">Column definition</h2>
             <div v-if="values.length === 0">
                 <h3 class="warning">Please upload a log first.</h3>
             </div>
@@ -90,7 +90,7 @@ export default {
         submit() {
             this.$router.push({name: 'parameters'})
         },
-        
+
         goToHome(){
             this.$router.push({name: 'home'});
         }
