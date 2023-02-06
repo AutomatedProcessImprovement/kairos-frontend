@@ -11,7 +11,7 @@
                 <div class="parameter">
                     <p>Uploaded log</p>
                     <div class='log-card'>
-                        <h4>{{ log.path.split(/_(.*)/s)[1] }}</h4>
+                        <h4>{{ log.filename }}</h4>
                         <small>{{ log.datetime }}</small>
                     </div>
                 </div>
@@ -28,36 +28,33 @@
                     <p>Positive case outcome</p>
                     <small>Please specify what is considered as the positive outcome of the case.</small>
                     <select v-model="positiveOutcomeType" required>
-                        <option value='' disabled selected>Select positive case outcome type</option>
                         <option v-for="outcomeType in positiveOutcomeTypes" :key="outcomeType" :value="outcomeType">{{ outcomeType }}</option>
                     </select>
                     <select v-if="positiveOutcomeType" v-model="positiveOutcomeEvaluationMethod" required="required">
-                        <option value='' disabled selected>Select evaluation method</option>
                         <option v-for="evaluationMethod in evaluationMethods[positiveOutcomeType]" :key="evaluationMethod">{{ evaluationMethod }}</option>
                     </select>
-                    <select v-if="positiveOutcomeType === 'Activity'" v-model="positiveOutcome" required="required">
-                        <option value='' disabled selected>Select positive case outcome</option>
+                    <select v-if="positiveOutcomeType === 'Action'" v-model="positiveOutcome" required="required">
                         <option v-for="activity in activities" :key="activity">{{ activity }}</option>
                     </select>
-                    <input v-else-if="isTimestamp" type="datetime-local" v-model="positiveOutcome" required="required"/>
-                    <input v-else type="number" v-model="positiveOutcome" required="required"/>
+                    <input v-else-if="positiveOutcomeType === 'Time'" type="datetime-local" v-model="positiveOutcome" required="required"/>
+                    <input v-else-if="positiveOutcomeType === 'Duration'" type="number" v-model="positiveOutcome" required="required"/>
+                    <input v-else type="text" v-model="positiveOutcome" required="required"/>
                 </div>
 
                 <div class="parameter">
                     <p>Intervention</p>
                     <small>Please specify what activity is considered as the intervention in the ongoing case.</small>
                     <select v-model="interventionType" required>
-                        <option value='' disabled selected>Select intervention type</option>
                         <option v-for="intType in interventionTypes" :key="intType" :value="intType">{{ intType }}</option>
                     </select>
                     <select v-if="interventionType" v-model="interventionEvaluationMethod" required="required">
-                        <option value='' disabled selected>Select evaluation method</option>
                         <option v-for="evaluationMethod in evaluationMethods[interventionType]" :key="evaluationMethod">{{ evaluationMethod }}</option>
                     </select>
-                    <select v-if="interventionType" v-model="intervention" required="required">
-                        <option value='' disabled selected>Select intervention</option>
+                    <select v-if="interventionType='Action'" v-model="intervention" required="required">
                         <option v-for="activity in activities" :key="activity">{{ activity }}</option>
                     </select>
+                    <input v-else-if="positiveOutcomeType === 'Time'" type="datetime-local" v-model="positiveOutcome" required="required"/>
+                    <input v-else type="text" v-model="positiveOutcome" required="required"/>
                 </div>
 
                 <div class="parameter">
@@ -88,39 +85,28 @@ export  default {
 
     data () {
         return {
-            log: null,
-            activities: ['A','B','C'],
             isLoading: false,
+
+            log: null,
+            activities: null,
 
             caseCompletion: null,
 
-            positiveOutcomeTypes: ["Timestamp", "Start timestamp","End timestamp", 
-                                    "Text", "Activity", "Resource", 
-                                    "Number", "Duration", "Cost",
-                                    "Boolean"],
+            positiveOutcomeTypes: null,
             positiveOutcomeType: null,
             positiveOutcomeEvaluationMethod: null,
             positiveOutcome: null,
             
-            interventionTypes: ['Activity'],
+            interventionTypes: null,
             interventionType: null,
             interventionEvaluationMethod: null,
             intervention: null,
             
             evaluationMethods: {
-                'Text': ['equal','not equal','contains','not contains'],
-                'Activity': ['equal','not equal','contains','not contains'],
-                'Resource': ['equal','not equal','contains','not contains'],
-
-                'Number': ['equal','not equal','greater than','less than','greater than or equal','less than or equal'],
-                'Duration': ['equal','not equal','greater than','less than','greater than or equal','less than or equal'],
-                'Cost': ['equal','not equal','greater than','less than','greater than or equal','less than or equal'],
-
-                'Start timestamp': ['equal','not equal','later than','earlier than','later than or equal','earlier than or equal'],
-                'End timestamp': ['equal','not equal','later than','earlier than','later than or equal','earlier than or equal'], 
-                'Timestamp': ['equal','not equal','later than','earlier than','later than or equal','earlier than or equal'],
-                
-                'Boolean': ['is true','is false']
+                'Time': ['equal','not equal','later than','earlier than','later than or equal','earlier than or equal'],
+                'Action': ['equal','not equal','contains','not contains'],
+                'Personnel': ['equal','not equal','contains','not contains'],
+                'Duration': ['equal','not equal','greater than','less than','greater than or equal','less than or equal']
             },
 
             alarmProbability: null
@@ -139,6 +125,9 @@ export  default {
             Service.getLog(fileId)
             .then(response => {
                 this.log = response.data.eventlog;
+                this.activities = this.log.activities;
+                this.positiveOutcomeTypes = this.log.outcome_selections;
+                this.interventionTypes = this.log.treatment_selections;
                 this.isLoading = false;
             })
             .catch(error => {
@@ -148,10 +137,6 @@ export  default {
                 console.log(resMessage)
                 this.isLoading = false;
             });
-        },
-
-        getActivities() {
-            // TODO connect to PrCore 
         },
 
         submit() {
@@ -195,12 +180,8 @@ export  default {
 
         },
 
-        isTimestamp(){
-            return this.positiveOutcomeType in ['Timestamp','Start timestamp', 'End timestamp'];
-        },
-
         format(s){
-            return s.replace(/\s+/g, '-').toUpperCase();
+            return s.replace(/\s+/g, '_').toUpperCase();
         }
 
     },

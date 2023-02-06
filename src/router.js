@@ -4,17 +4,22 @@ import CasePage from "./views/CasePage.vue"
 import CasesList from "./views/CasesList.vue"
 import HomePage from "./views/HomePage"
 import ResourcesPage from "./views/ResourcesPage"
-import CSVPage from "./views/CSVPage"
 import DashBoard from './views/DashBoard'
 import ParametersPage from './views/ParametersPage'
-import XESPage from "./views/XESPage"
+import ColumnsDefinitionPage from "./views/ColumnsDefinitionPage"
 import LoadingComponent from "./components/LoadingComponent"
+import ErrorPage from  "./views/ErrorPage"
 
 const routes = [
     {
         path: "/",
         name: "home",
         component: HomePage,
+    },
+    {
+        path: "/error",
+        name: "error",
+        component: ErrorPage,
     },
     {
         path: "/dashboard",
@@ -27,15 +32,9 @@ const routes = [
         component: ParametersPage,
     },
     {
-        path: '/csv',
-        name: 'csv',
-        component: CSVPage,
-        props: true
-    }, 
-    {
-        path: '/xes',
-        name: 'xes',
-        component: XESPage,
+        path: '/columns',
+        name: 'columns',
+        component: ColumnsDefinitionPage,
         props: true
     },
     {

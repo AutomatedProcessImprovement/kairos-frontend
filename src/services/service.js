@@ -3,6 +3,18 @@ const http = axios.create({
   baseURL: "http://localhost:5000"
 });
 
+import router from '@/router';
+
+http.interceptors.response.use(null, error => {
+    let path = '/error';
+    switch (error.response.status) {
+      case 404: path = '/error'; break;
+      case 500: path = '/error'; break;
+    }
+    router.push(path);
+    return Promise.reject(error);
+  });
+
 
 class Service {
 

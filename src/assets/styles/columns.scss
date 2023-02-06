@@ -1,15 +1,16 @@
-#csv{
+#log-columns{
     padding: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-grow: 1;
 
-    .csv-table{
+    .log-table{
         display: flex;
         flex-direction: column;
         background-color: $bs-white;
         border-radius: 10px;
+        max-width: 90vw;
 
         .buttons{
             display: flex;
@@ -31,5 +32,16 @@
                 }
             }
         }
+    }
+}
+
+select {
+    padding: 5px;
+    border: 1px solid $bs-gray2;
+    border-radius: 8px;
+    margin: 0px;
+
+    &:focus{
+        outline: 2px solid $bs-blue;
     }
 }

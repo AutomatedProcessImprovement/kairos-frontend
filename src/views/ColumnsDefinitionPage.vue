@@ -1,5 +1,5 @@
 <template>
-    <div id="csv">
+    <div id="log-columns">
         <loading v-if="isLoading"></loading>
         <div v-else class="column">
 
@@ -7,18 +7,18 @@
             <div v-if="values.length === 0">
                 <h3 class="warning">Please upload a log first.</h3>
             </div>
-            <div v-else class="csv-table shadow">
+            <div v-else class="log-table shadow">
                 <table>
                     <thead>
                         <tr>
-                            <th v-for="head in header" :key="head">
+                            <th v-for="head in headers" :key="head">
                                 {{head}}
                             </th>
                         </tr>
                         <tr>
-                            <th v-for="head in header" :key="head">
+                            <th v-for="head in headers" :key="head">
                                 <select class="dropdown" v-model="types[head]" required>
-                                    <option v-for="type in typeList" :key="type" :value="type.type" :disabled="type.disabled"> {{type.text}} </option>
+                                    <option v-for="type in typeList" :key="type" :selected="types[head] == type.type" :value="type.type" :disabled="type.disabled"> {{type.text}} </option>
                                 </select>
                             </th>
                         </tr>
@@ -46,7 +46,7 @@ import Loading from "@/components/LoadingComponent.vue";
 import Service from "@/services/service.js"
 
 export default {
-    name: "CSVPage",
+    name: "ColumnsDefinitionPage",
 
     components: {
         Loading,
@@ -56,18 +56,25 @@ export default {
         return {
             typeList: [
                 {type: undefined, text: "Choose a type", disabled: true},
-                {type: 'case_id', text: 'Case id', disabled: false},
-                {type: 'activity', text: 'Activity', disabled: false},
-                {type: 'start_time', text: 'Start time', disabled: false},
-                {type: 'end_time', text: 'End time', disabled: false},
-                {type: 'timestamp', text: 'Timestamp', disabled: false},
-                {type: 'resource', text: 'Resource', disabled: false},
-                {type: 'case_attribute', text: 'Case attribute', disabled: false},
-                {type: 'event_attribute', text: 'Event attribute', disabled: false}],
-            header: [],
+                {type: 'CASE_ID', text: 'Case id', disabled: false},
+                {type: 'TEXT', text: 'Text', disabled: false},
+                {type: 'NUMBER', text: 'Number', disabled: false},
+                {type: 'BOOLEAN', text: 'Bollean', disabled: false},
+                {type: 'DATETIME', text: 'Datetime', disabled: false},
+                {type: 'TRANSITION', text: 'Transition', disabled: false},
+                {type: 'ACTIVITY', text: 'Activity', disabled: false},
+                {type: 'RESOURCE', text: 'Resource', disabled: false},
+                {type: 'TIMESTAMP', text: 'Timestamp', disabled: false},
+                {type: 'START_TIMESTAMP', text: 'Start time', disabled: false},
+                {type: 'END_TIMESTAMP', text: 'End time', disabled: false},
+                {type: 'DURATION', text: 'Duration', disabled: false},
+                {type: 'COST', text: 'Cost', disabled: false},
+                {type: 'CASE_ATTRIBUTE', text: 'Case attribute', disabled: false},
+                {type: 'EVENT_ATTRIBUTE', text: 'Event attribute', disabled: false},
+            ],
+            headers: [],
             types: {},
             values: [],
-            dateFormat: '',
             isLoading: true,
         }
     },
@@ -82,15 +89,15 @@ export default {
  
             Service.parseFile(fileId)
             .then(response => {
-                this.header = response.data.header;
-                this.header.forEach((head) => {
-                    this.types[head] = null;
-                })
+                this.headers = response.data.header;
+                let types = response.data.types;
+                console.log(response.data.types);
+                console.log(types);
+                for (let i = 0; i < this.headers.length; i++) {
+                    this.types[this.headers[i]] = types[i];                    
+                }
                 console.log(this.types);
                 for (const r of response.data.rows) {
-                    // for (const v of r) {
-                    //     this.values.push(v)
-                    // }
                     this.values.push(r)
                 }
                 this.isLoading = false;
