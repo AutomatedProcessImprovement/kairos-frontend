@@ -17,9 +17,10 @@ const routes = [
         component: HomePage,
     },
     {
-        path: "/error",
+        path: "/error/:responseStatus",
         name: "error",
         component: ErrorPage,
+        params: true
     },
     {
         path: "/dashboard",
@@ -35,7 +36,6 @@ const routes = [
         path: '/columns',
         name: 'columns',
         component: ColumnsDefinitionPage,
-        props: true
     },
     {
         path: "/cases",

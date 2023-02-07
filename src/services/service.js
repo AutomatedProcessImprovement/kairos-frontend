@@ -6,12 +6,13 @@ const http = axios.create({
 import router from '@/router';
 
 http.interceptors.response.use(null, error => {
-    let path = '/error';
-    switch (error.response.status) {
-      case 404: path = '/error'; break;
-      case 500: path = '/error'; break;
-    }
-    router.push(path);
+    // let path = '/error';
+    // switch (error.response.status) {
+    //   case 404: path = '/error'; break;
+    //   case 500: path = '/error'; break;
+    // }
+    console.log(error.response);
+    router.push({name: 'error', params: {responseStatus: error.response.status}});
     return Promise.reject(error);
   });
 
