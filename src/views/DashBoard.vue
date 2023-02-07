@@ -11,13 +11,12 @@
         <div class='wrap center row'>
             <div class='log-card' :class="{'selected': log._id === selectedLog}" v-for="log in eventlogs" :key='log' @click="selectLog(log._id)">
                 <h4>{{ log.filename }}</h4>
-                <small>{{ log.uploadDate }}</small>
+                <small>{{ log.datetime }}</small>
             </div>
         </div>
         <div class="column">
             <div class="row">
                 <h3 class="bold-blue">Recommendation Parameters</h3>
-                <router-link class="btn margin" :to="{name: 'parameters'}">Change</router-link>
             </div>
             <div class="row">
                 <div class="parameter">

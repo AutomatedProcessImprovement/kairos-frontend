@@ -1,7 +1,6 @@
 #parameters{
     padding: 10px;
     display: flex;
-    justify-content: center;
     align-items: center;
     flex-grow: 1;
     flex-direction: column;
@@ -27,12 +26,29 @@
         flex-direction: column;
         padding: 5px 0px;
 
-        select{
-            margin: 5px 0px;
-        }
-
+        select,
         input{
             margin: 5px 0px;
+
+            &:disabled{
+                filter: opacity(60%);
+            }
+        }
+
+        .input-group{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            
+            *{
+                padding-right: 10px;
+            }
+
+            select,
+            input{
+                width: 250px;
+            }
         }
     }
+    
 }

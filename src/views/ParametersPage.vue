@@ -19,7 +19,7 @@
                 <div class="parameter">
                     <p>Case completion</p>
                     <small>Please specify what activity marks the case completion.</small>
-                    <select v-model="caseCompletion" required="required">
+                    <select v-model="caseCompletion">
                         <option v-for="activity in activities" :key="activity">{{ activity }}</option>
                     </select>
                 </div>
@@ -27,40 +27,67 @@
                 <div class="parameter">
                     <p>Positive case outcome</p>
                     <small>Please specify what is considered as the positive outcome of the case.</small>
-                    <select v-model="positiveOutcomeType" required>
-                        <option v-for="outcomeType in positiveOutcomeTypes" :key="outcomeType" :value="outcomeType">{{ outcomeType }}</option>
-                    </select>
-                    <select v-if="positiveOutcomeType" v-model="positiveOutcomeEvaluationMethod" required="required">
-                        <option v-for="evaluationMethod in evaluationMethods[positiveOutcomeType]" :key="evaluationMethod">{{ evaluationMethod }}</option>
-                    </select>
-                    <select v-if="positiveOutcomeType === 'Action'" v-model="positiveOutcome" required="required">
-                        <option v-for="activity in activities" :key="activity">{{ activity }}</option>
-                    </select>
-                    <input v-else-if="positiveOutcomeType === 'Time'" type="datetime-local" v-model="positiveOutcome" required="required"/>
-                    <input v-else-if="positiveOutcomeType === 'Duration'" type="number" v-model="positiveOutcome" required="required"/>
-                    <input v-else type="text" v-model="positiveOutcome" required="required"/>
+
+                    <div class="input-group">
+                        <small>Outcome type</small>
+                        <select v-model="positiveOutcome.column">
+                            <option v-for="outcomeType in positiveOutcomeTypes" :key="outcomeType" :value="outcomeType">{{ outcomeType }}</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <small>Outcome evaluation method</small>
+                        <select v-if="positiveOutcome.column" v-model="positiveOutcome.operator">
+                            <option v-for="evaluationMethod in getEvaluationMethods(positiveOutcome.column,'outcome')" :key="evaluationMethod">{{ evaluationMethod }}</option>
+                        </select>
+                        <select v-else disabled></select>
+                    </div>
+
+                    <div class="input-group">
+                        <small>Outcome value</small>
+                        <select v-if="positiveOutcome.columnDefinition === 'ACTIVITY'" v-model="positiveOutcome.value">
+                            <option v-for="activity in activities" :key="activity">{{ activity }}</option>
+                        </select>
+                        <span v-else-if="positiveOutcome.columnDefinition === 'BOOLEAN'"></span>
+                        <input v-else-if="positiveOutcome.columnDefinition" :type="evaluationMethods[positiveOutcome.columnDefinition].inputType" v-model="positiveOutcome.value"/>
+                        <select v-else disabled></select>
+                    </div>
                 </div>
 
                 <div class="parameter">
                     <p>Intervention</p>
-                    <small>Please specify what activity is considered as the intervention in the ongoing case.</small>
-                    <select v-model="interventionType" required>
-                        <option v-for="intType in interventionTypes" :key="intType" :value="intType">{{ intType }}</option>
-                    </select>
-                    <select v-if="interventionType" v-model="interventionEvaluationMethod" required="required">
-                        <option v-for="evaluationMethod in evaluationMethods[interventionType]" :key="evaluationMethod">{{ evaluationMethod }}</option>
-                    </select>
-                    <select v-if="interventionType='Action'" v-model="intervention" required="required">
-                        <option v-for="activity in activities" :key="activity">{{ activity }}</option>
-                    </select>
-                    <input v-else-if="positiveOutcomeType === 'Time'" type="datetime-local" v-model="positiveOutcome" required="required"/>
-                    <input v-else type="text" v-model="positiveOutcome" required="required"/>
+                    <small>Please specify what is considered as intervention in the ongoing case.</small>
+                    <div class="input-group">
+                        <small>Intervention type</small>
+                        <select v-model="intervention.column">
+                            <option v-for="outcomeType in interventionTypes" :key="outcomeType" :value="outcomeType">{{ outcomeType }}</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <small>Intervention evaluation method</small>
+                        <select v-if="intervention.column" v-model="intervention.operator">
+                            <option v-for="evaluationMethod in getEvaluationMethods(intervention.column,'intervention')" :key="evaluationMethod">{{ evaluationMethod }}</option>
+                        </select>
+                        <select v-else disabled></select>
+                    </div>
+
+                    <div class="input-group">
+                        <small>Intervention value</small>
+                        <select v-if="intervention.columnDefinition === 'ACTIVITY'" v-model="intervention.value">
+                            <option v-for="activity in activities" :key="activity">{{ activity }}</option>
+                        </select>
+                        <span v-else-if="intervention.columnDefinition === 'BOOLEAN'"></span>
+                        <input v-else-if="intervention.columnDefinition" :type="evaluationMethods[intervention.columnDefinition].inputType" v-model="intervention.value"/>
+                        <select v-else disabled></select>
+                    </div>
                 </div>
+                
 
                 <div class="parameter">
                     <p>Alarm Threshold</p>
                     <small>Please specify when an alarm should be triggered. Enter a value between 0.1 and 0.9.</small>
-                    <input type="number" v-model="alarmProbability" :required="true"/>
+                    <input type="number" v-model="alarmProbability"/>
                 </div>
 
                 <button type="submit" class="btn" @click="submit">Submit</button>
@@ -89,27 +116,32 @@ export  default {
 
             log: null,
             activities: null,
+            columnsDefinition: null,
 
             caseCompletion: null,
 
             positiveOutcomeTypes: null,
-            positiveOutcomeType: null,
-            positiveOutcomeEvaluationMethod: null,
-            positiveOutcome: null,
+            positiveOutcome: {},
             
             interventionTypes: null,
-            interventionType: null,
-            interventionEvaluationMethod: null,
-            intervention: null,
+            intervention: {},
             
-            evaluationMethods: {
-                'Time': ['equal','not equal','later than','earlier than','later than or equal','earlier than or equal'],
-                'Action': ['equal','not equal','contains','not contains'],
-                'Personnel': ['equal','not equal','contains','not contains'],
-                'Duration': ['equal','not equal','greater than','less than','greater than or equal','less than or equal']
-            },
+            alarmProbability: null,
 
-            alarmProbability: null
+            evaluationMethods: {
+                'TEXT': {operators:['equal','not equal','contains','not contains'],inputType:'text'},
+                'NUMBER': {operators:['equal','not equal','greater than','less than','greater than or equal','less than or equal'],inputType:'number'},
+                'BOOLEAN': {operators:['is true','is false'],inputType:'boolean'},
+                'DATETIME': {operators:['equal','not equal','later than','earlier than','later than or equal','earlier than or equal'],inputType:'datetime-local'},
+                'ACTIVITY': {operators:['equal','not equal','contains','not contains'],inputType:'activity'},
+                'RESOURCE': {operators:['equal','not equal','contains','not contains'],inputType:'text'},
+                'TIMESTAMP': {operators:['equal','not equal','later than','earlier than','later than or equal','earlier than or equal'],inputType:'datetime-local'},
+                'START_TIMESTAMP': {operators:['equal','not equal','later than','earlier than','later than or equal','earlier than or equal'],inputType:'datetime-local'},
+                'END_TIMESTAMP': {operators:['equal','not equal','later than','earlier than','later than or equal','earlier than or equal'],inputType:'datetime-local'},
+                'DURATION': {operators:['equal','not equal','greater than','less than','greater than or equal','less than or equal'],inputType:'number'},
+                'COST': {operators:['equal','not equal','greater than','less than','greater than or equal','less than or equal'],inputType:'number'},
+        },
+
         }
     },
 
@@ -128,6 +160,7 @@ export  default {
                 this.activities = this.log.activities;
                 this.positiveOutcomeTypes = this.log.outcome_selections;
                 this.interventionTypes = this.log.treatment_selections;
+                this.columnsDefinition = this.log.columns_definition;
                 this.isLoading = false;
             })
             .catch(error => {
@@ -140,30 +173,31 @@ export  default {
         },
 
         submit() {
-            if(!this.caseCompletion || !this.interventionType || !this.interventionEvaluationMethod || !this.intervention ||
-                ! this.positiveOutcome || !this.positiveOutcomeType || !this.positiveOutcomeEvaluationMethod){
+            if(!this.caseCompletion || !this.alarmProbability|| !this.intervention.column || !this.intervention.operator || !this.intervention.value ||
+                ! this.positiveOutcome.value || !this.positiveOutcome.column || !this.positiveOutcome.operator){
                     alert("Please fill in all the fields!");
                     return;
                 }
             this.isLoading = true;
 
             let positiveOutcome = {
-                "type": this.format(this.positiveOutcomeType),
-                "operator": this.format(this.positiveOutcomeEvaluationMethod),
-                "value": this.positiveOutcome
+                "column": this.positiveOutcome.column,
+                "operator": this.format(this.positiveOutcome.operator),
+                "value": this.positiveOutcome.value
             }
 
             let intervention = {
-                "type": this.format(this.interventionType),
-                "operator": this.format(this.interventionEvaluationMethod),
-                "value": this.intervention,
+                "column": this.intervention.column,
+                "operator": this.format(this.intervention.operator),
+                "value": this.intervention.value,
             }
             let data = {
                 'case_completion': this.caseCompletion,
                 'positive_outcome': positiveOutcome,
                 'treatment': intervention,
                 'alarm_probability': this.alarmProbability
-            }          
+            }    
+            console.log(data);      
 
             Service.parameters(localStorage.fileId,data)
             .then(response => {
@@ -178,6 +212,13 @@ export  default {
                 console.log(resMessage)
             });
 
+        },
+
+        getEvaluationMethods(type,parameter){
+            let definition = this.columnsDefinition[type];
+            if(parameter === 'outcome') this.positiveOutcome.columnDefinition = definition
+            else this.intervention.columnDefinition = definition
+            return this.evaluationMethods[definition].operators;
         },
 
         format(s){

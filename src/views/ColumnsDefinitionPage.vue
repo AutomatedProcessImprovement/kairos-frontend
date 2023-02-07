@@ -18,7 +18,7 @@
                         <tr>
                             <th v-for="head in headers" :key="head">
                                 <select class="dropdown" v-model="types[head]" required>
-                                    <option v-for="type in typeList" :key="type" :selected="types[head] == type.type" :value="type.type" :disabled="type.disabled"> {{type.text}} </option>
+                                    <option v-for="type in typeList" :key="type" :selected="types[head] == type.type" :value="type.type"> {{type.text}} </option>
                                 </select>
                             </th>
                         </tr>
@@ -55,22 +55,21 @@ export default {
     data () {
         return {
             typeList: [
-                {type: undefined, text: "Choose a type", disabled: true},
-                {type: 'CASE_ID', text: 'Case id', disabled: false},
-                {type: 'TEXT', text: 'Text', disabled: false},
-                {type: 'NUMBER', text: 'Number', disabled: false},
-                {type: 'BOOLEAN', text: 'Bollean', disabled: false},
-                {type: 'DATETIME', text: 'Datetime', disabled: false},
-                {type: 'TRANSITION', text: 'Transition', disabled: false},
-                {type: 'ACTIVITY', text: 'Activity', disabled: false},
-                {type: 'RESOURCE', text: 'Resource', disabled: false},
-                {type: 'TIMESTAMP', text: 'Timestamp', disabled: false},
-                {type: 'START_TIMESTAMP', text: 'Start time', disabled: false},
-                {type: 'END_TIMESTAMP', text: 'End time', disabled: false},
-                {type: 'DURATION', text: 'Duration', disabled: false},
-                {type: 'COST', text: 'Cost', disabled: false},
-                {type: 'CASE_ATTRIBUTE', text: 'Case attribute', disabled: false},
-                {type: 'EVENT_ATTRIBUTE', text: 'Event attribute', disabled: false},
+                {type: 'CASE_ID', text: 'Case id'},
+                {type: 'TEXT', text: 'Text'},
+                {type: 'NUMBER', text: 'Number'},
+                {type: 'BOOLEAN', text: 'Boolean'},
+                {type: 'DATETIME', text: 'Datetime'},
+                {type: 'TRANSITION', text: 'Transition'},
+                {type: 'ACTIVITY', text: 'Activity'},
+                {type: 'RESOURCE', text: 'Resource'},
+                {type: 'TIMESTAMP', text: 'Timestamp'},
+                {type: 'START_TIMESTAMP', text: 'Start time'},
+                {type: 'END_TIMESTAMP', text: 'End time'},
+                {type: 'DURATION', text: 'Duration'},
+                {type: 'COST', text: 'Cost'},
+                // {type: 'CASE_ATTRIBUTE', text: 'Case attribute'},
+                // {type: 'EVENT_ATTRIBUTE', text: 'Event attribute'},
             ],
             headers: [],
             types: {},
