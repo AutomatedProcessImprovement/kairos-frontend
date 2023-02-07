@@ -3,7 +3,7 @@
       <h1>PrPM</h1>
       <small>PrPM is a tool that visualises prescriptive process monitoring output.</small>
       <div class="upload-file">
-        <loading v-if="isLoading"></loading>
+        <loading v-if="isLoading" text="preprocessing data..."></loading>
         <h2>Upload</h2>
         <p>Upload an eventlog to start:</p>
         <small>Supported file types: .csv and .xes</small>

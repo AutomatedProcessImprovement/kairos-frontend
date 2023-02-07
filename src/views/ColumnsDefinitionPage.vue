@@ -1,6 +1,6 @@
 <template>
     <div id="log-columns">
-        <loading v-if="isLoading"></loading>
+        <loading v-if="isLoading" text="getting supported parameters..."></loading>
         <div v-else class="column">
 
             <h2 class="bold-blue">Column definition</h2>

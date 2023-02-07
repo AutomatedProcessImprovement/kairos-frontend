@@ -1,6 +1,6 @@
 <template>
     <div id="parameters">
-        <loading v-if="isLoading"></loading>
+        <loading v-if="isLoading" text="creating project..."></loading>
         <div v-else class="column">
             <a @click="$router.go(-1)"><ion-icon name="chevron-back-outline"></ion-icon> Return</a>
             <h2 class="bold-blue">Recommendation Parameters</h2>

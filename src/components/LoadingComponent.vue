@@ -3,7 +3,8 @@
         <div v-if="modalIsOpen">
             <div class="overlay">
                 <div id="loading">
-                    Please wait...
+                    <ion-icon class="rotate" name="reload-circle"></ion-icon>
+                    {{text}}
                 </div>
             </div>
         </div>
@@ -20,6 +21,13 @@ export default {
     data: function () {
         return {
             modalIsOpen: true,
+        }
+    },
+
+    props:{
+        text: {
+            type: String,
+            default: 'Please wait...'
         }
     }
 }
