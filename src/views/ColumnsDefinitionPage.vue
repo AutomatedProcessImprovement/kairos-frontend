@@ -128,6 +128,18 @@ export default {
             });
         },
         submit() {
+            let alarm = false;
+            Object.values(this.types).forEach(value => {  
+                if (!value){
+                    alarm = true;
+                    return;
+                }
+            })
+            if (alarm){
+                alert("Please define all columns!");
+                return;
+            }
+
             Service.updateTypes(localStorage.fileId,this.types)
             .then(response => {
                 console.log(response)

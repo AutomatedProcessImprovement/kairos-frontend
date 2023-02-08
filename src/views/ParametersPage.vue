@@ -87,7 +87,7 @@
                 <div class="parameter">
                     <p>Alarm Threshold</p>
                     <small>Please specify when an alarm should be triggered. Enter a value between 0.1 and 0.9.</small>
-                    <input type="number" v-model="alarmProbability"/>
+                    <input type="number" v-model="alarmThreshold"/>
                 </div>
 
                 <button type="submit" class="btn" @click="submit">Submit</button>
@@ -126,7 +126,7 @@ export  default {
             interventionTypes: null,
             intervention: {},
             
-            alarmProbability: null,
+            alarmThreshold: null,
 
             evaluationMethods: {
                 'TEXT': {operators:['equal','not equal','contains','not contains'],inputType:'text'},
@@ -173,11 +173,15 @@ export  default {
         },
 
         submit() {
-            if(!this.caseCompletion || !this.alarmProbability|| !this.intervention.column || !this.intervention.operator || !this.intervention.value ||
+            if(!this.caseCompletion || !this.alarmThreshold|| !this.intervention.column || !this.intervention.operator || !this.intervention.value ||
                 ! this.positiveOutcome.value || !this.positiveOutcome.column || !this.positiveOutcome.operator){
                     alert("Please fill in all the fields!");
                     return;
                 }
+            if(this.alarmThreshold < 0.1 || this.alarmThreshold > 0.9){
+                alert("Alarm threshold must be between 0.1 and 0.9!");
+                return;
+            }
             this.isLoading = true;
 
             let positiveOutcome = {
@@ -195,7 +199,7 @@ export  default {
                 'case_completion': this.caseCompletion,
                 'positive_outcome': positiveOutcome,
                 'treatment': intervention,
-                'alarm_probability': this.alarmProbability
+                'alarm_probability': this.alarmThreshold
             }    
             console.log(data);      
 
