@@ -49,7 +49,7 @@
                             <option v-for="activity in activities" :key="activity">{{ activity }}</option>
                         </select>
                         <span v-else-if="positiveOutcome.columnDefinition === 'BOOLEAN'"></span>
-                        <input v-else-if="positiveOutcome.columnDefinition" :type="evaluationMethods[positiveOutcome.columnDefinition].inputType" v-model="positiveOutcome.value"/>
+                        <input v-else-if="positiveOutcome.columnDefinition" :type="getInputType(positiveOutcome.columnDefinition)" v-model="positiveOutcome.value"/>
                         <select v-else disabled></select>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                             <option v-for="activity in activities" :key="activity">{{ activity }}</option>
                         </select>
                         <span v-else-if="intervention.columnDefinition === 'BOOLEAN'"></span>
-                        <input v-else-if="intervention.columnDefinition" :type="evaluationMethods[intervention.columnDefinition].inputType" v-model="intervention.value"/>
+                        <input v-else-if="intervention.columnDefinition" :type="getInputType(intervention.columnDefinition)" v-model="intervention.value"/>
                         <select v-else disabled></select>
                     </div>
                 </div>
@@ -220,9 +220,17 @@ export  default {
 
         getEvaluationMethods(type,parameter){
             let definition = this.columnsDefinition[type];
-            if(parameter === 'outcome') this.positiveOutcome.columnDefinition = definition
-            else this.intervention.columnDefinition = definition
-            return this.evaluationMethods[definition].operators;
+            if (!definition){
+                definition = type;
+            }
+            if(parameter === 'outcome') this.positiveOutcome.columnDefinition = definition;
+            else this.intervention.columnDefinition = definition;
+            let method = this.evaluationMethods[definition];
+            return method.operators;
+        },
+
+        getInputType(method){
+            return this.evaluationMethods[method].inputType;
         },
 
         format(s){
