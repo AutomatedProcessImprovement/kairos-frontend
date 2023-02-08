@@ -18,7 +18,7 @@
             <div class="row">
                 <h3 class="bold blue">Recommendation Parameters</h3>
             </div>
-            <div class="row">
+            <div v-if="selectedLog.positiveOutcome" class="row">
                 <div class="parameter">
                     <p>Activity {{ selectedLog.caseCompletion }}</p>
                     <small>Case completion</small>
@@ -35,6 +35,9 @@
                     <p>{{selectedLog.alarmProbability}}</p>
                     <small>Alarm probability</small>
                 </div>
+            </div>
+            <div v-else>
+                <p class="warning">No parameters defined.</p>
             </div>
         </div>
         <div class="column">

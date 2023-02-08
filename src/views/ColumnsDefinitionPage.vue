@@ -139,6 +139,8 @@ export default {
                 alert("Please define all columns!");
                 return;
             }
+            
+            this.isLoading = true;
 
             Service.updateTypes(localStorage.fileId,this.types)
             .then(response => {
