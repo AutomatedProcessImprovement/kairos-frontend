@@ -11,7 +11,32 @@
             </div>
         </div>
         <div class="recommendations-list">
+          <div class="row center">
           <h4>Recommendations</h4>
+          <tooltip-component>
+            <template v-slot:icon>
+              <ion-icon name="information-circle-outline"></ion-icon>
+            </template>
+            <template v-slot:title>
+                <h3 class="bold">Recommendation info</h3>
+            </template>
+            <template v-slot:content>
+              <p>How are recommendations calculated?</p>
+              <p class="bold">Intervention</p>
+              <p>Intervention was defined by process owner in the settings. An algorithm estimates
+                the causal effect of performing the intervention at a given point in time. It is shown
+                as ”recommended” when an estimated effect is positive (above 0).</p>
+
+              <p class="bold">Alarm</p>
+              <p>A process owner defined in the settings the alarm threshold. When an alarm is 
+              triggered, it shows that the case is likely to lead to an undesired outcome. This
+              means that the worker should look closer into the case.</p>
+
+              <p class="bold">Next activity</p>
+              <p>Another algorithm predicts the next best activity in the case and displays it.</p>
+            </template>
+          </tooltip-component>
+        </div>
           <div class="recommendation" v-for="(r,index) in currentCase.recommendations" :key="index">
             <div class="recommendation-heading">
               <p>{{r.name}}</p>
@@ -80,11 +105,13 @@
   <script>
 
   import AccordionComponent from './AccordionComponent.vue';
+  import TooltipComponent from './TooltipComponent.vue';
   
     export default {
       name: 'OperationalWorkerView',
       components:{
-        AccordionComponent
+        AccordionComponent,
+        TooltipComponent
       },
   
       props: {

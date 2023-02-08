@@ -1,4 +1,5 @@
 <template>
+  <side-bar></side-bar>
   <div id="case">
     <div class="case-top">
       <router-link :to="{name: 'cases'}"><ion-icon name="chevron-back-outline"></ion-icon> Return</router-link>
@@ -52,9 +53,12 @@
     import Service from "@/services/service";
     import OperationalView from '@/components/OperationalView.vue';
     import AnalyticalView from '@/components/AnalyticalView.vue';
+    import SideBar from '@/components/SideBar.vue';
+
     export default {
       name: 'CasePage',
       components: {
+        SideBar,
         OperationalView,
         AnalyticalView
       },
@@ -80,6 +84,7 @@
           this.caseId = (this.$route.params.caseId)
           Service.getCase(this.caseId).then(
             (response) => {
+              console.log(response.data);
               this.currentCase = response.data.case;
               this.kpi = response.data.kpi;
               this.getAdditionalInformation();
@@ -98,7 +103,7 @@
         getAdditionalInformation(){
           const arr = Object.entries(this.currentCase)
           const obj = arr.filter(([key,value]) => {
-            return typeof value !== "object" && key !== "caseId" && key !== 'status'
+            return typeof value !== "object" && key !== "_id" && key !== 'status'
           });
           this.caseDetails = Object.fromEntries(obj);
 

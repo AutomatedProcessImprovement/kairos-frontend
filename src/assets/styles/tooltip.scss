@@ -1,22 +1,31 @@
-.activity-tooltip{
-  font-size: 0.7rem;
-  width: 100px;
-  opacity: 0;
-  transition: 0.2s;
-  border: 1px solid $bs-gray2;
-  padding: 6px 3px 3px 3px;
-  margin-top: 10px;
-
-  
-  .arrow-up {
-    width: 0; 
-    height: 0; 
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    margin-left: 45%;
-    margin-top: -12%;
+#tooltip{
+    display: flex;
+    align-items: center;
+    z-index: 2;
     
-    border-bottom: 5px solid $bs-gray2;
-  }
-}
+    ion-icon{
+        width: 25px;
+        height: 25px;
+        cursor: pointer;
+        padding: 0px 10px;
+    }
 
+    .relative{
+        position: relative;
+        
+        .tooltip {
+            position: absolute;
+            padding: 20px;
+            border: 1px solid $bs-gray3;
+            border-radius: 10px;
+            background-color: $bs-gray1;
+            display: flex;
+            flex-direction: column;
+            width: 750px;
+
+            .sub-content{
+                display: flex;
+            }
+        }
+    }   
+}

@@ -4,12 +4,37 @@ import CasePage from "./views/CasePage.vue"
 import CasesList from "./views/CasesList.vue"
 import HomePage from "./views/HomePage"
 import ResourcesPage from "./views/ResourcesPage"
+import DashBoard from './views/DashBoard'
+import ParametersPage from './views/ParametersPage'
+import ColumnsDefinitionPage from "./views/ColumnsDefinitionPage"
+import ErrorPage from  "./views/ErrorPage"
 
 const routes = [
     {
         path: "/",
         name: "home",
-        component: HomePage
+        component: HomePage,
+    },
+    {
+        path: "/error/:responseStatus",
+        name: "error",
+        component: ErrorPage,
+        params: true
+    },
+    {
+        path: "/dashboard",
+        name: "dashboard",
+        component: DashBoard,
+    },
+    {
+        path: "/parameters",
+        name: "parameters",
+        component: ParametersPage,
+    },
+    {
+        path: '/columns',
+        name: 'columns',
+        component: ColumnsDefinitionPage,
     },
     {
         path: "/cases",
@@ -28,12 +53,11 @@ const routes = [
             },
         ]
     },
-    
     {
         path: "/resources",
         name: "resources",
         component: ResourcesPage
-    },
+    }
 ];
 
 const router = createRouter({

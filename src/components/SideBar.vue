@@ -5,7 +5,7 @@
       <h4>PrPM</h4>
     </div>
         <div class="sidebar-items">
-          <router-link class = "sidebar-item"  :to="{ name: 'home'}"><ion-icon name="home"></ion-icon>Home</router-link>
+          <router-link class = "sidebar-item"  :to="{ name: 'dashboard'}"><ion-icon name="home"></ion-icon>Dashboard</router-link>
           <router-link class = "sidebar-item"  :to="{ name: 'cases'}"><ion-icon name="stats-chart"></ion-icon>Cases</router-link>
           <router-link class = "sidebar-item"  :to="{ name: 'resources'}"><ion-icon name="people"></ion-icon>Resources</router-link>
         </div>
