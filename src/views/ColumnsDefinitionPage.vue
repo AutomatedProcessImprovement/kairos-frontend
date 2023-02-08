@@ -2,8 +2,24 @@
     <div id="log-columns">
         <loading v-if="isLoading" text="getting supported parameters..."></loading>
         <div v-else class="column">
+            <div class="row">
+                <h2 class="bold blue">Column definition</h2>
+                <tooltip-component>
+                    <template v-slot:icon>
+                        <ion-icon class="blue" name="information-circle"></ion-icon>
+                    </template>
+                    <template v-slot:title>
+                        <h3 class="bold">Column definition info</h3>
+                    </template>
+                    <template v-slot:content>
+                        <div v-for="t in typeList" :key="t" class="sub-content">
+                            <h4 class="bold">{{ t.text }}</h4>
+                            <p>: {{ t.definition }}</p>
+                        </div>
+                    </template>
+                </tooltip-component>
+            </div>
 
-            <h2 class="bold-blue">Column definition</h2>
             <div v-if="values.length === 0">
                 <h3 class="warning">Please upload a log first.</h3>
             </div>
@@ -44,30 +60,32 @@
 <script>
 import Loading from "@/components/LoadingComponent.vue";
 import Service from "@/services/service.js"
+import TooltipComponent from "@/components/TooltipComponent.vue";
 
 export default {
     name: "ColumnsDefinitionPage",
 
     components: {
         Loading,
+        TooltipComponent,
     },
 
     data () {
         return {
             typeList: [
-                {type: 'CASE_ID', text: 'Case id'},
-                {type: 'TEXT', text: 'Text'},
-                {type: 'NUMBER', text: 'Number'},
-                {type: 'BOOLEAN', text: 'Boolean'},
-                {type: 'DATETIME', text: 'Datetime'},
-                {type: 'TRANSITION', text: 'Transition'},
-                {type: 'ACTIVITY', text: 'Activity'},
-                {type: 'RESOURCE', text: 'Resource'},
-                {type: 'TIMESTAMP', text: 'Timestamp'},
-                {type: 'START_TIMESTAMP', text: 'Start time'},
-                {type: 'END_TIMESTAMP', text: 'End time'},
-                {type: 'DURATION', text: 'Duration'},
-                {type: 'COST', text: 'Cost'},
+                {type: 'CASE_ID', text: 'Case id',definition:'Identifier associated with each trace. At least one column with given type should be defined.'},
+                {type: 'TEXT', text: 'Text',definition:'Textual information.'},
+                {type: 'NUMBER', text: 'Number',definition:'Numerical information.'},
+                {type: 'BOOLEAN', text: 'Boolean',definition:'True or false.'},
+                {type: 'DATETIME', text: 'Datetime',definition:'Time information.'},
+                {type: 'TRANSITION', text: 'Transition',definition:'Not sure'},
+                {type: 'ACTIVITY', text: 'Activity',definition:'Name of the activity carried out during the event. At least one column with given type should be defined.'},
+                {type: 'RESOURCE', text: 'Resource',definition:'The resource that carried out the event.'},
+                {type: 'TIMESTAMP', text: 'Timestamp',definition:'Date and time of the event execution. At least one column with given type should be specified.'},
+                {type: 'START_TIMESTAMP', text: 'Start time',definition:'Date and time at which the event started. If defined, the user must also define "End time".'},
+                {type: 'END_TIMESTAMP', text: 'End time',definition:'Date and time at which the event ended. If defined, the user must also define "Start time".'},
+                {type: 'DURATION', text: 'Duration',definition:'Duration of the trace or corresponding event.'},
+                {type: 'COST', text: 'Cost',definition:'Cost associated with the trace or corresponding event.'},
                 // {type: 'CASE_ATTRIBUTE', text: 'Case attribute'},
                 // {type: 'EVENT_ATTRIBUTE', text: 'Event attribute'},
             ],

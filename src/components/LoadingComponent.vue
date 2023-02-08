@@ -1,14 +1,12 @@
 <template>
-    <transition name="modal">
-        <div v-if="modalIsOpen">
-            <div class="overlay">
-                <div id="loading">
-                    <ion-icon class="rotate" name="reload-circle"></ion-icon>
-                    {{text}}
-                </div>
+    <div v-if="modalIsOpen">
+        <div class="overlay">
+            <div id="loading">
+                <ion-icon class="rotate" name="reload-circle"></ion-icon>
+                {{text}}
             </div>
         </div>
-    </transition>
+    </div>
 </template>
 
 <style scoped>

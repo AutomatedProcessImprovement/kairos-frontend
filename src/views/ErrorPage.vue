@@ -1,7 +1,7 @@
 <template>
     <div id="error">
-        <h1 class="huge bold-blue">Oops!</h1>
-        <h1 v-if="responseStatus" class="bold-blue">{{responseStatus}}</h1>
+        <h1 class="huge bold blue">Oops!</h1>
+        <h1 v-if="responseStatus" class="bold blue">{{responseStatus}}</h1>
         <p>Something went wrong. Please check console and try again.</p>
     </div>
 </template>

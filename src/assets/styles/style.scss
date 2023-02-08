@@ -20,6 +20,7 @@ that contains all the variables.
 @import 'dashboard.scss';
 @import 'parameters.scss';
 @import 'error.scss';
+@import 'tooltip.scss';
 
 
 #app{
@@ -135,8 +136,7 @@ td, th {
   color: $bs-red;
 }
 
-.bold-blue{
-  font-weight: bold;
+.blue{
   color: $bs-blue;
 } 
 

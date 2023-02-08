@@ -9,14 +9,14 @@
             <input type="text" placeholder="Find log...">
         </div>
         <div class='wrap center row'>
-            <div class='log-card' :class="{'selected': log._id === selectedLog}" v-for="log in eventlogs" :key='log' @click="selectLog(log._id)">
+            <div class='log-card' :class="{'selected': log._id === selectedLog._id}" v-for="log in eventlogs" :key='log' @click="selectLog(log._id)">
                 <h4>{{ log.filename }}</h4>
                 <small>{{ log.datetime }}</small>
             </div>
         </div>
         <div class="column">
             <div class="row">
-                <h3 class="bold-blue">Recommendation Parameters</h3>
+                <h3 class="bold blue">Recommendation Parameters</h3>
             </div>
             <div class="row">
                 <div class="parameter">
@@ -38,7 +38,7 @@
             </div>
         </div>
         <div class="column">
-            <h3 class="bold-blue">Actions</h3>
+            <h3 class="bold blue">Actions</h3>
             <p>Display interface for:</p>
             <div class="select-view" v-for="view in views" :key="view">
                 <input type="radio" id="{{ view.value }}" :checked="selectedView===view.value" @click="selectView(view.value)">

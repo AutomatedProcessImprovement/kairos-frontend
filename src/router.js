@@ -7,7 +7,6 @@ import ResourcesPage from "./views/ResourcesPage"
 import DashBoard from './views/DashBoard'
 import ParametersPage from './views/ParametersPage'
 import ColumnsDefinitionPage from "./views/ColumnsDefinitionPage"
-import LoadingComponent from "./components/LoadingComponent"
 import ErrorPage from  "./views/ErrorPage"
 
 const routes = [
@@ -58,12 +57,6 @@ const routes = [
         path: "/resources",
         name: "resources",
         component: ResourcesPage
-    },
-    {
-        path: '/loading',
-        name: 'loading',
-        component: LoadingComponent,
-        props: true
     }
 ];
 

@@ -51,11 +51,12 @@
 import Service from "../services/service";
 import SideBar from '@/components/SideBar.vue';
 
+
 export default {
   name: 'CasesList',
 
   components: {
-        SideBar
+        SideBar,
       },
 
   data() {
