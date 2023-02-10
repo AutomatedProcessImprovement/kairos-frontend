@@ -83,7 +83,7 @@ export default {
                 {type: 'NUMBER', text: 'Number',definition:'Numerical information.'},
                 {type: 'BOOLEAN', text: 'Boolean',definition:'True or false.'},
                 {type: 'DATETIME', text: 'Datetime',definition:'Time information.'},
-                {type: 'TRANSITION', text: 'Transition',definition:'Not sure'},
+                {type: 'TRANSITION', text: 'Transition',definition:'An indication of the status of an activity instance. Possible values are start, complete, schedule, suspend, resume, etc.'},
                 {type: 'ACTIVITY', text: 'Activity',definition:'Name of the activity carried out during the event. At least one column with given type should be defined.'},
                 {type: 'RESOURCE', text: 'Resource',definition:'The resource that carried out the event.'},
                 {type: 'TIMESTAMP', text: 'Timestamp',definition:'Date and time of the event execution. At least one column with given type should be specified.'},
