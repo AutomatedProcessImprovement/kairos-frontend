@@ -151,7 +151,6 @@ export  default {
 
     methods: {
         getLog() {
-            this.isLoading = true;
             let fileId = localStorage.fileId;
  
             Service.getLog(fileId)

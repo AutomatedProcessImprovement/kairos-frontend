@@ -17,6 +17,7 @@
         <div class="column">
             <div class="row">
                 <h3 class="bold blue">Recommendation Parameters</h3>
+                <router-link class="btn-blue margin" :to="{name: 'parameters'}">Change</router-link>
             </div>
             <div v-if="selectedLog.positiveOutcome" class="row">
                 <div class="parameter">

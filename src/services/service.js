@@ -49,6 +49,10 @@ class Service {
             'Content-Type': 'application/json'
           }})
     }
+
+    getProjectStatus(fileId){
+        return http.get(`/project/${fileId}`)
+    }
     
 }
 
