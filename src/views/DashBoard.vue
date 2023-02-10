@@ -6,7 +6,7 @@
         <p>Event logs</p>
         <div class="row">
             <ion-icon class="input-icon" name="search"></ion-icon>
-            <input type="text" placeholder="Find log...">
+            <input type="text" id="find-log" @keyup="findLog" placeholder="Find log...">
         </div>
         <div class='wrap center row'>
             <div class='log-card' :class="{'selected': log._id === selectedLog._id}" v-for="log in eventlogs" :key='log' @click="selectLog(log._id)">
@@ -20,20 +20,20 @@
             </div>
             <div v-if="selectedLog.positiveOutcome" class="row">
                 <div class="parameter">
-                    <p>Activity {{ selectedLog.caseCompletion }}</p>
+                    <p> {{ selectedLog.caseCompletion }}</p>
                     <small>Case completion</small>
                 </div>
                 <div class="parameter">
-                    <p>{{selectedLog.positiveOutcome.type}} {{ selectedLog.positiveOutcome.value }}</p>
+                    <p>{{ selectedLog.positiveOutcome.value }}</p>
                     <small>Positive case outcome</small>
                 </div>
                 <div class="parameter">
-                    <p>{{selectedLog.treatment.type}} {{ selectedLog.treatment.value }}</p>
+                    <p> {{ selectedLog.treatment.value }}</p>
                     <small>Intervention</small>
                 </div>
                 <div class="parameter">
                     <p>{{selectedLog.alarmProbability}}</p>
-                    <small>Alarm probability</small>
+                    <small>Alarm Threshold</small>
                 </div>
             </div>
             <div v-else>
@@ -113,6 +113,23 @@ export default {
           localStorage.view = view;
           this.selectedView = view;
           console.log(this.selectedView);
+        },
+
+        findLog(){
+            var input, filter, logCards, h4, filename;
+            input = document.getElementById('find-log');
+            filter = input.value.toUpperCase();
+            logCards = document.getElementsByClassName("log-card");
+
+            for (let i = 0; i < logCards.length; i++) {
+                h4 = logCards[i].getElementsByTagName("h4")[0];
+                filename = h4.textContent || h4.innerText;
+                if (filename.toUpperCase().indexOf(filter) < 0) {
+                    logCards[i].style.display = "none";
+                } else{
+                    logCards[i].style.display = "";
+                }
+            }
         }
     }
 }
