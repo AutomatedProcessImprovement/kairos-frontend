@@ -40,3 +40,10 @@
   background: rgba($color: $bs-gray4, $alpha: 0.2);
   z-index: 999;
 }
+
+.component{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+}

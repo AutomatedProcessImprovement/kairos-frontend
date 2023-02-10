@@ -1,6 +1,6 @@
 <template>
     <div v-if="modalIsOpen">
-        <div class="overlay">
+        <div :class="[isOverlay ? 'overlay' : 'component']">
             <div id="loading">
                 <ion-icon class="rotate" name="reload-circle"></ion-icon>
                 {{text}}
@@ -26,6 +26,10 @@ export default {
         text: {
             type: String,
             default: 'Please wait...'
+        },
+        isOverlay: {
+            type: Boolean,
+            default: true
         }
     }
 }

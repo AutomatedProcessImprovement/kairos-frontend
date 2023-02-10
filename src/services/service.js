@@ -51,7 +51,7 @@ class Service {
     }
 
     getProjectStatus(fileId){
-        return http.get(`/project/${fileId}`)
+        return http.get(`/project/${fileId}/status`)
     }
     
 }
