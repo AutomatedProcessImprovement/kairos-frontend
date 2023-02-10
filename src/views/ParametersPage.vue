@@ -90,7 +90,7 @@
                     <input type="number" v-model="alarmThreshold"/>
                 </div>
 
-                <button type="submit" class="btn" @click="submit">Submit</button>
+                <button type="submit" class="btn-blue" @click="submit">Submit</button>
             </div>
         </div>
 

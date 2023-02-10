@@ -47,7 +47,7 @@
                 <input type="radio" id="{{ view.value }}" :checked="selectedView===view.value" @click="selectView(view.value)">
                 <label for="{{view.value}}">{{ view.name }}</label>
             </div>
-            <router-link class="btn" :to="{name: 'cases'}">Show</router-link>
+            <router-link class="btn-blue" :to="{name: 'cases'}">Show</router-link>
         </div>
     </div>
   </div>

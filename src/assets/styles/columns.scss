@@ -12,24 +12,20 @@
         border-radius: 10px;
         max-width: 90vw;
 
+        tr .btn-blue{
+            filter: opacity(50%);
+
+            &.selected{
+                filter: none;
+            }
+        }
+
         .buttons{
             display: flex;
             justify-content: flex-end;
             
-            .btn{
-                margin: 10px;
-                color: $bs-white;
-                background-color: $bs-blue;
-                padding: 5px 10px;
-                border-radius: 5px;
-                border: none;
-                text-transform: uppercase;
-                font-size: 0.7rem;
-    
-                &:hover{
-                    filter: brightness(98%);
-                    cursor: pointer;
-                }
+            .btn-blue{
+                margin: 10px !important;
             }
         }
     }

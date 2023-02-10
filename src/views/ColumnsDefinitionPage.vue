@@ -34,8 +34,13 @@
                         <tr>
                             <th v-for="head in headers" :key="head">
                                 <select class="dropdown" v-model="types[head]" required>
-                                    <option v-for="type in typeList" :key="type" :selected="types[head] == type.type" :value="type.type"> {{type.text}} </option>
+                                    <option v-for="myType in typeList" :key="myType" :selected="types[head] == myType.type" :value="myType.type"> {{myType.text}} </option>
                                 </select>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th v-for="head in headers" :key="head">
+                                <button @click="toggleCaseAttribute(head)" class="btn-blue" :class="{selected: caseAttributes.indexOf(head) >= 0}">Case attribute</button>
                             </th>
                         </tr>
     
@@ -48,8 +53,8 @@
                     </tbody>
                 </table>
                 <div class="buttons">
-                    <button class="btn" v-on:click="submit">Upload log</button>
-                    <button class="btn" v-on:click="goToHome">Cancel</button>
+                    <button class="btn-blue" v-on:click="submit">Upload log</button>
+                    <button class="btn-blue" v-on:click="goToHome">Cancel</button>
                 </div>
 
             </div>
@@ -86,12 +91,11 @@ export default {
                 {type: 'END_TIMESTAMP', text: 'End time',definition:'Date and time at which the event ended. If defined, the user must also define "Start time".'},
                 {type: 'DURATION', text: 'Duration',definition:'Duration of the trace or corresponding event.'},
                 {type: 'COST', text: 'Cost',definition:'Cost associated with the trace or corresponding event.'},
-                // {type: 'CASE_ATTRIBUTE', text: 'Case attribute'},
-                // {type: 'EVENT_ATTRIBUTE', text: 'Event attribute'},
             ],
             headers: [],
             types: {},
             values: [],
+            caseAttributes: [],
             isLoading: true,
         }
     },
@@ -108,12 +112,9 @@ export default {
             .then(response => {
                 this.headers = response.data.header;
                 let types = response.data.types;
-                console.log(response.data.types);
-                console.log(types);
                 for (let i = 0; i < this.headers.length; i++) {
                     this.types[this.headers[i]] = types[i];                    
                 }
-                console.log(this.types);
                 for (const r of response.data.rows) {
                     this.values.push(r)
                 }
@@ -142,7 +143,12 @@ export default {
             
             this.isLoading = true;
 
-            Service.updateTypes(localStorage.fileId,this.types)
+            var data = {
+                "types": this.types,
+                "case_attributes": this.caseAttributes
+            }
+
+            Service.updateTypes(localStorage.fileId,data)
             .then(response => {
                 console.log(response)
                 this.isLoading = false;
@@ -156,6 +162,16 @@ export default {
             });
 
         },
+
+        toggleCaseAttribute(head){
+            var ind = this.caseAttributes.indexOf(head);
+            if (ind < 0){
+                this.caseAttributes.push(head);  
+                return;
+            }
+            this.caseAttributes.splice(ind,1);
+        },
+
         goToHome(){
             this.$router.push({name: 'home'});
         }

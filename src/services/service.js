@@ -38,8 +38,8 @@ class Service {
         return http.get(`/parse/${fileId}`)
     }
 
-    updateTypes(fileId,types){
-        return http.post(`/update/${fileId}`,types, {headers: {
+    updateTypes(fileId,data){
+        return http.post(`/update/${fileId}`,data, {headers: {
             'Content-Type': 'application/json'
           }})
     }
