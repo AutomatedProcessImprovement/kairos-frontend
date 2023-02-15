@@ -200,7 +200,6 @@ export  default {
                 'treatment': intervention,
                 'alarm_probability': this.alarmThreshold
             }    
-            console.log(data);      
 
             Service.parameters(localStorage.fileId,data)
             .then(response => {

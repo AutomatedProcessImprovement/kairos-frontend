@@ -3,15 +3,6 @@ const http = axios.create({
   baseURL: "http://localhost:5000"
 });
 
-import router from '@/router';
-
-http.interceptors.response.use(null, error => {
-    console.log(error.response);
-    router.push({name: 'error', params: {responseStatus: error.response.status}});
-    return Promise.reject(error);
-  });
-
-
 class Service {
 
     getCases() {
@@ -51,9 +42,20 @@ class Service {
     }
 
     getProjectStatus(fileId){
-        return http.get(`/project/${fileId}/status`)
+        return http.get(`/projects/${fileId}/status`)
     }
-    
+
+    streamProjectStatus(fileId){
+        return http.get(`/projects/${fileId}/status/stream`)
+    }
+
+    startSimulation(fileId){
+        return http.get(`/projects/${fileId}/simulate/start`)
+    }
+
+    stopSimulation(fileId){
+        return http.get(`/projects/${fileId}/simulate/stop`)
+    }
 }
 
 export default new Service();

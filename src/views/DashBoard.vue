@@ -8,10 +8,22 @@
             <ion-icon class="input-icon" name="search"></ion-icon>
             <input type="text" id="find-log" @keyup="findLog" placeholder="Find log...">
         </div>
-        <div class='wrap center row'>
+        <div v-if="eventlogs.length > 0" class='wrap center row'>
             <div class='log-card' :class="{'selected': log._id === selectedLog._id}" v-for="log in eventlogs" :key='log' @click="selectLog(log._id)">
                 <h4>{{ log.filename }}</h4>
                 <small>{{ log.datetime }}</small>
+            </div>
+        </div>
+        <div v-else>
+            <p class="warning">No event logs uploaded.</p>
+        </div>
+        <div class="column">
+            <h3 class="bold blue">Simulation details</h3>
+            <p>{{ selectedLogStatus }} </p>
+            <small>Project status</small>
+            <div class="row">
+                <button :disabled="selectedLogStatus !== 'TRAINED'" class="btn-blue" @click="startSimulation">Start simulation</button>
+                <button :disabled="selectedLogStatus !== 'SIMULATING'" class="btn-blue margin" @click="stopSimulation">Stop simulation</button>
             </div>
         </div>
         <div class="column">
@@ -19,7 +31,7 @@
                 <h3 class="bold blue">Recommendation Parameters</h3>
                 <router-link class="btn-blue margin" :to="{name: 'parameters'}">Change</router-link>
             </div>
-            <div v-if="selectedLog.positiveOutcome" class="row">
+            <div v-if="selectedLog" class="row">
                 <div class="parameter">
                     <p> {{ selectedLog.caseCompletion }}</p>
                     <small>Case completion</small>
@@ -70,7 +82,8 @@ export default {
                 {value: 'operational', name:'Operational worker'},
                 {value: 'tactical', name:'Tactical manager'}
             ],
-            selectedView: localStorage.view
+            selectedView: localStorage.view,
+            selectedLogStatus: null,
         }
     },
 
@@ -80,6 +93,7 @@ export default {
 
       created() {
         this.getLogs();
+        this.getProjectStatus();
       },
 
     methods: {
@@ -108,6 +122,67 @@ export default {
         selectLog(fileId){
             localStorage.fileId = fileId;
             this.selectedLog = this.eventlogs.find(e => e._id === fileId);
+        },
+
+        startSimulation(){
+            Service.startSimulation(localStorage.fileId).then(
+                (response) => {
+                    console.log(response);
+                    this.selectedLogStatus = response.data.status;
+                },
+                (error) => {
+                this.content =
+                    (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                    error.message ||
+                    error.toString();
+                }
+            ); 
+        },
+
+        stopSimulation(){
+            Service.stopSimulation(localStorage.fileId).then(
+                (response) => {
+                    console.log(response)
+                    this.selectedLogStatus = response.data.status;
+                },
+                (error) => {
+                this.content =
+                    (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                    error.message ||
+                    error.toString();
+                }
+            ); 
+        },
+
+        getProjectStatus(){
+            Service.getProjectStatus(localStorage.fileId).then(
+                (response) => {
+                    console.log(response)
+                    this.selectedLogStatus = response.data.status;
+                },
+                (error) => {
+                this.content =
+                    (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                    error.message ||
+                    error.toString();
+                }
+            ); 
+        },
+
+        streamProjectStatus(){
+            let fileId = localStorage.fileId;
+            const sse = new EventSource(`http://localhost:5000/projects/${fileId}/status/stream`);
+            sse.addEventListener('message',(e) =>{
+                if (e.data){
+                    this.selectedLogStatus = e.data;
+                }
+            })
         },
 
         selectView(view){
