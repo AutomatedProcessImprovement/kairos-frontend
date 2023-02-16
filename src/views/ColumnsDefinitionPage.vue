@@ -108,14 +108,15 @@ export default {
         loadCols() {
             let fileId = localStorage.fileId;
  
-            Service.parseFile(fileId)
+            Service.getLog(fileId)
             .then(response => {
-                this.headers = response.data.header;
-                let types = response.data.types;
+                let log = response.data.event_log;
+                this.headers = log.columns_header;
+                let types = log.columns_definition;
                 for (let i = 0; i < this.headers.length; i++) {
                     this.types[this.headers[i]] = types[i];                    
                 }
-                for (const r of response.data.rows) {
+                for (const r of log.columns_data) {
                     this.values.push(r)
                 }
                 this.isLoading = false;
@@ -144,7 +145,7 @@ export default {
             this.isLoading = true;
 
             var data = {
-                "types": this.types,
+                "columns_definition": this.types,
                 "case_attributes": this.caseAttributes
             }
 

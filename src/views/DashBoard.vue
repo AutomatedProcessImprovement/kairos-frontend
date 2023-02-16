@@ -33,11 +33,11 @@
             </div>
             <div v-if="selectedLog" class="row">
                 <div class="parameter">
-                    <p> {{ selectedLog.caseCompletion }}</p>
+                    <p> {{ selectedLog.case_completion }}</p>
                     <small>Case completion</small>
                 </div>
                 <div class="parameter">
-                    <p>{{ selectedLog.positiveOutcome.value }}</p>
+                    <p>{{ selectedLog.positive_outcome.value }}</p>
                     <small>Positive case outcome</small>
                 </div>
                 <div class="parameter">
@@ -45,7 +45,7 @@
                     <small>Intervention</small>
                 </div>
                 <div class="parameter">
-                    <p>{{selectedLog.alarmProbability}}</p>
+                    <p>{{selectedLog.alarm_threshold}}</p>
                     <small>Alarm Threshold</small>
                 </div>
             </div>
@@ -101,12 +101,12 @@ export default {
         getLogs() {
             Service.getLogs().then(
                 (response) => {
-                    this.eventlogs = response.data.eventlogs;
+                    this.eventlogs = response.data.event_logs;
                     if(this.eventlogs.length === 0){
                         localStorage.fileId == null;
                         return;
                     }
-                    this.selectedLog = this.eventlogs.find(e => e._id === localStorage.fileId);
+                    this.selectedLog = this.eventlogs.find(e => e._id.toString() === localStorage.fileId);
                 },
                 (error) => {
                 this.content =
@@ -121,7 +121,7 @@ export default {
 
         selectLog(fileId){
             localStorage.fileId = fileId;
-            this.selectedLog = this.eventlogs.find(e => e._id === fileId);
+            this.selectedLog = this.eventlogs.find(e => e._id.toString() === fileId);
         },
 
         startSimulation(){
@@ -188,7 +188,6 @@ export default {
         selectView(view){
           localStorage.view = view;
           this.selectedView = view;
-          console.log(this.selectedView);
         },
 
         findLog(){
