@@ -155,10 +155,10 @@ export  default {
  
             Service.getLog(fileId)
             .then(response => {
-                this.log = response.data.eventlog;
+                this.log = response.data.event_log;
                 this.activities = this.log.activities;
-                this.positiveOutcomeTypes = this.log.outcome_selections;
-                this.interventionTypes = this.log.treatment_selections;
+                this.positiveOutcomeTypes = this.log.outcome_options;
+                this.interventionTypes = this.log.treatment_options;
                 this.columnsDefinition = this.log.columns_definition;
                 this.isLoading = false;
             })
@@ -198,7 +198,7 @@ export  default {
                 'case_completion': this.caseCompletion,
                 'positive_outcome': positiveOutcome,
                 'treatment': intervention,
-                'alarm_probability': this.alarmThreshold
+                'alarm_threshold': this.alarmThreshold
             }    
             console.log(data);      
 
