@@ -21,6 +21,10 @@ class Service {
         return http.get(`/event_logs/${fileId}`)
     }
 
+    getKPI(fileId){
+        return http.get(`/event_logs/${fileId}/kpi`)
+    }
+
     uploadFile(file){
         return http.post(`/upload`,file,{ headers: { 'Content-Type': 'multipart/form-data'} })
     }
@@ -46,11 +50,11 @@ class Service {
     }
 
     startSimulation(fileId){
-        return http.get(`/projects/${fileId}/simulate/start`)
+        return http.put(`/projects/${fileId}/simulate/start`)
     }
 
     stopSimulation(fileId){
-        return http.get(`/projects/${fileId}/simulate/stop`)
+        return http.put(`/projects/${fileId}/simulate/stop`)
     }
 }
 

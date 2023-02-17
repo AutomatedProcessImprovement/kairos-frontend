@@ -15,9 +15,9 @@
             </div>
         </div>
         <div v-else>
-            <p class="warning">No event logs uploaded.</p>
+            <p class="warning">No event log uploaded.</p>
         </div>
-        <div class="column">
+        <div v-if="selectedLog" class="column">
             <h3 class="bold blue">Simulation details</h3>
             <p>{{ selectedLogStatus }} </p>
             <small>Project status</small>
@@ -26,12 +26,12 @@
                 <button :disabled="selectedLogStatus !== 'SIMULATING'" class="btn-blue margin" @click="stopSimulation">Stop simulation</button>
             </div>
         </div>
-        <div class="column">
+        <div v-if="selectedLog" class="column">
             <div class="row">
                 <h3 class="bold blue">Recommendation Parameters</h3>
                 <router-link class="btn-blue margin" :to="{name: 'parameters'}">Change</router-link>
             </div>
-            <div v-if="selectedLog" class="row">
+            <div v-if="selectedLog.case_completion" class="row">
                 <div class="parameter">
                     <p> {{ selectedLog.case_completion }}</p>
                     <small>Case completion</small>
@@ -93,7 +93,6 @@ export default {
 
       created() {
         this.getLogs();
-        this.getProjectStatus();
       },
 
     methods: {
@@ -107,6 +106,7 @@ export default {
                         return;
                     }
                     this.selectedLog = this.eventlogs.find(e => e._id.toString() === localStorage.fileId);
+                    this.getProjectStatus();
                 },
                 (error) => {
                 this.content =
@@ -120,6 +120,7 @@ export default {
         },
 
         selectLog(fileId){
+            fileId = fileId.toString();
             localStorage.fileId = fileId;
             this.selectedLog = this.eventlogs.find(e => e._id.toString() === fileId);
         },

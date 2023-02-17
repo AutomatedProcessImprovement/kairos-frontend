@@ -7,7 +7,7 @@
       <div class="column">
         <small>Ongoing applications</small>
         <div class="row">
-          <h4> {{formattedCases.filter(i => i.status === "Open").length}}</h4>        
+          <h4> {{cases.filter(c => !c.case_completed).length}}</h4>        
         </div>
       </div>
       <ion-icon name="albums"></ion-icon>
@@ -17,7 +17,7 @@
       <div class="column">
         <small> Completed applications</small>
         <div class="row">
-          <h4> {{formattedCases.filter(i => i.status !== "Open").length}}</h4>
+          <h4> {{cases.filter(c => c.case_completed).length}}</h4>
         </div>
       </div>
       <ion-icon name="albums"></ion-icon>
@@ -33,11 +33,12 @@
       </tr>
       </thead>
       <tbody>
-      <tr v-for="item in formattedCases" :key='item'>
-        <td v-for="(value,name) in item" :key='name'>
-          <router-link v-if="name=='id'" :to="{ name: 'case', params: {caseId: value} }">{{value}}</router-link>
-          <div v-else-if="name=='status'" class="status" :class="[value === 'Open'? 'open' : 'completed']"> {{ value }}</div>
-          <p v-else>{{ value }}</p>
+      <tr v-for="item in casesData" :key='item'>
+          <td v-for="(value,name) in item" :key='name'>
+            <router-link :to="{name: 'case',params: {caseId: value}}" v-if="name==='id'">{{ value }}</router-link>
+            <div v-else-if="name=='recommendations'" class="case-recommendations" :class="[value ? 'available' : 'unavailable']"> {{ value ? "recommendations available" : "no new recommendations" }}</div>
+            <div v-else-if="name=='duration'">{{ value.value }} {{ value.measure }}</div>
+            <p v-else>{{ value }}</p>
           </td>
       </tr>
       </tbody>
@@ -62,9 +63,9 @@ export default {
   data() {
     const cases = [];
     const kpi = [];
-    const formattedCases = [];
-    const headers = ["Case ID","Status","Start Date","Duration (d)","Recommendations","Last Update","Amount","Purpose"];
-    return {cases,headers,formattedCases,kpi};
+    const casesData = [];
+    const headers = ["Application ID","Recommendations","Duration","Intervened"];
+    return {cases,headers,casesData,kpi};
   },
 
   methods: {
@@ -72,8 +73,7 @@ export default {
       Service.getCases().then(
         (response) => {
           this.cases = response.data.cases;
-          this.kpi = response.data.kpi;
-          this.formatCases();
+          if (this.cases.length > 0) this.formatCases();
           },
         (error) => {
           this.content =
@@ -87,34 +87,47 @@ export default {
     },
 
     formatCases(){
-      this.formattedCases = []
-      var oneDay=1000*60*60*24;
+      
       for (const el of this.cases) {
         let caseActivities = el.activities;
-        let caseRecommendations = el.recommendations;
+        let data = {}
         if (!caseActivities.length) {
-          this.formattedCases.push({id: el._id,
-                          status: el.status,
-                          startdate: "NaN",
-                          duration: "NaN",
-                          recs: caseRecommendations.length ? "No" : "Yes",
-                          update: "NaN",
-                          amount: el.amount,
-                          purpose: el.purpose})
-          continue;
+          data = {
+              id: el._id,
+              recommendations: false,
+              duration: null,
+              intervened: "No"
+          }
         }
-        var startDate = new Date(caseActivities[0].timestamp)
-        var endDate = new Date(caseActivities[caseActivities.length - 1].timestamp)
-        this.formattedCases.push({id: el._id, 
-                          status: el.status,
-                          startdate: startDate.toLocaleDateString("en-GB"), 
-                          duration: Math.round((endDate - startDate)/oneDay), 
-                          recs: !caseRecommendations.length ? "No" : "Yes",
-                          update: caseActivities[caseActivities.length - 1].name + ' ' + endDate.toLocaleDateString("en-GB"),
-                          amount: el.amount,
-                          purpose: el.purpose})
+        else{
+          const startDate = new Date(caseActivities[0]['TIMESTAMP']);
+          const endDate = new Date(caseActivities[caseActivities.length - 1]['TIMESTAMP']);
+          let measure, duration = Math.abs(endDate - startDate) / 1000;
+
+          if (duration >= 86400) measure = 'days', duration /= 86400;
+          else if (duration >= 3600) measure = 'hours', duration /= 3600;
+          else if (duration >= 60) measure = 'minutes', duration /= 60;
+          else measure = 'seconds';
+
+          duration = Math.round(duration);
+          
+          data = {
+            id: el._id, 
+            recommendations: caseActivities[caseActivities.length-1].prescriptions.length === 0 ? false : true,
+            duration: {value: duration, measure: measure}, 
+            intervened: "No"
+          }
+        }
+        for (const attr in el.case_attributes) {
+          data[attr] = el.case_attributes[attr];
+        }
+        
+        this.casesData.push(data);
     }
-  }
+    for (const attr in this.cases[0].case_attributes) {
+          this.headers.push(attr);
+        }
+    }
   
   },
   created() {

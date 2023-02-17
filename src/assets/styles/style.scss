@@ -85,19 +85,22 @@ td, th {
   text-align: center;
 }
 
-.status{
+.case-recommendations{
   border-radius: 5px;
   color: $bs-white;
   text-transform: uppercase;
-  display: inline;
   padding: 0px 5px;
+  display: inline-block;
+  width: 130px;
+  font-size: 0.7rem;
   
-  &.open{
+  &.available{
     background: linear-gradient(135deg, $bs-green1 5%, $bs-green2 100%);
   }
 
-  &.completed{
-    background: linear-gradient(135deg, #EC722D 0%, #EC2D2D 100%, #CF1010 100%);    }
+  &.unavailable{
+    background: linear-gradient(135deg, #AAAAAA 0%, #979797 100%);    
+  }
 }
 
 .shadow{
