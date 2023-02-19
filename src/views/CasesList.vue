@@ -110,12 +110,22 @@ export default {
           else measure = 'seconds';
 
           duration = Math.round(duration);
+
+          let intervened = "No";
+          caseActivities.forEach(activity => {
+            activity.prescriptions.forEach(prescription => {
+              if (prescription.status === 'accepted'){
+                intervened = "Yes";
+                return;
+              }
+            })
+          });
           
           data = {
             id: el._id, 
             recommendations: caseActivities[caseActivities.length-1].prescriptions.length === 0 ? false : true,
             duration: {value: duration, measure: measure}, 
-            intervened: "No"
+            intervened: intervened
           }
         }
         for (const attr in el.case_attributes) {
