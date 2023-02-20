@@ -177,16 +177,6 @@ export default {
             ); 
         },
 
-        streamProjectStatus(){
-            let fileId = localStorage.fileId;
-            const sse = new EventSource(`http://localhost:5000/projects/${fileId}/status/stream`);
-            sse.addEventListener('message',(e) =>{
-                if (e.data){
-                    this.selectedLogStatus = e.data;
-                }
-            })
-        },
-
         selectView(view){
           localStorage.view = view;
           this.selectedView = view;
