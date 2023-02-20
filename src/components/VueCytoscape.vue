@@ -32,14 +32,14 @@ cytoscape.use( dagre );
         watch: {
           currentCase: function(){
             this.$emit('loading');      
-            this.createDiagram();
+            // this.createDiagram();
           },
-          selectedRec: function(newVal,oldVal){
-            this.selectRecommendation(newVal,oldVal);
-          },
-          cy: function(){
-            this.displayDiagram();
-          }
+          // selectedRec: function(newVal,oldVal){
+          //   this.selectRecommendation(newVal,oldVal);
+          // },
+          // cy: function(){
+          //   this.displayDiagram();
+          // }
         },
         methods: {
           displayDiagram(){

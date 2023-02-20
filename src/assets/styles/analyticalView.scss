@@ -29,6 +29,13 @@
           filter: brightness(98%);
           cursor: pointer;
         }
+
+        .pill {
+          height: auto;
+          width: 30px;
+          margin: 2px 10px;
+          border-radius: 10px;
+        }
       }
     
       .selected{
