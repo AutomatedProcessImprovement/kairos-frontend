@@ -70,7 +70,7 @@ export default {
 
   methods: {
     getCases() {
-      Service.getCases().then(
+      Service.getCasesByLog(localStorage.fileId).then(
         (response) => {
           this.cases = response.data.cases;
           if (this.cases.length > 0) this.formatCases();

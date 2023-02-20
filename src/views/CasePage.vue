@@ -13,8 +13,8 @@
       <div class="stats">
         <div class="stats-card column">
           <h4>KPI</h4>
-          <h3 class="bold blue">[kpi value] [kpi measure]</h3>
-          <small>Case [kpi name]</small>
+          <h3 class="bold blue">{{ kpi.value }}</h3>
+          <small>Case {{ kpi.column }}  {{ kpi.operator }}</small>
         </div>
         <div class="stats-card">
           <div class="case-performance">
@@ -88,7 +88,7 @@
             (response) => {
               console.log(response.data);
               this.currentCase = response.data.case;
-              this.getAdditionalInformation();
+              this.getKPI();
             },
             (error) => {
               this.content =
@@ -106,6 +106,7 @@
             (response) => {
               console.log(response.data);
               this.kpi = response.data.kpi;
+              this.getAdditionalInformation();
             },
             (error) => {
               this.content =

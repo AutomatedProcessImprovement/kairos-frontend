@@ -123,6 +123,7 @@ export default {
             fileId = fileId.toString();
             localStorage.fileId = fileId;
             this.selectedLog = this.eventlogs.find(e => e._id.toString() === fileId);
+            this.getProjectStatus();
         },
 
         startSimulation(){
