@@ -11,6 +11,11 @@
       box-shadow: 0px 10px 27px rgba(0, 0, 0, 0.05);
       color: $bs-black;
       border-radius: 10px;
+      transition: 0.2s;
+
+      &.selected{
+        background-color: $bs-blue4;
+      }
   
       .column{
         padding-right: 10px;

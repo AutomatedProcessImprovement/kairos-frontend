@@ -3,7 +3,7 @@
 <div id="cases">
   <h2>Cases</h2>
   <div class="stats">
-    <div class="stats-card">
+    <div @click="filterApplications(false)" :class="['stats-card',{'selected': completedApplications === false}]">
       <div class="column">
         <small>Ongoing applications</small>
         <div class="row">
@@ -13,7 +13,7 @@
       <ion-icon name="albums"></ion-icon>
     </div>
 
-    <div class="stats-card">
+    <div @click="filterApplications(true)" :class="['stats-card',{'selected': completedApplications}]">
       <div class="column">
         <small> Completed applications</small>
         <div class="row">
@@ -61,11 +61,13 @@ export default {
       },
 
   data() {
-    const cases = [];
-    const kpi = [];
-    const casesData = [];
-    const headers = ["Application ID","Recommendations","Duration","Intervened"];
-    return {cases,headers,casesData,kpi};
+    return {
+      cases: [],
+      headers: ["Application ID","Recommendations","Duration","Intervened"],
+      casesData: [],
+      kpi: [],
+      completedApplications: undefined,
+    };
   },
 
   methods: {
@@ -128,17 +130,40 @@ export default {
             intervened: intervened
           }
         }
-        for (const attr in el.case_attributes) {
-          data[attr] = el.case_attributes[attr];
-        }
+        
+        Object.keys(el.case_attributes).forEach(k => {
+          data[k] = el.case_attributes[k];
+        })
         
         this.casesData.push(data);
-    }
-    for (const attr in this.cases[0].case_attributes) {
-          this.headers.push(attr);
+      }
+
+      Object.keys(this.cases[0].case_attributes).forEach(k => {
+        this.headers.push(k);
+      })
+    },
+
+    filterApplications(status){
+      var rows = document.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+      if (this.completedApplications === status){
+        this.completedApplications = null;
+        for (let i = 0; i < rows.length; i++) {
+          rows[i].style.display = "";
         }
-    }
-  
+        return;
+      }
+      this.completedApplications = status;
+      var filteredCases = this.cases.map(c => {if (c.case_completed === status) return c._id});
+      for (let i = 0; i < rows.length; i++) {
+        var routerLink = rows[i].getElementsByTagName("td")[0].getElementsByTagName("a")[0];
+        var caseId = routerLink.textContent || routerLink.innerText;
+        if (filteredCases.indexOf(caseId) < 0) {
+            rows[i].style.display = "none";
+        } else{
+            rows[i].style.display = "";
+        }
+      }
+    },
   },
   created() {
     this.getCases();
