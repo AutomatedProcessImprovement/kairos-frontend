@@ -28,20 +28,23 @@
           </tooltip-component>
         </div>
 
-        <tabs v-if="currentCase" :options="tabOptions">
-          <tab name="Past" id="past-recommendations">
-              <recommendation-component
-              v-for="activity in currentCase.activities" :key="activity"
-              :batch="activity"
+        <tabs :options="tabOptions">
+          <tab name="Past" id="past-recommendations">         
+              <recommendation-component  v-for="a in oldActivities" :key="a"
+              :batch="a"
               :current="false"
+              :selectedRec="selectedRec"
+              @recommendationSelected="selectRecommendation"
               ></recommendation-component>
           </tab>
-          <!-- <tab name="Current" id="current-recommendations">
+          <tab name="Current" id="current-recommendations">
             <recommendation-component
-              :batch="currentCase.activities"
+              :batch="lastActivity"
               :current="true"
+              :selectedRec="selectedRec"
+              @recommendationSelected="selectRecommendation"
               ></recommendation-component>
-          </tab> -->
+          </tab>
         </tabs>
       </div>
 
@@ -105,8 +108,18 @@
   
       data() {
         return {
-          selectedRec: null,
+          selectedRec: {},
+          oldActivities: [],
+          lastActivity: {},
           tabOptions: { defaultTabHash: 'tab-diagram', useUrlFragment: false},
+        }
+      },
+
+      watch: {
+        currentCase(value){
+          this.oldActivities = value.activities.slice(0,-1);
+          console.log(this.oldActivities);
+          this.lastActivity = value.activities.slice(-1)[0];
         }
       },
 
@@ -122,8 +135,8 @@
           console.log('diagram loading');
         },
   
-        selectRecommendation(index){
-          this.selectedRec = index;
+        selectRecommendation(selectedRec){
+          this.selectedRec = selectedRec;
         }
       
       },

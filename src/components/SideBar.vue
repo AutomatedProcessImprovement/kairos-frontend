@@ -2,7 +2,7 @@
   <div class="sidebar">
     <div class="sidebar-heading">
       <ion-icon name="laptop-outline"></ion-icon>
-      <h4>PrPM</h4>
+      <h4>Kairos</h4>
     </div>
         <div class="sidebar-items">
           <router-link class = "sidebar-item"  :to="{ name: 'dashboard'}"><ion-icon name="home"></ion-icon>Dashboard</router-link>

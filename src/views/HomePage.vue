@@ -1,7 +1,7 @@
 <template>
   <div id="home">
-      <h1>PrPM</h1>
-      <small>PrPM is a tool that visualises prescriptive process monitoring output.</small>
+      <h1>Kairos</h1>
+      <small>Kairos is a tool that visualises prescriptive process monitoring output.</small>
       <div class="upload-file">
         <loading v-if="isLoading" text="preprocessing data..."></loading>
         <h2>Upload</h2>

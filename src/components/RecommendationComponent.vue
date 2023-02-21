@@ -1,13 +1,13 @@
 <template>
-    <div v-if="data" class="column">
-        <!-- <p>Case status: {{ batch['ACTIVITY'] }} complete</p> -->
-        <div class="recommendation" v-for="r in data" :key="r">
+    <div class="column">
+        <p>Case status: {{ caseStatus }} complete</p>
+        <div class="recommendation" v-for="(r,index) in batchRecommendations" :key="index" @click="selectRecommendation(index)" :class="{selected: selectedRec.batchId === batchId && selectedRec.index === index}">
             <div class="row">
-                <small class="black">{{ r.type }}</small>
+                <small class="black">{{ r.recType }}</small>
                 <div :class="['pill',r.color]"></div>
             </div>
 
-            <p v-if="r.type='NEXT_ACTIVITY'">{{ r.rec }}</p>
+            <p>{{ r.rec }}</p>
 
             <p :class="['bold',current ? 'green' : 'warning']">{{ current ? 'Recommended now' : 'Not recommended now' }}</p>
             
@@ -25,11 +25,14 @@ export default{
     props: {
         batch: Object,
         current: Boolean,
+        selectedRec: Object
     },
 
     data(){
         return{
-            data: []
+            batchRecommendations: [],
+            caseStatus: null,
+            batchId: null,
         }
     },
 
@@ -41,41 +44,46 @@ export default{
     },
 
     methods: {
+        selectRecommendation(index){
+            this.$emit('recommendationSelected',{batchId: this.batchId,index: index}); 
+        },
+
         formatRecommendations() {
+            // console.log(this.batch);
+            this.caseStatus = this.batch['ACTIVITY'];
+            this.batchId = this.batch.event_id;
             for (let i = 0; i < this.batch.prescriptions.length; i++) {
-                const r = this.batch.prescriptions[i];
-                let data
-                if(r.type === 'NEXT_ACTIVITY'){
+                let p = this.batch.prescriptions[i];
+                let data = {};
+                if(p.type === 'NEXT_ACTIVITY'){
                     data = {
-                        type: 'Next activity',
+                        recType: 'Next activity',
                         color: 'background-orange2',
-                        rec: 'Perform' + r.output,
+                        rec: 'Perform ' + p.output,
                         metric: '',
-                        status: r.status
+                        status: p.status
                     }
                 }
-                else if(r.type === 'ALARM') {
+                else if(p.type === 'ALARM') {
                     data = {
-                        type: 'Alarm',
+                        recType: 'Alarm',
                         color: 'background-blue5',
                         rec: 'Action required',
-                        metric: 'Probability ' + r.output + '(defined threshold)',
+                        metric: 'Probability ' + p.output + ' (defined threshold)',
                         status: ''
                     }
                 }
                 else{
                     data = {
-                        type: 'Intervention',
+                        recType: 'Intervention',
                         color: 'background-purple',
-                        rec: 'Perform '+ r.output.treatment[0][0].value,
-                        metric: 'Causal effect: ' + r.output.cate + ' ' + (r.output.cate >= 0 ? 'positive': 'negative'),
-                        status: r.status
+                        rec: 'Perform '+ p.output.treatment[0][0].value,
+                        metric: 'Causal effect: ' + p.output.cate + ' ' + (p.output.cate >= 0 ? '(positive)': '(negative)'),
+                        status: p.status
                     }
                 }
-                this.data.push(data);
+                this.batchRecommendations.push(data);
             }
-
-            console.log(this.data);
         }
     }
 }
