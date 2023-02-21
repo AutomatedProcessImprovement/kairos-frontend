@@ -1,8 +1,7 @@
 <template>
   <div class="legend">
     <label class="past-activity">Completed</label>
-    <label class="prediction">Prediction</label>
-    <label class="recommendation">Recommendation</label>
+    <label class="recommendation">Current case status</label>
   </div>
 </template>
 

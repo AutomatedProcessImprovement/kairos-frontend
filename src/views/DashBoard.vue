@@ -10,7 +10,7 @@
         </div>
         <div v-if="eventlogs.length > 0" class='wrap center row'>
             <div class='log-card' :class="{'selected': log._id === selectedLog._id}" v-for="log in eventlogs" :key='log' @click="selectLog(log._id)">
-                <h4>{{ log.filename }}</h4>
+                <p>{{ log.filename }}</p>
                 <small>{{ log.datetime }}</small>
             </div>
         </div>
@@ -104,6 +104,9 @@ export default {
                     if(this.eventlogs.length === 0){
                         localStorage.fileId == null;
                         return;
+                    }
+                    if (!localStorage.fileId){
+                        localStorage.fileId = this.eventlogs[0]._id.toString();
                     }
                     this.selectedLog = this.eventlogs.find(e => e._id.toString() === localStorage.fileId);
                     this.getProjectStatus();

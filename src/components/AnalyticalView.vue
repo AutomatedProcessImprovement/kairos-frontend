@@ -2,7 +2,7 @@
     <div class="analytical-view">
       <div class="recommendations-list shadow">
         <div class="row center">
-          <h4>Recommendations</h4>
+          <h4 bold>Recommendations</h4>
           <tooltip-component>
             <template v-slot:icon>
               <ion-icon name="information-circle-outline"></ion-icon>
@@ -28,16 +28,16 @@
           </tooltip-component>
         </div>
 
-        <tabs :options="tabOptions">
-          <tab name="Past" id="past-recommendations">         
-              <recommendation-component  v-for="a in oldActivities" :key="a"
-              :batch="a"
+        <tabs :options="tabOptions.recommendations">
+          <tab name="Past" id="tab-past">       
+            <recommendation-component v-for="activity in oldActivities" v-bind:key="activity"
+              :batch="activity"
               :current="false"
               :selectedRec="selectedRec"
               @recommendationSelected="selectRecommendation"
               ></recommendation-component>
           </tab>
-          <tab name="Current" id="current-recommendations">
+          <tab name="Current" id="tab-current">
             <recommendation-component
               :batch="lastActivity"
               :current="true"
@@ -48,40 +48,40 @@
         </tabs>
       </div>
 
-      <tabs :options="tabOptions" class="shadow">
-        <tab name="Process model" id="tab-diagram" class="tab">
-          <legend-component></legend-component>
-            <vue-cytoscape
-            :currentCase="currentCase"
-            :selectedRec="selectedRec"
-            ></vue-cytoscape>
-        </tab>
-
-        <tab name="Calculation details" id="tab-details" class="tab">
-          <div v-if="selectedRec !== null" class="recommendation-details">
-              
-              <div class="row">
-                <div class="column">
-                  <h4> Description</h4>
-
-                </div>
-              </div>
-              <div class="row">
-                <div class="column">
-                  <h4>Model Description</h4>
+      <div class="recommendation-details shadow">
+        <h4 bold>Recommendation details</h4>
+        <tabs :options="tabOptions.recommendationDetails">
+          <tab name="Process model" id="tab-diagram">
+            <legend-component></legend-component>
+              <vue-cytoscape
+              :currentCase="currentCase"
+              :selectedRec="selectedRec"
+              @loading="handleLoading"
+              ></vue-cytoscape>
+          </tab>
   
-                </div>
+          <tab name="Calculation details" id="tab-details" class="tab-details">
+            <div v-if="selectedRecObject" class="details">
+                
+              <h4> Model description</h4>
+                <div v-if="selectedRecObject.type === 'TREATMENT_EFFECT'">
+                    <p>CATE score: {{ selectedRecObject.output.cate }}</p>
+                    <p>Probability if treated: {{ selectedRecObject.output.proba_if_treated * 100 }} %</p>
+                    <p>Probability if untreated: {{ selectedRecObject.output.proba_if_untreated * 100 }} %</p>
 
-                <div class="column">
-                  <h4>Predicted Effect</h4>
-                 
-                </div>
-              </div>                  
-          </div>
-      <h3 v-else>Please select a recommendation.</h3>
-
-        </tab>
-      </tabs>
+                  </div>
+                  <div  v-else>
+                    <p>Accuracy: {{ selectedRecObject.plugin.accuracy * 100 }} %</p>
+                    <p>Recall: {{ selectedRecObject.plugin.recall * 100 }} %</p>
+                    <p>Precision: {{ selectedRecObject.plugin.precision * 100 }} %</p>
+                  </div>
+                  
+            </div>
+        <h4 v-else>Please select a recommendation.</h4>
+  
+          </tab>
+        </tabs>
+      </div>
 
     </div>
   </template>
@@ -109,16 +109,19 @@
       data() {
         return {
           selectedRec: {},
+          selectedRecObject: null,
           oldActivities: [],
           lastActivity: {},
-          tabOptions: { defaultTabHash: 'tab-diagram', useUrlFragment: false},
+          tabOptions: {
+            recommendations: { defaultTabHash: 'tab-current', useUrlFragment: false},
+            recommendationDetails: { defaultTabHash: 'tab-diagram', useUrlFragment: false}
+        },
         }
       },
 
       watch: {
         currentCase(value){
-          this.oldActivities = value.activities.slice(0,-1);
-          console.log(this.oldActivities);
+          this.oldActivities = value.activities.slice(0,-2);
           this.lastActivity = value.activities.slice(-1)[0];
         }
       },
@@ -137,6 +140,7 @@
   
         selectRecommendation(selectedRec){
           this.selectedRec = selectedRec;
+          this.selectedRecObject = this.currentCase.activities.filter(a => a.event_id === this.selectedRec.batchId)[0].prescriptions[this.selectedRec.index];
         }
       
       },

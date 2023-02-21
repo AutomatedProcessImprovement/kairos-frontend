@@ -1,5 +1,6 @@
 <template>
   <side-bar></side-bar>
+  <loading v-if="isLoading"></loading>
   <div id="case">
     <div class="case-top">
       <router-link :to="{name: 'cases'}"><ion-icon name="chevron-back-outline"></ion-icon> Return</router-link>
@@ -12,18 +13,18 @@
   
       <div class="stats">
         <div class="stats-card column">
-          <h4>KPI</h4>
-          <h3 class="bold blue">{{ kpi.value }}</h3>
+          <p>KPI</p>
+          <h3 class="blue">{{ kpi.value }}</h3>
           <small>Case {{ kpi.column }}  {{ kpi.operator }}</small>
         </div>
         <div class="stats-card">
           <div class="case-performance">
-            <h4>Case performance</h4>
+            <p>Case performance</p>
             <p class="bold">{{ caseKpi.duration }} {{ caseKpi.measure }}</p>
             <small>Case duration</small>
           </div>
           <div class="case-details">
-            <h4>Case details</h4>
+            <p>Case details</p>
             <div class="row">
               <div class="column" v-for="(value,name) in caseDetails" :key='name'>
                 <p class="bold">{{ value }}</p>
@@ -55,13 +56,16 @@
     import OperationalView from '@/components/OperationalView.vue';
     import AnalyticalView from '@/components/AnalyticalView.vue';
     import SideBar from '@/components/SideBar.vue';
+    import Loading from "@/components/LoadingComponent.vue";
+
 
     export default {
       name: 'CasePage',
       components: {
         SideBar,
         OperationalView,
-        AnalyticalView
+        AnalyticalView,
+        Loading
       },
       params: {
           caseId:{
@@ -70,6 +74,7 @@
       },
       data() {
         return {
+          isLoading: false,
           currentCase: {},
           kpi: {},
           view: null,
@@ -80,6 +85,7 @@
       },
       methods: {
         getCase(){
+          this.isLoading = true;
           this.caseId = (this.$route.params.caseId)
           Service.getCase(this.caseId).then(
             (response) => {
@@ -133,7 +139,9 @@
           else measure = 'seconds';
 
           duration = Math.round(duration);
-          this.caseKpi = {duration: duration, measure: measure};       
+          this.caseKpi = {duration: duration, measure: measure};  
+          
+          this.isLoading = false;
         },
 
         selectView(view){

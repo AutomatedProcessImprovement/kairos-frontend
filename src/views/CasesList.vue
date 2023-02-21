@@ -1,9 +1,10 @@
 <template>
 <side-bar></side-bar>
+<loading v-if="isLoading"></loading>
 <div id="cases">
   <h2>Cases</h2>
   <div class="stats">
-    <div @click="filterApplications(false)" :class="['stats-card',{'selected': completedApplications === false}]">
+    <div @click="filterApplications(false)" :class="['stats-card','pointer',{'selected': completedApplications === false}]">
       <div class="column">
         <small>Ongoing applications</small>
         <div class="row">
@@ -13,7 +14,7 @@
       <ion-icon name="albums"></ion-icon>
     </div>
 
-    <div @click="filterApplications(true)" :class="['stats-card',{'selected': completedApplications}]">
+    <div @click="filterApplications(true)" :class="['stats-card','pointer',{'selected': completedApplications}]">
       <div class="column">
         <small> Completed applications</small>
         <div class="row">
@@ -29,7 +30,19 @@
     <table class="shadow">
       <thead>
       <tr>
-        <th v-for="header in headers" :key="header"> {{ header }}</th>
+        <th v-for="header in headers" :key="header"> {{ header }}
+          <!-- <tooltip-component v-if="header==='Intervened'">
+            <template v-slot:icon>
+              <ion-icon name="information-circle-outline"></ion-icon>
+            </template>            
+            <template v-slot:title>
+                <h3>Intervened</h3>
+            </template>
+            <template v-slot:content>
+              <p>Indicates whether another recommendation has already been implemented in this case.</p>
+            </template>
+          </tooltip-component> -->
+        </th>
       </tr>
       </thead>
       <tbody>
@@ -51,6 +64,8 @@
 
 import Service from "../services/service";
 import SideBar from '@/components/SideBar.vue';
+import Loading from "@/components/LoadingComponent.vue";
+
 
 
 export default {
@@ -58,10 +73,12 @@ export default {
 
   components: {
         SideBar,
+        Loading
       },
 
   data() {
     return {
+      isLoading: false,
       cases: [],
       headers: ["Application ID","Recommendations","Duration","Intervened"],
       casesData: [],
@@ -72,6 +89,7 @@ export default {
 
   methods: {
     getCases() {
+      this.isLoading = true;
       Service.getCasesByLog(localStorage.fileId).then(
         (response) => {
           this.cases = response.data.cases;
@@ -141,6 +159,8 @@ export default {
       Object.keys(this.cases[0].case_attributes).forEach(k => {
         this.headers.push(k);
       })
+
+      this.isLoading = false;
     },
 
     filterApplications(status){

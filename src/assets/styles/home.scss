@@ -10,7 +10,7 @@
 
     h2{
         font-weight: bold;
-        color: $bs-blue;
+        color: $k-blue;
     }
     .upload-file{
         display: flex;
@@ -26,8 +26,8 @@
 
         .btn::-webkit-file-upload-button,
         .submit-btn {
-            color: $bs-white;
-            background-color: $bs-blue;
+            color: $k-white;
+            background-color: $k-blue;
             padding: 5px 10px;
             border-radius: 5px;
             border: none;
@@ -52,8 +52,8 @@
           .input-text{
             margin: 0px 5px;
             padding: 1px;
-            outline: 1px solid $bs-blue;
-            background-color: $bs-white;
+            outline: 1px solid $k-blue;
+            background-color: $k-white;
             border: none;
             border-radius: 4px;
             text-align: center;

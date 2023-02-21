@@ -1,5 +1,5 @@
 #loading{
-  background-color: $bs-white;
+  background-color: $k-white;
   text-transform: uppercase;
   font-weight: bold;
   padding: 20px;
@@ -12,7 +12,7 @@
     width: 30px;
     height: 30px;
     margin-right: 15px;
-    color: $bs-blue;
+    color: $k-blue;
   }
 
   .rotate {
@@ -37,7 +37,7 @@
   align-items: center;
   width: 100%;
   height: 100%;
-  background: rgba($color: $bs-gray4, $alpha: 0.2);
+  background: rgba($color: $k-blue3, $alpha: 1);
   z-index: 999;
 }
 

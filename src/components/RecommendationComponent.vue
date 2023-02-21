@@ -38,7 +38,7 @@ export default{
 
     watch:{
         batch: function(){
-            console.log(this.batch);
+            // console.log(this.batch);
             this.formatRecommendations();
         }
     },

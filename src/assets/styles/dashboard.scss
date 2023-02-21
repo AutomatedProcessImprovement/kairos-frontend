@@ -11,7 +11,7 @@
     .log-card{
     
         &.selected{
-            background-color: $bs-blue4;
+            background-color: $k-blue4;
         }
     
         &:hover{
@@ -31,7 +31,7 @@
         align-items: center;
         
         input[type="radio"]{
-            accent-color: $bs-blue;
+            accent-color: $k-blue;
             margin: 0px 5px 5px 0px;
         }
     }
@@ -42,7 +42,7 @@
 
 }
 .log-card{
-    background-color: $bs-gray2;
+    background-color: $k-gray2;
     padding: 15px;
     margin-right: 10px;
     border-radius: 5px;
@@ -54,5 +54,5 @@
     padding: 10px 7px;
     width: 16px;
     height: 16px;
-    color: $bs-blue2
+    color: $k-blue2
 }
