@@ -33,6 +33,7 @@
             <recommendation-component v-for="activity in oldActivities" v-bind:key="activity"
               :batch="activity"
               :current="false"
+              :parameters="myParameters"
               :selectedRec="selectedRec"
               @recommendationSelected="selectRecommendation"
               ></recommendation-component>
@@ -42,6 +43,7 @@
               :batch="lastActivity"
               :current="true"
               :selectedRec="selectedRec"
+              :parameters="myParameters"
               @recommendationSelected="selectRecommendation"
               ></recommendation-component>
           </tab>
@@ -103,14 +105,14 @@
   
       props: {
           currentCase: Object,
-          kpi: Object
+          parameters: Object
       },
   
       data() {
         return {
           selectedRec: {},
           selectedRecObject: null,
-          oldActivities: [],
+          oldActivities: {},
           lastActivity: {},
           tabOptions: {
             recommendations: { defaultTabHash: 'tab-current', useUrlFragment: false},
@@ -119,10 +121,16 @@
         }
       },
 
-      watch: {
+      watch:{
         currentCase(value){
           this.oldActivities = value.activities.slice(0,-2);
           this.lastActivity = value.activities.slice(-1)[0];
+        }
+      },
+
+      computed: {
+        myParameters(){
+          return JSON.parse(JSON.stringify(this.parameters))
         }
       },
 

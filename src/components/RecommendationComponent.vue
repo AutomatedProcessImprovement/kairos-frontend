@@ -9,7 +9,7 @@
 
             <p>{{ r.rec }}</p>
 
-            <p :class="['bold',current ? 'green' : 'warning']">{{ current ? 'Recommended now' : 'Not recommended now' }}</p>
+            <p :class="['bold',r.recommended && current ? 'green' : 'warning']">{{ r.recommended && current ? 'Recommended now' : 'Not recommended now' }}</p>
             
             <small>{{r.metric}}</small>
             <div class="recommendation-status">{{ r.status }}</div>
@@ -19,13 +19,15 @@
 
 <script>
 
+
 export default{
     name: 'RecommendationComponent',
 
     props: {
         batch: Object,
         current: Boolean,
-        selectedRec: Object
+        selectedRec: Object,
+        parameters: Object,
     },
 
     data(){
@@ -37,8 +39,7 @@ export default{
     },
 
     watch:{
-        batch: function(){
-            // console.log(this.batch);
+        parameters: function(){
             this.formatRecommendations();
         }
     },
@@ -49,7 +50,7 @@ export default{
         },
 
         formatRecommendations() {
-            // console.log(this.batch);
+            // console.log(this.parameters);
             this.caseStatus = this.batch['ACTIVITY'];
             this.batchId = this.batch.event_id;
             for (let i = 0; i < this.batch.prescriptions.length; i++) {
@@ -61,16 +62,19 @@ export default{
                         color: 'background-orange2',
                         rec: 'Perform ' + p.output,
                         metric: '',
-                        status: p.status
+                        status: p.status,
+                        recommended: true
                     }
                 }
                 else if(p.type === 'ALARM') {
+                    let recommendedAttr = p.output < this.parameters.alarmThreshold ? false : true
                     data = {
                         recType: 'Alarm',
                         color: 'background-blue5',
                         rec: 'Action required',
-                        metric: 'Probability ' + p.output + ' (defined threshold)',
-                        status: ''
+                        metric: 'Probability ' + p.output + ' (' + (recommendedAttr ? '> ' : '< ') + 'defined threshold)',
+                        status: '',
+                        recommended: recommendedAttr
                     }
                 }
                 else{
@@ -78,8 +82,9 @@ export default{
                         recType: 'Intervention',
                         color: 'background-purple',
                         rec: 'Perform '+ p.output.treatment[0][0].value,
-                        metric: 'Causal effect: ' + p.output.cate + ' ' + (p.output.cate >= 0 ? '(positive)': '(negative)'),
-                        status: p.status
+                        metric: 'Causal effect: ' + p.output.cate + ' ' + (p.output.cate > 0 ? '(positive)': '(negative)'),
+                        status: p.status,
+                        recommended: p.output.cate > 0 ? true : false
                     }
                 }
                 this.batchRecommendations.push(data);

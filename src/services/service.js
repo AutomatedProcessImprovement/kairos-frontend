@@ -25,8 +25,8 @@ class Service {
         return http.get(`/event_logs/${fileId}`)
     }
 
-    getKPI(fileId){
-        return http.get(`/event_logs/${fileId}/kpi`)
+    getParameters(fileId){
+        return http.get(`/event_logs/${fileId}/parameters`)
     }
 
     uploadFile(file){

@@ -12,10 +12,10 @@
       </div>
   
       <div class="stats">
-        <div class="stats-card column">
+        <div v-if="parameters.kpi" class="stats-card column">
           <p>KPI</p>
-          <h3 class="blue">{{ kpi.value }}</h3>
-          <small>Case {{ kpi.column }}  {{ kpi.operator }}</small>
+          <h3 class="blue">{{ parameters.kpi.value }}</h3>
+          <small>Case {{ parameters.kpi.column }}  {{ parameters.kpi.operator }}</small>
         </div>
         <div class="stats-card">
           <div class="case-performance">
@@ -37,16 +37,16 @@
     </div>
     <div class="switch-views shadow">
       <button class="btn" :class="{ active: view==='analytical' }" @click="selectView('analytical')">Analytical</button>
-      <button class="btn" :class="{ active: view==='operational' }" @click="selectView('operational')">Operational</button>
+      <button class="btn" :class="{ active: view==='operational' }">Operational</button>
       <button class="btn" :class="{ active: view==='tactical' }">Tactical</button>
     </div>
     <operational-view v-show="view==='operational'"
       :currentCase="currentCase"
-      :kpi="kpi"
+      :kpi="parameters.kpi"
       ></operational-view>
       <analytical-view v-show="view==='analytical'"
       :currentCase="currentCase"
-      :kpi="kpi"
+      :parameters="parameters"
     ></analytical-view>
   </div>
   </template>
@@ -76,7 +76,7 @@
         return {
           isLoading: false,
           currentCase: {},
-          kpi: {},
+          parameters: {},
           view: null,
           caseKpi: {},
           caseDetails: {},
@@ -91,7 +91,7 @@
             (response) => {
               console.log(response.data);
               this.currentCase = response.data.case;
-              this.getKPI();
+              this.getParameters();
             },
             (error) => {
               this.content =
@@ -104,11 +104,13 @@
           );
         },
 
-        getKPI(){
-          Service.getKPI(localStorage.fileId).then(
+        getParameters(){
+          Service.getParameters(localStorage.fileId).then(
             (response) => {
-              console.log(response.data);
-              this.kpi = response.data.kpi;
+              this.parameters.kpi = response.data.kpi;
+              this.parameters.caseCompletion = response.data.caseCompletion;
+              this.parameters.alarmThreshold = response.data.alarmThreshold;
+              this.parameters.treatment = response.data.treatment;
               this.getAdditionalInformation();
             },
             (error) => {
