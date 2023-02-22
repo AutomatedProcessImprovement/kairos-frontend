@@ -94,6 +94,7 @@ export default {
         (response) => {
           this.cases = response.data.cases;
           if (this.cases.length > 0) this.formatCases();
+          else this.isLoading = false;
           },
         (error) => {
           this.content =
@@ -186,7 +187,7 @@ export default {
     },
   },
   created() {
-    this.getCases();
+    if (localStorage.fileId !== 'null') this.getCases();
   },
 
 }

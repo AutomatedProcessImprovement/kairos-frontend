@@ -129,6 +129,7 @@
           const caseActivities = this.currentCase.activities
           this.recommendationsAvailable = caseActivities[caseActivities.length - 1]['prescriptions'].length === 0 ? false: true;
           if (!caseActivities.length) {
+            this.isLoading = false;
             return;
           } 
           const startDate = new Date(caseActivities[0]['TIMESTAMP']);

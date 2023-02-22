@@ -50,7 +50,6 @@ export default{
         },
 
         formatRecommendations() {
-            // console.log(this.parameters);
             this.caseStatus = this.batch['ACTIVITY'];
             this.batchId = this.batch.event_id;
             for (let i = 0; i < this.batch.prescriptions.length; i++) {

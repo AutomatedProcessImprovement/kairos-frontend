@@ -102,7 +102,7 @@ export default {
                 (response) => {
                     this.eventlogs = response.data.event_logs;
                     if(this.eventlogs.length === 0){
-                        localStorage.fileId == null;
+                        localStorage.fileId = null;
                         return;
                     }
                     if (!localStorage.fileId){
