@@ -33,6 +33,19 @@
             input{
                 width: 250px;
             }
+
+            .double-input{
+                padding: 0px;
+                select,
+                input{
+                    width: 120px;
+                }
+
+                input{
+                    margin-right: 10px;
+                }
+
+            }
         }
     }
     

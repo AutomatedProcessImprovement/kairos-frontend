@@ -7,19 +7,12 @@ import ResourcesPage from "./views/ResourcesPage"
 import DashBoard from './views/DashBoard'
 import ParametersPage from './views/ParametersPage'
 import ColumnsDefinitionPage from "./views/ColumnsDefinitionPage"
-import ErrorPage from  "./views/ErrorPage"
 
 const routes = [
     {
         path: "/",
         name: "home",
         component: HomePage,
-    },
-    {
-        path: "/error/:responseStatus",
-        name: "error",
-        component: ErrorPage,
-        params: true
     },
     {
         path: "/dashboard",

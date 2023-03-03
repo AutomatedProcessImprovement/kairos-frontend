@@ -112,12 +112,17 @@ export default {
                     this.getProjectStatus();
                 },
                 (error) => {
-                this.content =
+                const resMessage =
                     (error.response &&
                     error.response.data &&
                     error.response.data.message) ||
                     error.message ||
                     error.toString();
+                    this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    }) 
                 }
             );      
         },
@@ -133,15 +138,20 @@ export default {
             Service.startSimulation(localStorage.fileId).then(
                 (response) => {
                     console.log(response);
-                    this.selectedLogStatus = response.data.status;
+                    this.getProjectStatus();
                 },
                 (error) => {
-                this.content =
+                const resMessage =
                     (error.response &&
                     error.response.data &&
                     error.response.data.message) ||
                     error.message ||
                     error.toString();
+                    this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    }) 
                 }
             ); 
         },
@@ -150,15 +160,20 @@ export default {
             Service.stopSimulation(localStorage.fileId).then(
                 (response) => {
                     console.log(response)
-                    this.selectedLogStatus = response.data.status;
+                    this.getProjectStatus();
                 },
                 (error) => {
-                this.content =
+                const resMessage =
                     (error.response &&
                     error.response.data &&
                     error.response.data.message) ||
                     error.message ||
                     error.toString();
+                    this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    }) 
                 }
             ); 
         },
@@ -166,16 +181,35 @@ export default {
         getProjectStatus(){
             Service.getProjectStatus(localStorage.fileId).then(
                 (response) => {
-                    console.log(response)
-                    this.selectedLogStatus = response.data.status;
+                    let status = response.data.status;
+                    if ((this.selectedLogStatus === 'TRAINED' && status === 'SIMULATING') ||
+                        (this.selectedLogStatus === 'SIMULATING' && status === 'TRAINED')) {
+                        let message = '';
+                        if (status === 'SIMULATING') {
+                            message = 'started';
+                        } else if (status === 'TRAINED') {
+                            message = 'stopped';
+                        }
+                        this.$notify({
+                            title: 'Success',
+                            text: `Successfully ${message} simulating log ${localStorage.fileId}`,
+                            type: 'success'
+                        });
+                    }
+                    this.selectedLogStatus = status;
                 },
                 (error) => {
-                this.content =
+                const resMessage =
                     (error.response &&
                     error.response.data &&
                     error.response.data.message) ||
                     error.message ||
                     error.toString();
+                    this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    }) 
                 }
             ); 
         },

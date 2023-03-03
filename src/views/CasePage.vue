@@ -94,12 +94,17 @@
               this.getParameters();
             },
             (error) => {
-              this.content =
+              const resMessage=
                 (error.response &&
                   error.response.data &&
                   error.response.data.message) ||
                 error.message ||
                 error.toString();
+                this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    }) 
             }
           );
         },
@@ -114,12 +119,17 @@
               this.getAdditionalInformation();
             },
             (error) => {
-              this.content =
+              const resMessage =
                 (error.response &&
                   error.response.data &&
                   error.response.data.message) ||
                 error.message ||
                 error.toString();
+                this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    }) 
             }
           );
         },

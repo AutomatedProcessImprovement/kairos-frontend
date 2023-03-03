@@ -171,16 +171,16 @@ cytoscape.use( dagre );
             const activities = this.currentCase.activities;
             const l = activities.length;
             var elems = [];
-
+            
             elems.push({
                   group: "nodes",
                   data: {
-                    id: "an0", 
+                    id: "an-1", 
                   },
                   classes: 'start'
                 });
 
-            for (let i = 1; i < activities.length; i++) {
+            for (let i = 0; i < l; i++) {
               const activity = activities[i];
 
               var options = {dateStyle:"short",timeStyle: "short"};
@@ -269,16 +269,7 @@ cytoscape.use( dagre );
             cy.add(elems);
             this.cy = cy;
                             
-            },
-          
-          // selectRecommendation(newVal,oldVal){
-          //   if(oldVal !== null) {
-          //     this.cy.getElementById("rn" + oldVal.batchId + "-" + oldVal.index).removeClass('selectedRec')
-          //     this.cy.getElementById("re" + oldVal.batchId + "-" + oldVal.index).removeClass('selectedEdge')
-          //   }
-          //   this.cy.getElementById("rn" + newVal.batchId + "-" + newVal.index).addClass('selectedRec')
-          //   this.cy.getElementById("re" + newVal.batchId + "-" + newVal.index).addClass('selectedEdge')
-          // }
+            }
                     
         }
       };

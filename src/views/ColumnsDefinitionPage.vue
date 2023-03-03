@@ -122,11 +122,15 @@ export default {
                 this.isLoading = false;
             })
             .catch(error => {
-              const resMessage =
+                this.isLoading = false;
+                const resMessage =
                 (error.response && error.response.data && error.response.data.message) ||
                 error.message || error.toString();
-                console.log(resMessage)
-                this.isLoading = false;
+                this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    })
             });
         },
         submit() {
@@ -138,7 +142,11 @@ export default {
                 }
             })
             if (alarm){
-                alert("Please define all columns!");
+                this.$notify({
+                        title: 'Warning',
+                        text: 'Please define all the columns!',
+                        type: 'warning'
+                    })
                 return;
             }
             
@@ -156,10 +164,15 @@ export default {
                 this.$router.push({name: 'parameters'})
             })
             .catch(error => {
-              const resMessage =
+                this.isLoading = false;
+                const resMessage =
                 (error.response && error.response.data && error.response.data.message) ||
                 error.message || error.toString();
-                console.log(resMessage)
+                this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    })
             });
 
         },

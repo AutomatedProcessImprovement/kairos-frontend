@@ -11,7 +11,7 @@
                 <div class="parameter">
                     <p>Uploaded log</p>
                     <div class='log-card'>
-                        <h4>{{ log.filename }}</h4>
+                        <p>{{ log.filename }}</p>
                         <small>{{ log.datetime }}</small>
                     </div>
                 </div>
@@ -49,6 +49,17 @@
                             <option v-for="activity in activities" :key="activity">{{ activity }}</option>
                         </select>
                         <span v-else-if="positiveOutcome.columnDefinition === 'BOOLEAN'"></span>
+                        <div class="double-input" v-else-if="positiveOutcome.columnDefinition === 'DURATION'">
+                            <input type="number" v-model="positiveOutcome.value"/>
+                            <select v-model="positiveOutcome.unit">
+                                <option>month</option>
+                                <option>week</option>
+                                <option>day</option>
+                                <option>hour</option>
+                                <option>minute</option>
+                                <option>second</option>
+                            </select>
+                        </div>
                         <input v-else-if="positiveOutcome.columnDefinition" :type="getInputType(positiveOutcome.columnDefinition)" v-model="positiveOutcome.value"/>
                         <select v-else disabled></select>
                     </div>
@@ -163,31 +174,48 @@ export  default {
                 this.isLoading = false;
             })
             .catch(error => {
+                this.isLoading = false;
                 const resMessage =
                 (error.response && error.response.data && error.response.data.message) ||
                 error.message || error.toString();
-                console.log(resMessage)
-                this.isLoading = false;
-            });
+                this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    })            
+                });
         },
 
         submit() {
             if(!this.caseCompletion || !this.alarmThreshold|| !this.intervention.column || !this.intervention.operator || !this.intervention.value ||
-                ! this.positiveOutcome.value || !this.positiveOutcome.column || !this.positiveOutcome.operator){
-                    alert("Please fill in all the fields!");
+                ! this.positiveOutcome.value || !this.positiveOutcome.column || !this.positiveOutcome.operator || (this.positiveOutcome.column ==='DURATION' && !this.positiveOutcome.unit)){
+                    this.$notify({
+                        title: 'Warning',
+                        text: 'Please fill in all the fields!',
+                        type: 'warning'
+                    })
                     return;
                 }
             if(this.alarmThreshold < 0.1 || this.alarmThreshold > 0.9){
-                alert("Alarm threshold must be between 0.1 and 0.9!");
+                this.$notify({
+                        title: 'Warning',
+                        text: 'Alarm threshold must be between 0.1 and 0.9!',
+                        type: 'warning'
+                    })
                 return;
             }
             this.isLoading = true;
 
+            let outcomeValue = !this.positiveOutcome.unit ? this.positiveOutcome.value : this.positiveOutcome.value + ' ' + this.positiveOutcome.unit;
+            if (this.positiveOutcome.column === 'DURATION' && this.positiveOutcome.value > 1) outcomeValue += 's';
+
+            
             let positiveOutcome = {
                 "column": this.positiveOutcome.column,
                 "operator": this.format(this.positiveOutcome.operator),
-                "value": this.positiveOutcome.value
+                "value": outcomeValue
             }
+            console.log(positiveOutcome)
 
             let intervention = {
                 "column": this.intervention.column,
@@ -208,12 +236,16 @@ export  default {
                 this.$router.push({name: 'dashboard'})
             })
             .catch(error => {
-              const resMessage =
+                this.isLoading = false;
+                const resMessage =
                 (error.response && error.response.data && error.response.data.message) ||
                 error.message || error.toString();
-                console.log(resMessage)
-            });
-
+                this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    })            
+                });
         },
 
         getEvaluationMethods(type,parameter){

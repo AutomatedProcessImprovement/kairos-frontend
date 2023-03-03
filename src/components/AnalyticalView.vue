@@ -123,7 +123,7 @@
 
       watch:{
         currentCase(value){
-          this.oldActivities = value.activities.slice(0,-2);
+          this.oldActivities = value.activities.slice(0,-1);
           this.lastActivity = value.activities.slice(-1)[0];
         }
       },
