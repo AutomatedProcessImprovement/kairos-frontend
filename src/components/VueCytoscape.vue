@@ -14,14 +14,31 @@ cytoscape.use( dagre );
     
         name: 'vue-cytoscape',
         props: {
+          columnsDefinition: Object,
           currentCase: Object, 
-          selectedRec: Object
+          selectedRec: Object,
         },
 
         data: function() {
           return {
             cy: null,
-            elems: []
+            elems: [],
+            recommendationTypes: {
+                    'ALARM': null,
+                    'NEXT_ACTIVITY': {
+                      label: (recommendation) => recommendation.output,
+                      nodeClass: 'nextActivity',
+                      edgeClass: 'nextActivityEdge'
+                    },
+                    'TREATMENT_EFFECT': {
+                      label: (recommendation) => recommendation.output.treatment[0][0].value,
+                      nodeClass: 'intervention',
+                      edgeClass: 'interventionEdge',
+                      isValidNode: (recommendation, columnsDefinition) =>
+                        columnsDefinition[recommendation.output.treatment[0][0].column] === 'ACTIVITY' &&
+                        recommendation.output.treatment[0][0].operator === 'EQUAL'
+                    }
+                  }
           };
         },
 
@@ -30,9 +47,6 @@ cytoscape.use( dagre );
             this.$emit('loading');      
             this.createDiagram();
           },
-          // selectedRec: function(newVal,oldVal){
-          //   this.selectRecommendation(newVal,oldVal);
-          // },
           cy: function(){
             this.displayDiagram();
           }
@@ -210,21 +224,18 @@ cytoscape.use( dagre );
               let recommendations = activity.prescriptions;
 
               for (let j=0; j < recommendations.length; j++) {
-                if(recommendations[j].type === 'ALARM') {continue}
-                let label = '';
-                let nodeClass = '';
-                let edgeClass = '';
-                let index = activity.event_id + "-" + j;
-                
-                if(recommendations[j].type === 'NEXT_ACTIVITY'){
-                  label = recommendations[j].output;
-                  nodeClass = 'nextActivity';
-                  edgeClass = 'nextActivityEdge';
-                } else{ 
-                  label = recommendations[j].output.treatment[0][0].value;
-                  nodeClass = 'intervention';
-                  edgeClass = 'interventionEdge';
-                }
+                const recommendation = recommendations[j];
+                const recommendationType = this.recommendationTypes[recommendation.type];
+
+                if (!recommendationType) continue;
+                if (recommendationType.isValidNode && 
+                !recommendationType.isValidNode(recommendation, this.columnsDefinition)) continue;
+
+                const label = recommendationType.label(recommendation);
+                const nodeClass = recommendationType.nodeClass;
+                const edgeClass = recommendationType.edgeClass;
+
+                const index = activity.event_id + '-' + j;
                 elems.push({
                   group: "nodes",
                   data: {

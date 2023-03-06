@@ -193,7 +193,7 @@ export default {
                         this.$notify({
                             title: 'Success',
                             text: `Successfully ${message} simulating log ${localStorage.fileId}`,
-                            type: 'success'
+                            type: 'success',
                         });
                     }
                     this.selectedLogStatus = status;

@@ -20,8 +20,8 @@
         <div class="stats-card">
           <div class="case-performance">
             <p>Case performance</p>
-            <p class="bold">{{ caseKpi.duration }} {{ caseKpi.measure }}</p>
-            <small>Case duration</small>
+            <p :class="['bold', caseKpi.outcome? 'green' : 'warning']">{{ caseKpi.value }}</p>
+            <small>Case {{ caseKpi.column }}</small>
           </div>
           <div class="case-details">
             <p>Case details</p>
@@ -78,7 +78,7 @@
           currentCase: {},
           parameters: {},
           view: null,
-          caseKpi: {},
+          caseKpi: {value: null,column: null, outcome: false},
           caseDetails: {},
           recommendationsAvailable: false,
         }
@@ -116,6 +116,7 @@
               this.parameters.caseCompletion = response.data.caseCompletion;
               this.parameters.alarmThreshold = response.data.alarmThreshold;
               this.parameters.treatment = response.data.treatment;
+              this.parameters.columnsDefinition = response.data.columnsDefinition;
               this.getAdditionalInformation();
             },
             (error) => {
@@ -138,21 +139,10 @@
           this.caseDetails = this.currentCase.case_attributes;
           const caseActivities = this.currentCase.activities
           this.recommendationsAvailable = caseActivities[caseActivities.length - 1]['prescriptions'].length === 0 ? false: true;
-          if (!caseActivities.length) {
-            this.isLoading = false;
-            return;
+          
+          if (this.currentCase.case_performance) {
+            this.caseKpi = this.currentCase.case_performance;  
           } 
-          const startDate = new Date(caseActivities[0]['TIMESTAMP']);
-          const endDate = new Date(caseActivities[caseActivities.length - 1]['TIMESTAMP']);
-          let measure, duration = Math.abs(endDate - startDate) / 1000;
-
-          if (duration >= 86400) measure = 'days', duration /= 86400;
-          else if (duration >= 3600) measure = 'hours', duration /= 3600;
-          else if (duration >= 60) measure = 'minutes', duration /= 60;
-          else measure = 'seconds';
-
-          duration = Math.round(duration);
-          this.caseKpi = {duration: duration, measure: measure};  
           
           this.isLoading = false;
         },

@@ -52,7 +52,7 @@
                         <div class="double-input" v-else-if="positiveOutcome.columnDefinition === 'DURATION'">
                             <input type="number" v-model="positiveOutcome.value"/>
                             <select v-model="positiveOutcome.unit">
-                                <option>month</option>
+                                <!-- <option>month</option> -->
                                 <option>week</option>
                                 <option>day</option>
                                 <option>hour</option>
