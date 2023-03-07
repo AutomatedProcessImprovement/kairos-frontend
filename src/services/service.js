@@ -1,6 +1,6 @@
 import axios from "axios"; // responsible for communicating with api
 const http = axios.create({
-  baseURL: "http://localhost:5000/api"
+  baseURL: process.env.VUE_APP_BASE_URL
 });
 
 class Service {
