@@ -56,6 +56,7 @@
           <tab name="Process model" id="tab-diagram">
             <legend-component></legend-component>
               <vue-cytoscape
+              :parameters="myParameters"
               :currentCase="currentCase"
               :selectedRec="selectedRec"
               @loading="handleLoading"
