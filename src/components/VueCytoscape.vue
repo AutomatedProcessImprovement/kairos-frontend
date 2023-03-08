@@ -14,7 +14,7 @@ cytoscape.use( dagre );
     
         name: 'vue-cytoscape',
         props: {
-          columnsDefinition: Object,
+          parameters: Object,
           currentCase: Object, 
           selectedRec: Object,
         },
@@ -34,7 +34,7 @@ cytoscape.use( dagre );
                       label: (recommendation) => recommendation.output.treatment[0][0].value,
                       nodeClass: 'intervention',
                       edgeClass: 'interventionEdge',
-                      isValidNode: (recommendation, columnsDefinition) =>
+                      isValidNode: (recommendation,columnsDefinition) =>
                         columnsDefinition[recommendation.output.treatment[0][0].column] === 'ACTIVITY' &&
                         recommendation.output.treatment[0][0].operator === 'EQUAL'
                     }
@@ -43,7 +43,7 @@ cytoscape.use( dagre );
         },
 
         watch: {
-          currentCase: function(){
+          parameters: function(){
             this.$emit('loading');      
             this.createDiagram();
           },
@@ -228,8 +228,7 @@ cytoscape.use( dagre );
                 const recommendationType = this.recommendationTypes[recommendation.type];
 
                 if (!recommendationType) continue;
-                if (recommendationType.isValidNode && 
-                !recommendationType.isValidNode(recommendation, this.columnsDefinition)) continue;
+                if (recommendationType.isValidNode && !recommendationType.isValidNode(recommendation,this.parameters.columnsDefinition)) continue;
 
                 const label = recommendationType.label(recommendation);
                 const nodeClass = recommendationType.nodeClass;

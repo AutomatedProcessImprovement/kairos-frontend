@@ -33,18 +33,22 @@
             </div>
             <div v-if="selectedLog.case_completion" class="row">
                 <div class="parameter">
+                    <small class="upper"> Activity equals </small>
                     <p> {{ selectedLog.case_completion }}</p>
                     <small>Case completion</small>
                 </div>
                 <div class="parameter">
+                    <small>{{ selectedLog.positive_outcome.column }} {{ selectedLog.positive_outcome.operator }}</small>
                     <p>{{ selectedLog.positive_outcome.value }}</p>
                     <small>Positive case outcome</small>
                 </div>
                 <div class="parameter">
+                    <small>{{ selectedLog.treatment.column }} {{ selectedLog.treatment.operator }}</small>
                     <p> {{ selectedLog.treatment.value }}</p>
                     <small>Intervention</small>
                 </div>
                 <div class="parameter">
+                    <small> Threshold less than </small>
                     <p>{{selectedLog.alarm_threshold}}</p>
                     <small>Alarm Threshold</small>
                 </div>
@@ -74,6 +78,7 @@ export default {
     name: "DashBoard",
     data () {
         return {
+            timer: null,
             eventlogs: [],
             selectedLog: null,
             parameters: [],
@@ -87,13 +92,17 @@ export default {
         }
     },
 
-      components: {
+    components: {
         SideBar
-      },
+    },
 
-      created() {
+    created() {
         this.getLogs();
-      },
+    },
+
+    beforeUnmount() {
+        if(this.timer) clearInterval(this.timer);
+    },
 
     methods: {
 
@@ -108,6 +117,11 @@ export default {
                     if (!localStorage.fileId){
                         localStorage.fileId = this.eventlogs[0]._id.toString();
                     }
+                    this.timer = setInterval(() => {
+                        if (localStorage.fileId){
+                            this.getProjectStatus();
+                        }
+                    }, 4000)
                     this.selectedLog = this.eventlogs.find(e => e._id.toString() === localStorage.fileId);
                     this.getProjectStatus();
                 },
@@ -138,7 +152,6 @@ export default {
             Service.startSimulation(localStorage.fileId).then(
                 (response) => {
                     console.log(response);
-                    this.getProjectStatus();
                 },
                 (error) => {
                 const resMessage =
@@ -160,7 +173,6 @@ export default {
             Service.stopSimulation(localStorage.fileId).then(
                 (response) => {
                     console.log(response)
-                    this.getProjectStatus();
                 },
                 (error) => {
                 const resMessage =

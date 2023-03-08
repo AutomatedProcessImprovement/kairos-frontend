@@ -142,8 +142,7 @@
           
           if (this.currentCase.case_performance) {
             this.caseKpi = this.currentCase.case_performance;  
-          } 
-          
+          }           
           this.isLoading = false;
         },
 
