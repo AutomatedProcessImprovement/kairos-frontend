@@ -38,31 +38,31 @@
     align-items: center;
     border-radius: 5px;
     transition: 0.2s;
-    color: $bs-blue2;
+    color: $k-blue2;
     
     &:hover{
-    background-color: $bs-white;
-    color: $bs-black;
+    background-color: $k-white;
+    color: $k-black;
     }  
 
     &.router-link-active{
-      background-color: $bs-white;
-      box-shadow: 0px 1px 5px $bs-gray2;
-      color: $bs-black;
+      background-color: $k-white;
+      box-shadow: 0px 1px 5px $k-gray2;
+      color: $k-black;
       z-index: 999;
 
       ion-icon{
-        color: $bs-white;
-        background-color: $bs-blue;
+        color: $k-white;
+        background-color: $k-blue;
         box-shadow: none;
       }
     }
 
     ion-icon{
       margin-right: 10px;
-      background-color: $bs-white;
+      background-color: $k-white;
       border-radius: 5px;
-      box-shadow: 0px 1px 5px $bs-gray2;
+      box-shadow: 0px 1px 5px $k-gray2;
     }
   }
   

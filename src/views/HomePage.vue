@@ -1,15 +1,15 @@
 <template>
   <div id="home">
-      <h1>PrPM</h1>
-      <small>PrPM is a tool that visualises prescriptive process monitoring output.</small>
+      <h1>Kairos</h1>
+      <small>Kairos is a tool that visualises prescriptive process monitoring output.</small>
       <div class="upload-file">
         <loading v-if="isLoading" text="preprocessing data..."></loading>
         <h2>Upload</h2>
         <p>Upload an eventlog to start:</p>
-        <small>Supported file types: .csv and .xes</small>
+        <small>Supported file types: .csv, .xes, .zip. (Please make sure to indicate file type in the file name when uploading .zip)</small>
         
         <input class='btn' type="file" name="fileToUpload" ref="file" id="fileToUpload" v-on:change="handleFileUpload()" />
-        
+
         <div v-if="extension == 'csv'">
             <span>Separator for .csv: </span>
             <span  class="center">
@@ -17,7 +17,7 @@
             </span>
         </div>
         
-        <input class='submit-btn' type="button" value="Upload" name="submit" @click.self="isLoading = true;" v-on:click="submit" :disabled="isDisabled"/>
+        <input class='submit-btn' type="button" value="Upload" name="submit" v-on:click="submit" :disabled="isDisabled"/>
         
     </div>
   </div>
@@ -50,6 +50,9 @@ export default {
         handleFileUpload(){
             this.file = this.$refs.file.files[0];
             this.extension = this.file.name.split('.').pop();
+            if(this.extension === 'zip'){
+                this.extension = this.file.name.toLowerCase().indexOf('csv') < 0 ? 'xes' : 'csv';
+            }
             this.isDisabled = false;
         },
 
@@ -66,13 +69,18 @@ export default {
               this.$router.push({name: "columns"});
             })
             .catch(error => {
-              const resMessage =
-                (error.response &&
-                  error.response.data &&
-                  error.response.data.message) ||
-                error.message ||
-                error.toString();
-                console.log(resMessage)
+                this.isLoading = false;
+                const resMessage =
+                    (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                    error.message ||
+                    error.toString();
+                    this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    })
             });
             
         }

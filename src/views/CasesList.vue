@@ -1,23 +1,24 @@
 <template>
 <side-bar></side-bar>
+<loading v-if="isLoading"></loading>
 <div id="cases">
   <h2>Cases</h2>
   <div class="stats">
-    <div class="stats-card">
+    <div @click="filterApplications(false)" :class="['stats-card','pointer',{'selected': completedApplications === false}]">
       <div class="column">
         <small>Ongoing applications</small>
         <div class="row">
-          <h4> {{formattedCases.filter(i => i.status === "Open").length}}</h4>        
+          <h4> {{cases.filter(c => !c.case_completed).length}}</h4>        
         </div>
       </div>
       <ion-icon name="albums"></ion-icon>
     </div>
 
-    <div class="stats-card">
+    <div @click="filterApplications(true)" :class="['stats-card','pointer',{'selected': completedApplications}]">
       <div class="column">
         <small> Completed applications</small>
         <div class="row">
-          <h4> {{formattedCases.filter(i => i.status !== "Open").length}}</h4>
+          <h4> {{cases.filter(c => c.case_completed).length}}</h4>
         </div>
       </div>
       <ion-icon name="albums"></ion-icon>
@@ -29,15 +30,28 @@
     <table class="shadow">
       <thead>
       <tr>
-        <th v-for="header in headers" :key="header"> {{ header }}</th>
+        <th v-for="header in headers" :key="header"> {{ header }}
+          <!-- <tooltip-component v-if="header==='Intervened'">
+            <template v-slot:icon>
+              <ion-icon name="information-circle-outline"></ion-icon>
+            </template>            
+            <template v-slot:title>
+                <h3>Intervened</h3>
+            </template>
+            <template v-slot:content>
+              <p>Indicates whether another recommendation has already been implemented in this case.</p>
+            </template>
+          </tooltip-component> -->
+        </th>
       </tr>
       </thead>
       <tbody>
-      <tr v-for="item in formattedCases" :key='item'>
-        <td v-for="(value,name) in item" :key='name'>
-          <router-link v-if="name=='id'" :to="{ name: 'case', params: {caseId: value} }">{{value}}</router-link>
-          <div v-else-if="name=='status'" class="status" :class="[value === 'Open'? 'open' : 'completed']"> {{ value }}</div>
-          <p v-else>{{ value }}</p>
+      <tr v-for="item in casesData" :key='item'>
+          <td v-for="(value,name) in item" :key='name'>
+            <router-link :to="{name: 'case',params: {caseId: value}}" v-if="name==='id'">{{ value }}</router-link>
+            <div v-else-if="name=='recommendations'" class="case-recommendations" :class="[value ? 'available' : 'unavailable']"> {{ value ? "recommendations available" : "no new recommendations" }}</div>
+            <div v-else-if="name=='duration'">{{ value.value }} {{ value.measure }}</div>
+            <p v-else>{{ value }}</p>
           </td>
       </tr>
       </tbody>
@@ -50,6 +64,8 @@
 
 import Service from "../services/service";
 import SideBar from '@/components/SideBar.vue';
+import Loading from "@/components/LoadingComponent.vue";
+
 
 
 export default {
@@ -57,68 +73,126 @@ export default {
 
   components: {
         SideBar,
+        Loading
       },
 
   data() {
-    const cases = [];
-    const kpi = [];
-    const formattedCases = [];
-    const headers = ["Case ID","Status","Start Date","Duration (d)","Recommendations","Last Update","Amount","Purpose"];
-    return {cases,headers,formattedCases,kpi};
+    return {
+      isLoading: false,
+      cases: [],
+      headers: ["Application ID","Recommendations","Duration","Intervened"],
+      casesData: [],
+      kpi: [],
+      completedApplications: undefined,
+    };
   },
 
   methods: {
     getCases() {
-      Service.getCases().then(
+      this.isLoading = true;
+      Service.getCasesByLog(localStorage.fileId).then(
         (response) => {
           this.cases = response.data.cases;
-          this.kpi = response.data.kpi;
-          this.formatCases();
+          if (this.cases.length > 0) this.formatCases();
+          else this.isLoading = false;
           },
         (error) => {
-          this.content =
+          const resMessage =
             (error.response &&
               error.response.data &&
               error.response.data.message) ||
             error.message ||
             error.toString();
+            this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    }) 
         }
       );
     },
 
     formatCases(){
-      this.formattedCases = []
-      var oneDay=1000*60*60*24;
+      
       for (const el of this.cases) {
         let caseActivities = el.activities;
-        let caseRecommendations = el.recommendations;
+        let data = {}
         if (!caseActivities.length) {
-          this.formattedCases.push({id: el._id,
-                          status: el.status,
-                          startdate: "NaN",
-                          duration: "NaN",
-                          recs: caseRecommendations.length ? "No" : "Yes",
-                          update: "NaN",
-                          amount: el.amount,
-                          purpose: el.purpose})
-          continue;
+          data = {
+              id: el._id,
+              recommendations: false,
+              duration: null,
+              intervened: "No"
+          }
         }
-        var startDate = new Date(caseActivities[0].timestamp)
-        var endDate = new Date(caseActivities[caseActivities.length - 1].timestamp)
-        this.formattedCases.push({id: el._id, 
-                          status: el.status,
-                          startdate: startDate.toLocaleDateString("en-GB"), 
-                          duration: Math.round((endDate - startDate)/oneDay), 
-                          recs: !caseRecommendations.length ? "No" : "Yes",
-                          update: caseActivities[caseActivities.length - 1].name + ' ' + endDate.toLocaleDateString("en-GB"),
-                          amount: el.amount,
-                          purpose: el.purpose})
-    }
-  }
-  
+        else{
+          const startDate = new Date(caseActivities[0]['TIMESTAMP']);
+          const endDate = new Date(caseActivities[caseActivities.length - 1]['TIMESTAMP']);
+          let measure, duration = Math.abs(endDate - startDate) / 1000;
+
+          if (duration >= 86400) measure = 'days', duration /= 86400;
+          else if (duration >= 3600) measure = 'hours', duration /= 3600;
+          else if (duration >= 60) measure = 'minutes', duration /= 60;
+          else measure = 'seconds';
+
+          duration = Math.round(duration);
+
+          let intervened = "No";
+          caseActivities.forEach(activity => {
+            activity.prescriptions.forEach(prescription => {
+              if (prescription.status === 'accepted'){
+                intervened = "Yes";
+                return;
+              }
+            })
+          });
+          
+          data = {
+            id: el._id, 
+            recommendations: caseActivities[caseActivities.length-1].prescriptions.length === 0 ? false : true,
+            duration: {value: duration, measure: measure}, 
+            intervened: intervened
+          }
+        }
+        
+        Object.keys(el.case_attributes).forEach(k => {
+          data[k] = el.case_attributes[k];
+        })
+        
+        this.casesData.push(data);
+      }
+
+      Object.keys(this.cases[0].case_attributes).forEach(k => {
+        this.headers.push(k);
+      })
+
+      this.isLoading = false;
+    },
+
+    filterApplications(status){
+      var rows = document.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+      if (this.completedApplications === status){
+        this.completedApplications = null;
+        for (let i = 0; i < rows.length; i++) {
+          rows[i].style.display = "";
+        }
+        return;
+      }
+      this.completedApplications = status;
+      var filteredCases = this.cases.map(c => {if (c.case_completed === status) return c._id});
+      for (let i = 0; i < rows.length; i++) {
+        var routerLink = rows[i].getElementsByTagName("td")[0].getElementsByTagName("a")[0];
+        var caseId = routerLink.textContent || routerLink.innerText;
+        if (filteredCases.indexOf(caseId) < 0) {
+            rows[i].style.display = "none";
+        } else{
+            rows[i].style.display = "";
+        }
+      }
+    },
   },
   created() {
-    this.getCases();
+    if (localStorage.fileId !== 'null') this.getCases();
   },
 
 }

@@ -34,8 +34,13 @@
                         <tr>
                             <th v-for="head in headers" :key="head">
                                 <select class="dropdown" v-model="types[head]" required>
-                                    <option v-for="type in typeList" :key="type" :selected="types[head] == type.type" :value="type.type"> {{type.text}} </option>
+                                    <option v-for="myType in typeList" :key="myType" :selected="types[head] == myType.type" :value="myType.type"> {{myType.text}} </option>
                                 </select>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th v-for="head in headers" :key="head">
+                                <button @click="toggleCaseAttribute(head)" class="btn-blue" :class="{selected: caseAttributes.indexOf(head) >= 0}">Case attribute</button>
                             </th>
                         </tr>
     
@@ -48,8 +53,8 @@
                     </tbody>
                 </table>
                 <div class="buttons">
-                    <button class="btn" v-on:click="submit">Upload log</button>
-                    <button class="btn" v-on:click="goToHome">Cancel</button>
+                    <button class="btn-blue" v-on:click="submit">Upload log</button>
+                    <button class="btn-blue" v-on:click="goToHome">Cancel</button>
                 </div>
 
             </div>
@@ -78,7 +83,7 @@ export default {
                 {type: 'NUMBER', text: 'Number',definition:'Numerical information.'},
                 {type: 'BOOLEAN', text: 'Boolean',definition:'True or false.'},
                 {type: 'DATETIME', text: 'Datetime',definition:'Time information.'},
-                {type: 'TRANSITION', text: 'Transition',definition:'Not sure'},
+                {type: 'TRANSITION', text: 'Transition',definition:'An indication of the status of an activity instance. Possible values are start, complete, schedule, suspend, resume, etc.'},
                 {type: 'ACTIVITY', text: 'Activity',definition:'Name of the activity carried out during the event. At least one column with given type should be defined.'},
                 {type: 'RESOURCE', text: 'Resource',definition:'The resource that carried out the event.'},
                 {type: 'TIMESTAMP', text: 'Timestamp',definition:'Date and time of the event execution. At least one column with given type should be specified.'},
@@ -86,12 +91,11 @@ export default {
                 {type: 'END_TIMESTAMP', text: 'End time',definition:'Date and time at which the event ended. If defined, the user must also define "Start time".'},
                 {type: 'DURATION', text: 'Duration',definition:'Duration of the trace or corresponding event.'},
                 {type: 'COST', text: 'Cost',definition:'Cost associated with the trace or corresponding event.'},
-                // {type: 'CASE_ATTRIBUTE', text: 'Case attribute'},
-                // {type: 'EVENT_ATTRIBUTE', text: 'Event attribute'},
             ],
             headers: [],
             types: {},
             values: [],
+            caseAttributes: [],
             isLoading: true,
         }
     },
@@ -104,27 +108,29 @@ export default {
         loadCols() {
             let fileId = localStorage.fileId;
  
-            Service.parseFile(fileId)
+            Service.getLog(fileId)
             .then(response => {
-                this.headers = response.data.header;
-                let types = response.data.types;
-                console.log(response.data.types);
-                console.log(types);
+                let log = response.data.event_log;
+                this.headers = log.columns_header;
+                let types = log.columns_definition;
                 for (let i = 0; i < this.headers.length; i++) {
                     this.types[this.headers[i]] = types[i];                    
                 }
-                console.log(this.types);
-                for (const r of response.data.rows) {
+                for (const r of log.columns_data) {
                     this.values.push(r)
                 }
                 this.isLoading = false;
             })
             .catch(error => {
-              const resMessage =
+                this.isLoading = false;
+                const resMessage =
                 (error.response && error.response.data && error.response.data.message) ||
                 error.message || error.toString();
-                console.log(resMessage)
-                this.isLoading = false;
+                this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    })
             });
         },
         submit() {
@@ -136,26 +142,50 @@ export default {
                 }
             })
             if (alarm){
-                alert("Please define all columns!");
+                this.$notify({
+                        title: 'Warning',
+                        text: 'Please define all the columns!',
+                        type: 'warning'
+                    })
                 return;
             }
             
             this.isLoading = true;
 
-            Service.updateTypes(localStorage.fileId,this.types)
+            var data = {
+                "columns_definition": this.types,
+                "case_attributes": this.caseAttributes
+            }
+
+            Service.updateTypes(localStorage.fileId,data)
             .then(response => {
                 console.log(response)
                 this.isLoading = false;
                 this.$router.push({name: 'parameters'})
             })
             .catch(error => {
-              const resMessage =
+                this.isLoading = false;
+                const resMessage =
                 (error.response && error.response.data && error.response.data.message) ||
                 error.message || error.toString();
-                console.log(resMessage)
+                this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    })
             });
 
         },
+
+        toggleCaseAttribute(head){
+            var ind = this.caseAttributes.indexOf(head);
+            if (ind < 0){
+                this.caseAttributes.push(head);  
+                return;
+            }
+            this.caseAttributes.splice(ind,1);
+        },
+
         goToHome(){
             this.$router.push({name: 'home'});
         }

@@ -5,6 +5,7 @@
   flex-direction: column;
   padding: 20px 30px;
   flex-grow: 1;
+  overflow: hidden;
 }
 
 .case-small-text{
@@ -20,18 +21,14 @@
   .stats-card{
     align-items: flex-start !important;
 
-    h3{
-      font-weight: bold;
-      color: $bs-blue;
-    }
-
-    p{
-      font-weight: bold;
-    }
   }
 
   .case-performance{
     padding-right: 50px
+  }
+
+  .case-recommendations{
+    margin-left: 5px;
   }
 }
 
@@ -42,7 +39,7 @@
 .switch-views{
   display: flex;
   justify-content: center;
-  background-color: $bs-white;
+  background-color: $k-white;
   border-radius: 10px;
 
   .btn{
@@ -50,7 +47,7 @@
     padding: 10px;
     border-radius: 8px;
     border: none;
-    background-color: $bs-blue3;
+    background-color: $k-blue3;
     transition: 0.2s;
 
     &:hover{
@@ -60,51 +57,58 @@
     
   }
   .btn.active{
-    background-color: $bs-blue4;
+    background-color: $k-blue4;
   }
 }
 
 
 // tabs
 
-.tabs-container {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  background-color: $bs-white;
-  padding: 15px;
+.tabs-component {
+  padding: 5px;
   border-radius: 10px;
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
 
-  .tabs-header{
+  .tabs-component-panels{
     display: flex;
-    flex-direction: row;
-  }
-  input[type="radio"] {
-    display: none;
+    flex-grow: 1;
   }
 
-  .tab-label {
-    padding: 5px 10px;
-    border-bottom: 2px solid $bs-gray2;
-    transition: 0.2s;
-    
-    &:hover{
-      cursor: pointer;
-      filter: brightness(98%);
-    }
-  }
-
-  .tab {
+  .tabs-component-panel {
     width: 100%;
     height: 100%;
     order: 1;
     display: flex;
     flex-grow: 1;
+    flex-direction: column;
   }
 
-  input[type="radio"]:checked + .tab-label {
-    color: $bs-blue;
-    border-bottom: 2px solid $bs-blue;
+  .tabs-component-tabs{
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 10px;
+
+    .tabs-component-tab {
+      padding: 0px 5px;
+      border-bottom: 2px solid $k-gray2;
+      transition: 0.2s;
+      list-style-type: none;
+      
+      &:hover{
+        cursor: pointer;
+        filter: brightness(98%);
+      }
+
+      &.is-active{
+        color: $k-blue;
+        border-bottom: 2px solid $k-blue;
+      }
+    }
+    
   }
+
+
 }
 

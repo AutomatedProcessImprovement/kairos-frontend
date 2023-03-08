@@ -21,6 +21,7 @@ that contains all the variables.
 @import 'parameters.scss';
 @import 'error.scss';
 @import 'tooltip.scss';
+@import 'notification.scss';
 
 
 #app{
@@ -30,54 +31,59 @@ that contains all the variables.
 
 body {
   margin: 0;
-  font-family: $bs-font-sans-serif;
+  font-family: $k-font-sans-serif;
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
-  background-color: $bs-gray1;
+  background-color: $k-gray1;
 }
 
 
 *, ::after, ::before {
   box-sizing: border-box;
-  color: $bs-black;
+  color: $k-black;
   padding: 0;
   margin: 0;
 }
 
 small{
-  color: $bs-blue2;
+  color: $k-blue2;
 }
 
-h1,h2,h3,h4,h5,h6{
-  font-weight: normal;
-}
+// h1,h2,h3,h4,h5,h6{
+//   font-weight: normal;
+// }
 
 p,th,a,div {
   font-size: 14px;
 }
 
+.pointer{
+  cursor: pointer;
+
+}
+
 a{
   text-decoration: none;
-  color: $bs-black;
+  color: $k-black;
   cursor: pointer;
 }
 
 th {
   font-weight: bold;
   text-transform: uppercase;
-  color: $bs-blue2;
+  color: $k-blue2;
 }
 
 table {
-  background-color: $bs-white;
+  background-color: $k-white;
   border-collapse: collapse;
   border-radius: 10px;
 
 }
 
 td{
-  border-top: 1px solid $bs-gray1;
+  border-top: 1px solid $k-gray1;
 }
 
 td, th {
@@ -85,23 +91,26 @@ td, th {
   text-align: center;
 }
 
-.status{
+.case-recommendations{
   border-radius: 5px;
-  color: $bs-white;
+  color: $k-white;
   text-transform: uppercase;
-  display: inline;
   padding: 0px 5px;
+  display: inline-block;
+  width: 130px;
+  font-size: 0.7rem;
   
-  &.open{
-    background: linear-gradient(135deg, $bs-green1 5%, $bs-green2 100%);
+  &.available{
+    background: linear-gradient(135deg, $k-green1 5%, $k-green2 100%);
   }
 
-  &.completed{
-    background: linear-gradient(135deg, #EC722D 0%, #EC2D2D 100%, #CF1010 100%);    }
+  &.unavailable{
+    background: linear-gradient(135deg, #AAAAAA 0%, #979797 100%);    
+  }
 }
 
 .shadow{
-  box-shadow: 0px 10px 27px rgba(0, 0, 0, 0.05);
+  box-shadow: 0px 20px 27px rgba(0, 0, 0, 0.05);
 }
 
 .bold{
@@ -127,18 +136,38 @@ td, th {
 
 .divider{
   height: 2px;
-  background-color: $bs-blue2;
+  background-color: $k-blue2;
   margin: 5px 0px;
   border-radius: 2px;
 }
 
 .warning{
-  color: $bs-red;
+  color: $k-red;
 }
 
 .blue{
-  color: $bs-blue;
+  color: $k-blue;
 } 
+
+.black{
+  color: $k-black
+}
+
+.green{
+  color: $k-green2
+}
+
+.background-purple{
+  background-color: $k-purple;
+}
+
+.background-blue5{
+  background-color: $k-blue5;
+}
+
+.background-orange2{
+  background-color: $k-orange2;
+}
 
 #resources{
   padding: 20px 30px;
@@ -150,15 +179,40 @@ td, th {
 select,
 input{
   padding: 5px;
-  border: 1px solid $bs-gray2;
+  border: 1px solid $k-gray2;
   border-radius: 8px;
   margin: 0px;
 
   &:focus{
-      outline: 2px solid $bs-blue;
+      outline: 2px solid $k-blue;
   }
 }
 
 input::placeholder{
-  color: $bs-gray2;
+  color: $k-gray2;
+}
+
+.btn-blue{
+  color: $k-white;
+  background-color: $k-blue;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  width:max-content;
+
+  &.margin{
+      margin-left: 10px;
+  }
+
+  &:hover{
+      filter: brightness(98%);
+      cursor: pointer;
+  }
+
+  &:disabled{
+    filter: opacity(50%);
+    cursor: auto;
+  }
 }

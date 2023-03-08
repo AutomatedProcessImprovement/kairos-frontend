@@ -11,13 +11,13 @@
 
   .column{
     padding: 15px;
-    background-color: $bs-white;
+    background-color: $k-white;
     border-radius: 10px;
     margin-right: 10px;
   }
 
   .recommendation-details{
-    background-color: $bs-white;
+    background-color: $k-white;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
@@ -56,7 +56,7 @@
         padding: 10px;
         transition: .2s;
         min-width: 420px;
-        background-color: $bs-blue3;
+        background-color: $k-blue3;
         border-radius: 10px;
 
         .recommendation-heading{
@@ -65,7 +65,7 @@
           justify-content: space-between;
 
           .btn{
-            background-color: $bs-white;
+            background-color: $k-white;
             padding: 5px;
             border-radius: 5px;
             border: none;
@@ -75,7 +75,7 @@
             }
 
             &.selected{
-              background-color: $bs-blue4;
+              background-color: $k-blue4;
             }
           }
         }
@@ -91,7 +91,7 @@
             flex-direction: column;
             
             .btn{
-              background-color: $bs-white;
+              background-color: $k-white;
               border-radius: 5px;
               border: none;
               padding: 5px;

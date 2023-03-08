@@ -1,16 +1,7 @@
 import axios from "axios"; // responsible for communicating with api
 const http = axios.create({
-  baseURL: "http://localhost:5000"
+  baseURL: "http://localhost:5000/api"
 });
-
-import router from '@/router';
-
-http.interceptors.response.use(null, error => {
-    console.log(error.response);
-    router.push({name: 'error', params: {responseStatus: error.response.status}});
-    return Promise.reject(error);
-  });
-
 
 class Service {
 
@@ -18,28 +9,32 @@ class Service {
         return http.get('/cases');
     }
 
+    getCasesByLog(fileId) {
+        return http.get(`event_logs/${fileId}/cases`);
+    }
+
     getCase(caseId){
         return http.get(`/cases/${caseId}`)
     }
 
     getLogs() {
-        return http.get('/eventlogs');
+        return http.get('/event_logs');
     }
 
     getLog(fileId){
-        return http.get(`/eventlogs/${fileId}`)
+        return http.get(`/event_logs/${fileId}`)
+    }
+
+    getParameters(fileId){
+        return http.get(`/event_logs/${fileId}/parameters`)
     }
 
     uploadFile(file){
         return http.post(`/upload`,file,{ headers: { 'Content-Type': 'multipart/form-data'} })
     }
 
-    parseFile(fileId){
-        return http.get(`/parse/${fileId}`)
-    }
-
-    updateTypes(fileId,types){
-        return http.post(`/update/${fileId}`,types, {headers: {
+    updateTypes(fileId,data){
+        return http.put(`/update/${fileId}`,data, {headers: {
             'Content-Type': 'application/json'
           }})
     }
@@ -49,7 +44,22 @@ class Service {
             'Content-Type': 'application/json'
           }})
     }
-    
+
+    getProjectStatus(fileId){
+        return http.get(`/projects/${fileId}/status`)
+    }
+
+    streamProjectStatus(fileId){
+        return http.get(`/projects/${fileId}/status/stream`)
+    }
+
+    startSimulation(fileId){
+        return http.put(`/projects/${fileId}/simulate/start`)
+    }
+
+    stopSimulation(fileId){
+        return http.put(`/projects/${fileId}/simulate/stop`)
+    }
 }
 
 export default new Service();

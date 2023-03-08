@@ -2,7 +2,7 @@
     <div class="analytical-view">
       <div class="recommendations-list shadow">
         <div class="row center">
-          <h4>Recommendations</h4>
+          <h4 bold>Recommendations</h4>
           <tooltip-component>
             <template v-slot:icon>
               <ion-icon name="information-circle-outline"></ion-icon>
@@ -27,73 +27,65 @@
             </template>
           </tooltip-component>
         </div>
-        <div class="recommendation" v-for="(r,index) in currentCase.recommendations" :key="index" 
-        @click="selectRecommendation(index)" :class="{selected: index === selectedRec}">
-          <p>{{r.name}}</p>
-          <small>Predicted effect: <span class="bold">{{ r.effect }} {{ kpi.measurement }}</span> </small>
-          <div class="divider"></div>
-          <small>Type: <span class="bold"></span> </small>
-          <small>Aspect: <span class="bold">Control-flow</span> </small>
-        </div>
-      </div>
-  
-      <div class="tabs-container shadow">
-        <div class="tabs-header">
-            <input type="radio" id="tab-diagram" name="tabs-container" checked="checked" @click="selectedTab='diagram'">
-            <label for="tab-diagram" class="tab-label">Process model</label>
-            
-            <input type="radio" id="tab-details" name="tabs-container" @click="selectedTab='details'">
-            <label for="tab-details" class="tab-label">Calculation details</label>
-        </div>
 
-          <div v-show="selectedTab==='diagram'" class="tab tab-diagram">
+        <tabs :options="tabOptions.recommendations">
+          <tab name="Past" id="tab-past">       
+            <recommendation-component v-for="activity in oldActivities" v-bind:key="activity"
+              :batch="activity"
+              :current="false"
+              :parameters="myParameters"
+              :selectedRec="selectedRec"
+              @recommendationSelected="selectRecommendation"
+              ></recommendation-component>
+          </tab>
+          <tab name="Current" id="tab-current">
+            <recommendation-component
+              :batch="lastActivity"
+              :current="true"
+              :selectedRec="selectedRec"
+              :parameters="myParameters"
+              @recommendationSelected="selectRecommendation"
+              ></recommendation-component>
+          </tab>
+        </tabs>
+      </div>
+
+      <div class="recommendation-details shadow">
+        <h4 bold>Recommendation details</h4>
+        <tabs :options="tabOptions.recommendationDetails">
+          <tab name="Process model" id="tab-diagram">
             <legend-component></legend-component>
-            <vue-cytoscape
-            :currentCase="currentCase"
-            :selectedRec="selectedRec"
-            ></vue-cytoscape>
-            
-          </div>
-
-          <div v-show="selectedTab==='details'" class="tab tab-details">
-            <div v-if="selectedRec !== null" class="recommendation-details">
-              
-                  <div class="row">
-                    <div class="column">
-                      <h4> Description</h4>
-                      <div class="norb-text">
-                        <span>Case predicted to last {{ currentCase.prediction.effect }} {{ kpi.measurement }}. </span>
-                        <span v-if="currentCase.prediction.effect > kpi.value">This violates the target. </span>
-                        <span>It is recommended to perform {{currentCase.recommendations[selectedRec].name}}. </span>
-                        <br/>
-                        <span>Probability: {{currentCase.prediction.probability}}% Uncertainty: {{currentCase.prediction.uncertainty}}%</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="column">
-                      <h4>Model Description</h4>
-      
-                      <p>Accuracy: {{currentCase.recommendations[selectedRec].accuracy}}%</p>
-                      <p>Recall: {{currentCase.recommendations[selectedRec].recall}}%</p>
-                      <p>Precision: {{currentCase.recommendations[selectedRec].precision}}%</p>
-      
-                    </div>
+              <vue-cytoscape
+              :parameters="myParameters"
+              :currentCase="currentCase"
+              :selectedRec="selectedRec"
+              @loading="handleLoading"
+              ></vue-cytoscape>
+          </tab>
   
-                    <div class="column">
-                      <h4>Predicted Effect</h4>
-                      <p> Case {{ kpi.name }} is predicted to 
-                        <span v-if="currentCase.prediction.effect - currentCase.recommendations[selectedRec].effect > 0">decrease</span>
-                        <span v-else>increase</span>
-                        by {{currentCase.prediction.effect - currentCase.recommendations[selectedRec].effect}} {{ kpi.measurement }}.</p>
-                      <p>Probability: {{currentCase.recommendations[selectedRec].probability}}%,
-                      uncertainty: {{currentCase.recommendations[selectedRec].uncertainty}}%</p>
-                    </div>
-                  </div>                  
-              </div>
-          <h3 v-else>Please select a recommendation.</h3>
-          </div>
+          <tab name="Calculation details" id="tab-details" class="tab-details">
+            <div v-if="selectedRecObject" class="details">
+                
+              <h4> Model description</h4>
+                <div v-if="selectedRecObject.type === 'TREATMENT_EFFECT'">
+                    <p>CATE score: {{ selectedRecObject.output.cate }}</p>
+                    <p>Probability if treated: {{ selectedRecObject.output.proba_if_treated * 100 }} %</p>
+                    <p>Probability if untreated: {{ selectedRecObject.output.proba_if_untreated * 100 }} %</p>
+
+                  </div>
+                  <div  v-else>
+                    <p>Accuracy: {{ selectedRecObject.plugin.accuracy * 100 }} %</p>
+                    <p>Recall: {{ selectedRecObject.plugin.recall * 100 }} %</p>
+                    <p>Precision: {{ selectedRecObject.plugin.precision * 100 }} %</p>
+                  </div>
+                  
+            </div>
+        <h4 v-else>Please select a recommendation.</h4>
+  
+          </tab>
+        </tabs>
       </div>
+
     </div>
   </template>
   
@@ -101,26 +93,48 @@
   import VueCytoscape from './VueCytoscape.vue';
   import LegendComponent from './LegendComponent.vue';
   import TooltipComponent from './TooltipComponent.vue';
+  import RecommendationComponent from './RecommendationComponent.vue';
   
     export default {
       name: 'CasePage',
       components: {
         VueCytoscape,
         LegendComponent,
-        TooltipComponent
+        TooltipComponent,
+        RecommendationComponent
       },
   
       props: {
           currentCase: Object,
-          kpi: Object
+          parameters: Object
       },
   
       data() {
         return {
-          selectedRec: null,
-          selectedTab: 'diagram',
+          selectedRec: {},
+          selectedRecObject: null,
+          oldActivities: {},
+          lastActivity: {},
+          tabOptions: {
+            recommendations: { defaultTabHash: 'tab-current', useUrlFragment: false},
+            recommendationDetails: { defaultTabHash: 'tab-diagram', useUrlFragment: false}
+        },
         }
       },
+
+      watch:{
+        currentCase(value){
+          this.oldActivities = value.activities.slice(0,-1);
+          this.lastActivity = value.activities.slice(-1)[0];
+        }
+      },
+
+      computed: {
+        myParameters(){
+          return JSON.parse(JSON.stringify(this.parameters))
+        }
+      },
+
       methods: {
   
         handleError: function(err) {
@@ -133,8 +147,9 @@
           console.log('diagram loading');
         },
   
-        selectRecommendation(index){
-          this.selectedRec = index;
+        selectRecommendation(selectedRec){
+          this.selectedRec = selectedRec;
+          this.selectedRecObject = this.currentCase.activities.filter(a => a.event_id === this.selectedRec.batchId)[0].prescriptions[this.selectedRec.index];
         }
       
       },

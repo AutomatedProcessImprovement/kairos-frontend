@@ -1,31 +1,33 @@
 <template>
   <side-bar></side-bar>
+  <loading v-if="isLoading"></loading>
   <div id="case">
     <div class="case-top">
       <router-link :to="{name: 'cases'}"><ion-icon name="chevron-back-outline"></ion-icon> Return</router-link>
-      <h2>Case #{{caseId}}
-        <div class="status" :class="[currentCase.status === 'Open' ? 'open' : 'completed']">
-          {{ currentCase.status }}
+      <div class="row">
+        <h2>Case #{{caseId}}</h2>
+        <div class="case-recommendations" :class="[recommendationsAvailable ? 'available' : 'unavailable']"> 
+          {{ recommendationsAvailable ? "recommendations available" : "no new recommendations" }}
         </div>
-      </h2>
+      </div>
   
       <div class="stats">
-        <div class="stats-card column">
-          <h4>KPI</h4>
-          <h3>{{ kpi.value }} {{ kpi.measurement }}</h3>
-          <small>Case {{ kpi.name }}</small>
+        <div v-if="parameters.kpi" class="stats-card column">
+          <p>KPI</p>
+          <h3 class="blue">{{ parameters.kpi.value }}</h3>
+          <small>Case {{ parameters.kpi.column }}  {{ parameters.kpi.operator }}</small>
         </div>
         <div class="stats-card">
           <div class="case-performance">
-            <h4>Case performance</h4>
-            <p>{{ caseKpi }} {{ kpi.measurement }}</p>
-            <small>Case {{ kpi.name }}</small>
+            <p>Case performance</p>
+            <p :class="['bold', caseKpi.outcome? 'green' : 'warning']">{{ caseKpi.value }}</p>
+            <small>Case {{ caseKpi.column }}</small>
           </div>
           <div class="case-details">
-            <h4>Case details</h4>
+            <p>Case details</p>
             <div class="row">
               <div class="column" v-for="(value,name) in caseDetails" :key='name'>
-                <p>{{ value }}</p>
+                <p class="bold">{{ value }}</p>
                 <small>{{ name }}</small>
               </div>
             </div>
@@ -35,16 +37,16 @@
     </div>
     <div class="switch-views shadow">
       <button class="btn" :class="{ active: view==='analytical' }" @click="selectView('analytical')">Analytical</button>
-      <button class="btn" :class="{ active: view==='operational' }" @click="selectView('operational')">Operational</button>
+      <button class="btn" :class="{ active: view==='operational' }">Operational</button>
       <button class="btn" :class="{ active: view==='tactical' }">Tactical</button>
     </div>
     <operational-view v-show="view==='operational'"
       :currentCase="currentCase"
-      :kpi="kpi"
+      :kpi="parameters.kpi"
       ></operational-view>
       <analytical-view v-show="view==='analytical'"
       :currentCase="currentCase"
-      :kpi="kpi"
+      :parameters="parameters"
     ></analytical-view>
   </div>
   </template>
@@ -54,13 +56,16 @@
     import OperationalView from '@/components/OperationalView.vue';
     import AnalyticalView from '@/components/AnalyticalView.vue';
     import SideBar from '@/components/SideBar.vue';
+    import Loading from "@/components/LoadingComponent.vue";
+
 
     export default {
       name: 'CasePage',
       components: {
         SideBar,
         OperationalView,
-        AnalyticalView
+        AnalyticalView,
+        Loading
       },
       params: {
           caseId:{
@@ -69,56 +74,76 @@
       },
       data() {
         return {
+          isLoading: false,
           currentCase: {},
-          kpi: {},
-          startDate: "None",
-          endDate: new Date("2022-12-22T10:30:00"),
-          lastUpdate: "None",
+          parameters: {},
           view: null,
-          caseKpi: null,
+          caseKpi: {value: null,column: null, outcome: false},
           caseDetails: {},
+          recommendationsAvailable: false,
         }
       },
       methods: {
         getCase(){
+          this.isLoading = true;
           this.caseId = (this.$route.params.caseId)
           Service.getCase(this.caseId).then(
             (response) => {
               console.log(response.data);
               this.currentCase = response.data.case;
-              this.kpi = response.data.kpi;
-              this.getAdditionalInformation();
+              this.getParameters();
             },
             (error) => {
-              this.content =
+              const resMessage=
                 (error.response &&
                   error.response.data &&
                   error.response.data.message) ||
                 error.message ||
                 error.toString();
+                this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    }) 
+            }
+          );
+        },
+
+        getParameters(){
+          Service.getParameters(localStorage.fileId).then(
+            (response) => {
+              this.parameters.kpi = response.data.kpi;
+              this.parameters.caseCompletion = response.data.caseCompletion;
+              this.parameters.alarmThreshold = response.data.alarmThreshold;
+              this.parameters.treatment = response.data.treatment;
+              this.parameters.columnsDefinition = response.data.columnsDefinition;
+              this.getAdditionalInformation();
+            },
+            (error) => {
+              const resMessage =
+                (error.response &&
+                  error.response.data &&
+                  error.response.data.message) ||
+                error.message ||
+                error.toString();
+                this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    }) 
             }
           );
         },
 
         getAdditionalInformation(){
-          const arr = Object.entries(this.currentCase)
-          const obj = arr.filter(([key,value]) => {
-            return typeof value !== "object" && key !== "_id" && key !== 'status'
-          });
-          this.caseDetails = Object.fromEntries(obj);
-
-          if (!this.currentCase.activities.length) {
-            return;
-          } 
-          var options = {dateStyle:"medium",timeStyle: "short"};
-          this.startDate = new Date(this.currentCase.activities[0].timestamp).toLocaleString("en-GB",options)
+          this.caseDetails = this.currentCase.case_attributes;
+          const caseActivities = this.currentCase.activities
+          this.recommendationsAvailable = caseActivities[caseActivities.length - 1]['prescriptions'].length === 0 ? false: true;
           
-          var lastActivity = this.currentCase.activities[this.currentCase.activities.length - 1]
-          var endDate = new Date(lastActivity.timestamp).toLocaleString("en-GB",options)
-          this.lastUpdate = "Task " + lastActivity.name + " completed by " + lastActivity.resource.name + " on " + endDate;
-          
-          this.caseKpi = Math.ceil(Math.abs(this.endDate - (new Date(this.currentCase.activities[0].timestamp)))/(1000*60*60*24))    
-          
+          if (this.currentCase.case_performance) {
+            this.caseKpi = this.currentCase.case_performance;  
+          }           
+          this.isLoading = false;
         },
 
         selectView(view){

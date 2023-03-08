@@ -14,28 +14,38 @@ cytoscape.use( dagre );
     
         name: 'vue-cytoscape',
         props: {
-          currentCase: {
-            type: Object
-          },  
-          selectedRec: {
-            type: Number
-          }
-          
+          parameters: Object,
+          currentCase: Object, 
+          selectedRec: Object,
         },
 
         data: function() {
           return {
-            cy: null
+            cy: null,
+            elems: [],
+            recommendationTypes: {
+                    'ALARM': null,
+                    'NEXT_ACTIVITY': {
+                      label: (recommendation) => recommendation.output,
+                      nodeClass: 'nextActivity',
+                      edgeClass: 'nextActivityEdge'
+                    },
+                    'TREATMENT_EFFECT': {
+                      label: (recommendation) => recommendation.output.treatment[0][0].value,
+                      nodeClass: 'intervention',
+                      edgeClass: 'interventionEdge',
+                      isValidNode: (recommendation,columnsDefinition) =>
+                        columnsDefinition[recommendation.output.treatment[0][0].column] === 'ACTIVITY' &&
+                        recommendation.output.treatment[0][0].operator === 'EQUAL'
+                    }
+                  }
           };
         },
 
         watch: {
-          currentCase: function(){
+          parameters: function(){
             this.$emit('loading');      
             this.createDiagram();
-          },
-          selectedRec: function(newVal,oldVal){
-            this.selectRecommendation(newVal,oldVal);
           },
           cy: function(){
             this.displayDiagram();
@@ -47,12 +57,16 @@ cytoscape.use( dagre );
               name:'dagre',
               rankDir: 'LR', 
               align: 'DR',
-                          }).run()
+            }).run()
+            // var node = this.cy.getElementById("an" + (this.currentCase.activities.length-1));
+            // this.cy.fit(node,100);
+            // this.cy.zoom(1);
           },
 
           createDiagram(){
-            var width = 100;
-            var height = 80;
+            var width = 120;
+            var height = 60;
+            var lineWidth = 2;
             var cy = cytoscape({
                 container: document.getElementById('cy'),
                 // autoungrabify: true, // lets you grab nodes in the diagram
@@ -60,12 +74,19 @@ cytoscape.use( dagre );
                 style: [
                 
                   {
-                    selector: '.recommendation',
+                    selector: '.nextActivity',
                     style : {
-                      'label' : 'data(id)',
-                      'border-color' : 'black'
+                      'label' : 'data(label)',
+                      'border-color' : '#F2994A'
                     }
                   },
+                  {
+                  selector: '.nextActivityEdge',
+                  style: {
+                    'line-color' : '#F2994A',
+                    'target-arrow-color': '#F2994A',
+                  }
+                },
                   
                 {
                   selector: '.activity',
@@ -75,42 +96,32 @@ cytoscape.use( dagre );
                   }
                 },
                 {
-                  selector: '.prediction',
-                  style: {
-                    'label' : 'data(label)',
-                    'border-style' : 'dashed',
-                    'border-color' : '#d7d7d7'
-                  }
-                },
-
-                {
                   selector: '.activityEdge',
                   style: {
                     'line-color' : '#d7d7d7',
                     'target-arrow-color': '#d7d7d7',
                   }
                 },
-
                 {
-                  selector: '.recommendationEdge',
+                  selector: '.intervention',
                   style: {
-                    'line-color' : 'black',
-                    'target-arrow-color': 'black',
+                    'label' : 'data(label)',
+                    'border-color' : '#BB6BD9'
                   }
                 },
 
                 {
-                  selector: '.predictionEdge',
+                  selector: '.interventionEdge',
                   style: {
-                    'line-color' : '#d7d7d7',
-                    'line-style': 'dashed',
-                    'target-arrow-color': '#d7d7d7',
+                    'line-color' : '#BB6BD9',
+                    'target-arrow-color': '##BB6BD9',
                   }
                 },
 
                 {
-                    selector: '.selectedRec',
+                    selector: '.selectedNode',
                     style: {
+                      'label': 'data(label)',
                       'border-color' : '#579aff',
                     }
                   },
@@ -128,7 +139,7 @@ cytoscape.use( dagre );
                     'text-halign': 'center',
                     'shape': 'round-rectangle',
                     'background-color' : 'white',
-                    'border-width' : 1,
+                    'border-width' : lineWidth,
                     'text-wrap' : 'wrap',
                     'text-max-width' : width-10,
                     'height' : height,
@@ -142,11 +153,10 @@ cytoscape.use( dagre );
                   style: {
                     'curve-style': 'bezier',
                     'target-arrow-shape': 'triangle',
-                    'width': 1,
+                    'width': lineWidth,
                     'label' : node => node.data('label') > 1 ? node.data('label') : "",
                     'font-size' : 12,
                     'font-family' : 'arial',
-                    'color' : '#7e7e7e'
                   }
                 },
                 {
@@ -156,7 +166,6 @@ cytoscape.use( dagre );
                       'height' : 40,
                       'width' : 40,
                       'border-color' : '#d7d7d7',
-
                     }
                   },
                   {
@@ -174,47 +183,24 @@ cytoscape.use( dagre );
             });
 
             const activities = this.currentCase.activities;
-            const recommendations = this.currentCase.recommendations;
-            const prediction = this.currentCase.prediction;
-            
+            const l = activities.length;
             var elems = [];
-
+            
             elems.push({
                   group: "nodes",
                   data: {
-                    id: "an0", 
+                    id: "an-1", 
                   },
                   classes: 'start'
                 });
 
-            for (let i = 1; i < activities.length; i++) {
+            for (let i = 0; i < l; i++) {
               const activity = activities[i];
 
-              if(activity.name === 'End Event'){
-                elems.push({
-                  group: "nodes",
-                  data: {
-                    id: "an"+ i, 
-                    label: content,
-                  },
-                  classes: 'end'
-                });
-
-                elems.push({
-                  group: "edges",
-                  data: {
-                    id: "ae" + i,
-                    source: "an" + (i-1),
-                    target: "an" + i,
-                  },
-                  classes: 'activityEdge'
-                });
-                break;
-              }
-
               var options = {dateStyle:"short",timeStyle: "short"};
-              var date = new Date(activity.timestamp).toLocaleString("en-GB",options);
-              var content = activity.name + "\n\n" + date + "\n" + activity.resource.name;
+              var date = new Date(activity['TIMESTAMP']).toLocaleString("en-GB",options);
+              var content = activity['ACTIVITY'] + "\n\n" + date;
+              var activityClass = (i === (l-1)) ? 'selectedNode' :'activity';
 
               elems.push({
                 group: "nodes",
@@ -222,7 +208,7 @@ cytoscape.use( dagre );
                   id: "an"+ i, 
                   label: content,
                 },
-                classes: 'activity'
+                classes: activityClass
               });
 
               elems.push({
@@ -234,67 +220,66 @@ cytoscape.use( dagre );
                 },
                 classes: 'activityEdge'
               });
-            }
 
-            var l = activities.length
+              let recommendations = activity.prescriptions;
 
-            if (this.currentCase.status === 'Open'){
-              if (prediction){
+              for (let j=0; j < recommendations.length; j++) {
+                const recommendation = recommendations[j];
+                const recommendationType = this.recommendationTypes[recommendation.type];
+
+                if (!recommendationType) continue;
+                if (recommendationType.isValidNode && !recommendationType.isValidNode(recommendation,this.parameters.columnsDefinition)) continue;
+
+                const label = recommendationType.label(recommendation);
+                const nodeClass = recommendationType.nodeClass;
+                const edgeClass = recommendationType.edgeClass;
+
+                const index = activity.event_id + '-' + j;
                 elems.push({
                   group: "nodes",
                   data: {
-                    id: "pn",
-                    label: prediction.name
+                    id: "rn"+ index, 
+                    label: label,
                   },
-                  classes: 'prediction',
-                });
-    
-                elems.push({
-                  group: "edges",
-                  data: {
-                    id: "pe",
-                    source: "an" + (l-1),
-                    target: 'pn',
-                  },
-                  classes: 'predictionEdge'
-                });
-              }
-             
-  
-              for (let i=0; i < recommendations.length; i++) {
-                elems.push({
-                  group: "nodes",
-                  data: {
-                    id: recommendations[i].name,
-                  },
-                  classes: 'recommendation',
+                  classes: nodeClass
                 });
   
                 elems.push({
                   group: "edges",
                   data: {
-                    id: "re" + i,
-                    source: "an" + (l-1),
-                    target: recommendations[i].name,
+                    id: "re" + index,
+                    source: "an" + i,
+                    target: "rn"+ index,
                   },
-                  classes: 'recommendationEdge'
+                  classes: edgeClass
                 });
               }
             }
 
+            if(this.currentCase.case_completed){
+              elems.push({
+                group: "nodes",
+                data: {
+                  id: "endnode", 
+                },
+                classes: 'end'
+              });
+
+              elems.push({
+                group: "edges",
+                data: {
+                  id: "endedge",
+                  source: "an" + (l-1),
+                  target: "endnode",
+                },
+                classes: 'activityEdge'
+              }); 
+            }
+            this.elems = elems;
             cy.add(elems);
             this.cy = cy;
                             
-            },
-          
-          selectRecommendation(newVal,oldVal){
-            if(oldVal !== null) {
-              this.cy.getElementById(this.currentCase.recommendations[oldVal].name).removeClass('selectedRec')
-              this.cy.getElementById("re" + oldVal).removeClass('selectedEdge')
             }
-            this.cy.getElementById(this.currentCase.recommendations[newVal].name).addClass('selectedRec')
-            this.cy.getElementById("re" + newVal).addClass('selectedEdge')
-          }
                     
         }
       };
