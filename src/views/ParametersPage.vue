@@ -17,7 +17,20 @@
                 </div>
 
                 <div class="parameter">
-                    <p>Case completion</p>
+                    <div class="row">
+                        <p>Case completion</p>
+                        <tooltip-component>
+                            <template v-slot:icon>
+                            <ion-icon name="information-circle-outline"></ion-icon>
+                            </template>            
+                            <template v-slot:title>
+                                <h3 class="bold">What is case completion?</h3>
+                            </template>
+                            <template v-slot:content>
+                            <p>The case completion parameter marks the event that is considered the end of a case.</p>
+                            </template>
+                        </tooltip-component>
+                    </div>
                     <small>Please specify what activity marks the case completion.</small>
                     <select v-model="caseCompletion">
                         <option v-for="activity in activities" :key="activity">{{ activity }}</option>
@@ -25,7 +38,20 @@
                 </div>
 
                 <div class="parameter">
-                    <p>Positive case outcome</p>
+                    <p>Positive case outcome
+                        <tooltip-component>
+                            <template v-slot:icon>
+                            <ion-icon name="information-circle-outline"></ion-icon>
+                            </template>            
+                            <template v-slot:title>
+                                <h3 class="bold">What is positive case outcome?</h3>
+                            </template>
+                            <template v-slot:content>
+                            <p>The positive case outcome parameter marks when the case is considered to have a positive outcome. This is the key performance indicator (KPI) for the log.</p>
+                            <p>For example, if positive case outcome is 'Duration less than or equal 12 days', then all cases that last for 12 days or less are considered to have a positive outcome, and those that do not - negative.</p>
+                            </template>
+                        </tooltip-component>
+                    </p>
                     <small>Please specify what is considered as the positive outcome of the case.</small>
 
                     <div class="input-group">
@@ -112,6 +138,7 @@
 
 <script>
 import Loading from "@/components/LoadingComponent.vue";
+import TooltipComponent from "@/components/TooltipComponent.vue";
 import  Service from "@/services/service.js"
 
 export  default {
@@ -119,6 +146,7 @@ export  default {
 
     components: {
         Loading,
+        TooltipComponent
     },
 
     data () {

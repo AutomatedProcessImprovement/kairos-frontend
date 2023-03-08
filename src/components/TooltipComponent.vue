@@ -15,6 +15,16 @@
   <script>
   export default {
     name: "TooltipComponent",
+
+    props: {
+          color: {
+            type: String,
+            default: 'black'
+          },
+          width: {
+            type: 
+          }
+      },
     
     data() {
       return {
