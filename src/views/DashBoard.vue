@@ -100,16 +100,8 @@ export default {
         this.getLogs();
     },
 
-    mounted(){
-        this.timer = setInterval(() => {
-            if (localStorage.fileId){
-                this.getProjectStatus();
-            }
-        }, 4000)
-    },
-
     beforeUnmount() {
-        clearInterval(this.timer);
+        if(this.timer) clearInterval(this.timer);
     },
 
     methods: {
@@ -125,6 +117,11 @@ export default {
                     if (!localStorage.fileId){
                         localStorage.fileId = this.eventlogs[0]._id.toString();
                     }
+                    this.timer = setInterval(() => {
+                        if (localStorage.fileId){
+                            this.getProjectStatus();
+                        }
+                    }, 4000)
                     this.selectedLog = this.eventlogs.find(e => e._id.toString() === localStorage.fileId);
                     this.getProjectStatus();
                 },
