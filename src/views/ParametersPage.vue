@@ -19,9 +19,9 @@
                 <div class="parameter">
                     <div class="row">
                         <p>Case completion</p>
-                        <tooltip-component>
+                        <tooltip-component :iconSize="15" :tooltipSize="200">
                             <template v-slot:icon>
-                            <ion-icon name="information-circle-outline"></ion-icon>
+                            <ion-icon class="small" name="information-circle-outline"></ion-icon>
                             </template>            
                             <template v-slot:title>
                                 <h3 class="bold">What is case completion?</h3>
@@ -38,10 +38,11 @@
                 </div>
 
                 <div class="parameter">
-                    <p>Positive case outcome
-                        <tooltip-component>
+                    <div class="row">
+                        <p>Positive case outcome</p>
+                        <tooltip-component :iconSize="15" :tooltipSize="200">
                             <template v-slot:icon>
-                            <ion-icon name="information-circle-outline"></ion-icon>
+                                <ion-icon class="small" name="information-circle-outline"></ion-icon>
                             </template>            
                             <template v-slot:title>
                                 <h3 class="bold">What is positive case outcome?</h3>
@@ -51,7 +52,7 @@
                             <p>For example, if positive case outcome is 'Duration less than or equal 12 days', then all cases that last for 12 days or less are considered to have a positive outcome, and those that do not - negative.</p>
                             </template>
                         </tooltip-component>
-                    </p>
+                    </div>
                     <small>Please specify what is considered as the positive outcome of the case.</small>
 
                     <div class="input-group">
@@ -92,7 +93,21 @@
                 </div>
 
                 <div class="parameter">
-                    <p>Intervention</p>
+                    <div class="row">
+                        <p>Intervention</p>
+                        <tooltip-component :iconSize="15" :tooltipSize="200">
+                            <template v-slot:icon>
+                                <ion-icon class="small" name="information-circle-outline"></ion-icon>
+                            </template>            
+                            <template v-slot:title>
+                                <h3 class="bold">What is positive intervention?</h3>
+                            </template>
+                            <template v-slot:content>
+                            <p>The intervention parameter indicates the best possible course of action for achieveing a positive outcome as perceoved by the user.</p>
+                            <p>For example, if intervention is 'Activity equals offer-sent', then an algorithm estimates the causal effect of performing this activity at a given point in time. Causal effect may be positive or negative.</p>
+                            </template>
+                        </tooltip-component>
+                    </div>
                     <small>Please specify what is considered as intervention in the ongoing case.</small>
                     <div class="input-group">
                         <small>Intervention type</small>

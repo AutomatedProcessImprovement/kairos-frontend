@@ -21,8 +21,13 @@
             type: String,
             default: 'black'
           },
-          width: {
-            type: 
+          iconSize: {
+            type: Number,
+            default: 25
+          },
+          tooltipSize: {
+            type: Number,
+            default: 750
           }
       },
     
