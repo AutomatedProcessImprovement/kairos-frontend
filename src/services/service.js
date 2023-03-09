@@ -10,7 +10,7 @@ class Service {
     }
 
     getCasesByLog(fileId) {
-        return http.get(`event_logs/${fileId}/cases`);
+        return http.get(`/event_logs/${fileId}/cases`);
     }
 
     getCase(caseId){

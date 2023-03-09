@@ -30,19 +30,7 @@
     <table class="shadow">
       <thead>
       <tr>
-        <th v-for="header in headers" :key="header"> {{ header }}
-          <!-- <tooltip-component v-if="header==='Intervened'">
-            <template v-slot:icon>
-              <ion-icon name="information-circle-outline"></ion-icon>
-            </template>            
-            <template v-slot:title>
-                <h3>Intervened</h3>
-            </template>
-            <template v-slot:content>
-              <p>Indicates whether another recommendation has already been implemented in this case.</p>
-            </template>
-          </tooltip-component> -->
-        </th>
+        <th v-for="header in headers" :key="header"> {{ header }}</th>
       </tr>
       </thead>
       <tbody>
@@ -92,6 +80,7 @@ export default {
       this.isLoading = true;
       Service.getCasesByLog(localStorage.fileId).then(
         (response) => {
+          console.log(response);
           this.cases = response.data.cases;
           if (this.cases.length > 0) this.formatCases();
           else this.isLoading = false;
