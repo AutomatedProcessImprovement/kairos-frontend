@@ -1,6 +1,6 @@
 import axios from "axios"; // responsible for communicating with api
 const http = axios.create({
-  baseURL: 'http://localhost:5000/frontend_api'
+  baseURL: "https://kairos.cloud.ut.ee/frontend_api"
 });
 
 class Service {
