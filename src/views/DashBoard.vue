@@ -216,12 +216,8 @@ export default {
                     error.response.data &&
                     error.response.data.message) ||
                     error.message ||
-                    error.toString();
-                    this.$notify({
-                        title: 'An error occured',
-                        text: resMessage,
-                        type: 'error'
-                    }) 
+                    error.toString(); 
+                    console.log(resMessage);
                 }
             ); 
         },
