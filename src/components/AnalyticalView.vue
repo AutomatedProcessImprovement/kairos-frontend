@@ -3,10 +3,7 @@
       <div class="recommendations-list shadow">
         <div class="row center">
           <h4 bold>Recommendations</h4>
-          <tooltip-component>
-            <template v-slot:icon>
-              <ion-icon name="information-circle-outline"></ion-icon>
-            </template>            
+          <tooltip-component :iconSize="20" :tooltipSize="600">           
             <template v-slot:title>
                 <h3 class="bold">Recommendation info</h3>
             </template>

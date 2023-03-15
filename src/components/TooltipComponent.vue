@@ -1,10 +1,10 @@
 <template>
     <div id="tooltip">
       <div class="row center" @click="toggleTooltip">
-        <slot name="icon"/>
+        <ion-icon :style="iconStyle" :name="icon"></ion-icon>
       </div>
       <div class="relative">
-        <div v-if="showTooltip" class="tooltip">
+        <div v-if="showTooltip" class="tooltip" :style="tooltipStyle">
           <slot name="title"/>
           <slot name="content"/>
         </div>
@@ -17,6 +17,10 @@
     name: "TooltipComponent",
 
     props: {
+          icon:{
+            type: String,
+            default: 'information-circle-outline'
+          },
           color: {
             type: String,
             default: 'black'
@@ -30,6 +34,22 @@
             default: 750
           }
       },
+
+    computed:{
+      iconStyle(){
+        return {
+          color: this.color,
+          height: this.iconSize + 'px',
+          width: this.iconSize + 'px'}
+      },
+      tooltipStyle(){
+        return{
+          width: this.tooltipSize + 'px',
+          height: 'max-content'
+        }
+      }
+
+    },
     
     data() {
       return {

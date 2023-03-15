@@ -19,10 +19,7 @@
                 <div class="parameter">
                     <div class="row">
                         <p>Case completion</p>
-                        <tooltip-component :iconSize="15" :tooltipSize="200">
-                            <template v-slot:icon>
-                            <ion-icon class="small" name="information-circle-outline"></ion-icon>
-                            </template>            
+                        <tooltip-component :iconSize="15" :tooltipSize="400">  
                             <template v-slot:title>
                                 <h3 class="bold">What is case completion?</h3>
                             </template>
@@ -40,7 +37,7 @@
                 <div class="parameter">
                     <div class="row">
                         <p>Positive case outcome</p>
-                        <tooltip-component :iconSize="15" :tooltipSize="200">
+                        <tooltip-component :iconSize="15" :tooltipSize="400">
                             <template v-slot:icon>
                                 <ion-icon class="small" name="information-circle-outline"></ion-icon>
                             </template>            
@@ -95,12 +92,12 @@
                 <div class="parameter">
                     <div class="row">
                         <p>Intervention</p>
-                        <tooltip-component :iconSize="15" :tooltipSize="200">
+                        <tooltip-component :iconSize="15" :tooltipSize="400">
                             <template v-slot:icon>
                                 <ion-icon class="small" name="information-circle-outline"></ion-icon>
                             </template>            
                             <template v-slot:title>
-                                <h3 class="bold">What is positive intervention?</h3>
+                                <h3 class="bold">What is intervention?</h3>
                             </template>
                             <template v-slot:content>
                             <p>The intervention parameter indicates the best possible course of action for achieveing a positive outcome as perceoved by the user.</p>

@@ -4,10 +4,7 @@
         <div v-else class="column">
             <div class="row">
                 <h2 class="bold blue">Column definition</h2>
-                <tooltip-component>
-                    <template v-slot:icon>
-                        <ion-icon class="blue" name="information-circle"></ion-icon>
-                    </template>
+                <tooltip-component icon="information-circle" :iconSize="25" color="blue">
                     <template v-slot:title>
                         <h3 class="bold">Column definition info</h3>
                     </template>
