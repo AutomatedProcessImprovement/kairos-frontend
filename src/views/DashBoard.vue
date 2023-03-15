@@ -11,7 +11,7 @@
         <div v-if="eventlogs.length > 0" class='wrap center row'>
             <div class='log-card' :class="{'selected': log._id === selectedLog._id}" v-for="log in eventlogs" :key='log' @click="selectLog(log._id)">
                 <p>{{ log.filename }}</p>
-                <small>{{log.parameters_description}}</small>
+                <p>{{log.parameters_description}}</p>
                 <small>{{ log.datetime }}</small>
             </div>
         </div>
