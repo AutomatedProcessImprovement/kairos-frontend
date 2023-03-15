@@ -80,7 +80,7 @@ export default {
     return {
       isLoading: false,
       cases: [],
-      headers: ["Application ID","Recommendations","Duration","Intervened"],
+      headers: ["Application ID","Recommendations","Intervened"],
       casesData: [],
       kpi: [],
       completedApplications: undefined,
@@ -113,30 +113,26 @@ export default {
     },
 
     formatCases(){
+      let performanceColumn = null;
+      let performanceValue = null;
       
       for (const el of this.cases) {
+        if(!performanceColumn || !performanceValue){
+          performanceColumn = el.case_performance.column;
+          performanceValue = el.case_performance.value;
+        }
+
         let caseActivities = el.activities;
         let data = {}
         if (!caseActivities.length) {
           data = {
               id: el._id,
               recommendations: false,
-              duration: null,
+              performance: performanceValue,
               intervened: "No"
           }
         }
         else{
-          const startDate = new Date(caseActivities[0]['TIMESTAMP']);
-          const endDate = new Date(caseActivities[caseActivities.length - 1]['TIMESTAMP']);
-          let measure, duration = Math.abs(endDate - startDate) / 1000;
-
-          if (duration >= 86400) measure = 'days', duration /= 86400;
-          else if (duration >= 3600) measure = 'hours', duration /= 3600;
-          else if (duration >= 60) measure = 'minutes', duration /= 60;
-          else measure = 'seconds';
-
-          duration = Math.round(duration);
-
           let intervened = "No";
           caseActivities.forEach(activity => {
             activity.prescriptions.forEach(prescription => {
@@ -150,7 +146,7 @@ export default {
           data = {
             id: el._id, 
             recommendations: caseActivities[caseActivities.length-1].prescriptions.length === 0 ? false : true,
-            duration: {value: duration, measure: measure}, 
+            performance: performanceValue, 
             intervened: intervened
           }
         }
@@ -161,6 +157,8 @@ export default {
         
         this.casesData.push(data);
       }
+
+      this.headers.push(performanceColumn)
 
       Object.keys(this.cases[0].case_attributes).forEach(k => {
         this.headers.push(k);
