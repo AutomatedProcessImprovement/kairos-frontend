@@ -139,10 +139,17 @@
                     <input type="number" v-model="alarmThreshold"/>
                 </div>
 
-                <button type="submit" class="btn-blue" @click="submit">Submit</button>
+                <button type="submit" class="btn-blue" @click="validate">Submit</button>
             </div>
         </div>
-
+        <modal-component v-if="openModal" title="Parameters group name" @closeModal="closeModal">
+            <template v-slot:content>
+                <div class="column">
+                    <input type="text" minlength="2" maxlength="30" placeholder="Description..." v-model="parametersDescription"/>
+                    <button type="submit" class="btn-blue" @click="submit">Submit</button>
+                </div>
+            </template>
+        </modal-component>
 
     </div>
 </template>
@@ -151,6 +158,7 @@
 <script>
 import Loading from "@/components/LoadingComponent.vue";
 import TooltipComponent from "@/components/TooltipComponent.vue";
+import ModalComponent from "@/components/ModalComponent.vue";
 import  Service from "@/services/service.js"
 
 export  default {
@@ -158,12 +166,14 @@ export  default {
 
     components: {
         Loading,
-        TooltipComponent
+        TooltipComponent,
+        ModalComponent
     },
 
     data () {
         return {
             isLoading: false,
+            openModal: false,
 
             log: null,
             activities: null,
@@ -191,7 +201,8 @@ export  default {
                 'END_TIMESTAMP': {operators:['equal','not equal','later than','earlier than','later than or equal','earlier than or equal'],inputType:'datetime-local'},
                 'DURATION': {operators:['equal','not equal','greater than','less than','greater than or equal','less than or equal'],inputType:'number'},
                 'COST': {operators:['equal','not equal','greater than','less than','greater than or equal','less than or equal'],inputType:'number'},
-        },
+            },
+            parametersDescription: null
 
         }
     },
@@ -226,7 +237,11 @@ export  default {
                 });
         },
 
-        submit() {
+        closeModal(){
+            this.openModal = false;
+        },
+
+        validate(){
             if(!this.caseCompletion || !this.alarmThreshold|| !this.intervention.column || !this.intervention.operator || !this.intervention.value ||
                 ! this.positiveOutcome.value || !this.positiveOutcome.column || !this.positiveOutcome.operator || (this.positiveOutcome.column ==='DURATION' && !this.positiveOutcome.unit)){
                     this.$notify({
@@ -244,6 +259,11 @@ export  default {
                     })
                 return;
             }
+            this.openModal=true;
+        },
+
+        submit() {
+            this.openModal=false;
             this.isLoading = true;
 
             let outcomeValue = !this.positiveOutcome.unit ? this.positiveOutcome.value : this.positiveOutcome.value + ' ' + this.positiveOutcome.unit;
@@ -266,7 +286,8 @@ export  default {
                 'case_completion': this.caseCompletion,
                 'positive_outcome': positiveOutcome,
                 'treatment': intervention,
-                'alarm_threshold': this.alarmThreshold
+                'alarm_threshold': this.alarmThreshold,
+                'parameters_description': this.parametersDescription
             }    
 
             Service.parameters(localStorage.fileId,data)

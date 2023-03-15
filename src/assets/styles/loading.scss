@@ -37,13 +37,13 @@
   align-items: center;
   width: 100%;
   height: 100%;
-  background: rgba($color: $k-blue3, $alpha: 1);
   z-index: 999;
+
+  &.opaque{
+    background: rgba($color: $k-blue3, $alpha: 1);
+  }
+  &.transparent{
+    background: rgba($color: $k-blue3, $alpha: 0.3);
+  }
 }
 
-.component{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
-}
