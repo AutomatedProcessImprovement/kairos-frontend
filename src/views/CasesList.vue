@@ -4,9 +4,9 @@
 <div id="cases">
   <h2>Cases</h2>
   <div class="stats">
-    <div @click="filterApplications(false)" :class="['stats-card','pointer',{'selected': completedApplications === false}]">
+    <div @click="filterCases(false)" :class="['stats-card','pointer',{'selected': completedCases === false}]">
       <div class="column">
-        <small>Ongoing applications</small>
+        <small>Ongoing cases</small>
         <div class="row">
           <h4> {{cases.filter(c => !c.case_completed).length}}</h4>        
         </div>
@@ -14,9 +14,9 @@
       <ion-icon name="albums"></ion-icon>
     </div>
 
-    <div @click="filterApplications(true)" :class="['stats-card','pointer',{'selected': completedApplications}]">
+    <div @click="filterCases(true)" :class="['stats-card','pointer',{'selected': completedCases}]">
       <div class="column">
-        <small> Completed applications</small>
+        <small> Completed cases</small>
         <div class="row">
           <h4> {{cases.filter(c => c.case_completed).length}}</h4>
         </div>
@@ -80,10 +80,10 @@ export default {
     return {
       isLoading: false,
       cases: [],
-      headers: ["Application ID","Recommendations","Intervened"],
+      headers: ["Case ID","Recommendations","Intervened"],
       casesData: [],
       kpi: [],
-      completedApplications: undefined,
+      completedCases: undefined,
     };
   },
 
@@ -114,22 +114,21 @@ export default {
 
     formatCases(){
       let performanceColumn = null;
-      let performanceValue = null;
       
       for (const el of this.cases) {
-        if(!performanceColumn || !performanceValue){
+        if(!performanceColumn){
           performanceColumn = el.case_performance.column;
-          performanceValue = el.case_performance.value;
         }
-
+        let performanceValue = el.case_performance.value;
+        
         let caseActivities = el.activities;
         let data = {}
         if (!caseActivities.length) {
           data = {
               id: el._id,
               recommendations: false,
+              intervened: "No",
               performance: performanceValue,
-              intervened: "No"
           }
         }
         else{
@@ -146,8 +145,8 @@ export default {
           data = {
             id: el._id, 
             recommendations: caseActivities[caseActivities.length-1].prescriptions.length === 0 ? false : true,
+            intervened: intervened,
             performance: performanceValue, 
-            intervened: intervened
           }
         }
         
@@ -167,16 +166,16 @@ export default {
       this.isLoading = false;
     },
 
-    filterApplications(status){
+    filterCases(status){
       var rows = document.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
-      if (this.completedApplications === status){
-        this.completedApplications = null;
+      if (this.completedCases === status){
+        this.completedCases = null;
         for (let i = 0; i < rows.length; i++) {
           rows[i].style.display = "";
         }
         return;
       }
-      this.completedApplications = status;
+      this.completedCases = status;
       var filteredCases = this.cases.map(c => {if (c.case_completed === status) return c._id});
       for (let i = 0; i < rows.length; i++) {
         var routerLink = rows[i].getElementsByTagName("td")[0].getElementsByTagName("a")[0];
