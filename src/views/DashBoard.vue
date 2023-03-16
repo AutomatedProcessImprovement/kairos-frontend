@@ -58,7 +58,7 @@
                 <p class="warning">No parameters defined.</p>
             </div>
         </div>
-        <div class="column">
+        <!-- <div class="column">
             <h3 class="bold blue">Actions</h3>
             <p>Display interface for:</p>
             <div class="select-view" v-for="view in views" :key="view">
@@ -66,7 +66,7 @@
                 <label for="{{view.value}}">{{ view.name }}</label>
             </div>
             <router-link class="btn-blue" :to="{name: 'cases'}">Show</router-link>
-        </div>
+        </div> -->
     </div>
   </div>
 </template>
