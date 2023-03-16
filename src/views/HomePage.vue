@@ -47,6 +47,7 @@ export default {
             this.delimiter = this.$refs.delimiter.value;
         },
         handleFileUpload(){
+            console.log(process.env.VUE_APP_BASE_URL)
             this.file = this.$refs.file.files[0];
             let fileSize = this.file.size/ 1024 / 1024; // in MiB
             if (fileSize > 100){
