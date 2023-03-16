@@ -2,7 +2,7 @@
     <div class="diagram">
       <div id='cy'></div>
     </div>
-    </template>
+  </template>
 
 <script>    
 import cytoscape from 'cytoscape';
@@ -114,7 +114,7 @@ cytoscape.use( dagre );
                   selector: '.interventionEdge',
                   style: {
                     'line-color' : '#BB6BD9',
-                    'target-arrow-color': '##BB6BD9',
+                    'target-arrow-color': '#BB6BD9',
                   }
                 },
 
