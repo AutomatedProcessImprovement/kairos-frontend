@@ -1,118 +1,66 @@
 .operational-view {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   padding-top: 10px;
 
-  .prediction-container{
-    .prediction-details{
-      padding: 5px 10px;
+  .case-status{
+    display: flex;
+    background-color: $k-white;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    height: 100px;
+    // align-items: center;
+
+    &>.column p{
+      white-space: nowrap;
     }
   }
 
-  .column{
-    padding: 15px;
-    background-color: $k-white;
-    border-radius: 10px;
-    margin-right: 10px;
-  }
-
-  .recommendation-details{
-    background-color: $k-white;
-    border-radius: 10px;
+  .case-performance-details{
     display: flex;
     flex-direction: column;
-    padding: 10px;
-    max-height: 400px;
+    background-color: $k-white;
+    padding: 15px;
+    border-radius: 10px;
+    width: 300px;
+    margin-right: 10px;
+    height: calc(100vh - 110px - $case-top);
 
-    h4{
-      font-style: italic;
-    }
-
-    p{
-      padding: 5px;
-    }
-
-    .recommendation-details-column-container{
-      display: flex;
-      flex-direction: row;
-
-      .recommendation-details-column{
-        display: flex;
-        flex-direction: column;
-        padding-right: 30px;
-      }
+    ion-icon{
+      height:20px;
+      width:20px;
     }
   }
+
   .recommendations-list {
-    
-      h4 {
-        padding-right: 10px;
-      }
-    
-      .recommendation {
-        display: flex;
-        flex-direction: column;
-        margin: 10px 0px;
-        padding: 10px;
-        transition: .2s;
-        min-width: 420px;
-        background-color: $k-blue3;
-        border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    background-color: $k-white;
+    padding: 15px;
+    border-radius: 10px;
+    height: calc(100vh - 110px - $case-top);
+    overflow-y: auto;
 
-        .recommendation-heading{
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-
-          .btn{
-            background-color: $k-white;
-            padding: 5px;
-            border-radius: 5px;
-            border: none;
-
-            &:hover{
-              filter: brightness(98%);
-            }
-
-            &.selected{
-              background-color: $k-blue4;
-            }
-          }
-        }
-
-        .similar-cases{
-          display: flex;
-          padding: 10px;
-          flex-direction: column;
-          
-          .accordion{ 
-            display: flex;
-            align-items: flex-end;
-            flex-direction: column;
-            
-            .btn{
-              background-color: $k-white;
-              border-radius: 5px;
-              border: none;
-              padding: 5px;
-              cursor: pointer;
-              margin-bottom: 5px;
-            }
-
-            ion-icon{
-              visibility: visible;
-              transition: 0.2s;
-
-              &.arrow-down{
-                transform: rotate(180deg);
-              }
-            }
-
-        }
-
-        }
-    
-      }
-    
+    h4 {
+      padding-right: 10px;
     }
+  
+    .recommendation {
+      display: flex;
+      flex-direction: row;
+      margin: 5px 0px;
+      padding: 10px;
+      transition: .2s;
+      background-color: $k-blue3;
+      border-radius: 10px;
+      justify-content: space-between;
+    }
+  
+    // .selected{
+    //   background-color: $k-blue4;
+    // }
+  }
+
 }

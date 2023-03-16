@@ -4,9 +4,9 @@
 <div id="cases">
   <h2>Cases</h2>
   <div class="stats">
-    <div @click="filterApplications(false)" :class="['stats-card','pointer',{'selected': completedApplications === false}]">
+    <div @click="filterCases(false)" :class="['stats-card','pointer',{'selected': completedCases === false}]">
       <div class="column">
-        <small>Ongoing applications</small>
+        <small>Ongoing cases</small>
         <div class="row">
           <h4> {{cases.filter(c => !c.case_completed).length}}</h4>        
         </div>
@@ -14,9 +14,9 @@
       <ion-icon name="albums"></ion-icon>
     </div>
 
-    <div @click="filterApplications(true)" :class="['stats-card','pointer',{'selected': completedApplications}]">
+    <div @click="filterCases(true)" :class="['stats-card','pointer',{'selected': completedCases}]">
       <div class="column">
-        <small> Completed applications</small>
+        <small> Completed cases</small>
         <div class="row">
           <h4> {{cases.filter(c => c.case_completed).length}}</h4>
         </div>
@@ -30,7 +30,8 @@
     <table class="shadow">
       <thead>
       <tr>
-        <th v-for="header in headers" :key="header"> {{ header }}</th>
+        <th v-for="header in headers" :key="header"> {{ header }}
+        </th>
       </tr>
       </thead>
       <tbody>
@@ -50,11 +51,9 @@
 
 <script>
 
-import Service from "../services/service";
+import casesService from "@/services/cases.service";
 import SideBar from '@/components/SideBar.vue';
 import Loading from "@/components/LoadingComponent.vue";
-
-
 
 export default {
   name: 'CasesList',
@@ -68,17 +67,21 @@ export default {
     return {
       isLoading: false,
       cases: [],
-      headers: ["Application ID","Recommendations","Duration","Intervened"],
+      headers: ["Case ID","Recommendations","Intervened"],
       casesData: [],
       kpi: [],
-      completedApplications: undefined,
+      completedCases: undefined,
     };
   },
 
+  mounted() {
+    if (localStorage.logId !== 'null') this.getCases();
+  },
+  
   methods: {
     getCases() {
       this.isLoading = true;
-      Service.getCasesByLog(localStorage.fileId).then(
+      casesService.getCasesByLog(localStorage.logId).then(
         (response) => {
           console.log(response);
           this.cases = response.data.cases;
@@ -86,6 +89,7 @@ export default {
           else this.isLoading = false;
           },
         (error) => {
+          this.isLoading = false;
           const resMessage =
             (error.response &&
               error.response.data &&
@@ -102,30 +106,25 @@ export default {
     },
 
     formatCases(){
+      let performanceColumn = null;
       
       for (const el of this.cases) {
+        if(!performanceColumn){
+          performanceColumn = el.case_performance.column;
+        }
+        let performanceValue = el.case_performance.value;
+        
         let caseActivities = el.activities;
         let data = {}
         if (!caseActivities.length) {
           data = {
               id: el._id,
               recommendations: false,
-              duration: null,
-              intervened: "No"
+              intervened: "No",
+              performance: performanceValue,
           }
         }
         else{
-          const startDate = new Date(caseActivities[0]['TIMESTAMP']);
-          const endDate = new Date(caseActivities[caseActivities.length - 1]['TIMESTAMP']);
-          let measure, duration = Math.abs(endDate - startDate) / 1000;
-
-          if (duration >= 86400) measure = 'days', duration /= 86400;
-          else if (duration >= 3600) measure = 'hours', duration /= 3600;
-          else if (duration >= 60) measure = 'minutes', duration /= 60;
-          else measure = 'seconds';
-
-          duration = Math.round(duration);
-
           let intervened = "No";
           caseActivities.forEach(activity => {
             activity.prescriptions.forEach(prescription => {
@@ -139,8 +138,8 @@ export default {
           data = {
             id: el._id, 
             recommendations: caseActivities[caseActivities.length-1].prescriptions.length === 0 ? false : true,
-            duration: {value: duration, measure: measure}, 
-            intervened: intervened
+            intervened: intervened,
+            performance: performanceValue, 
           }
         }
         
@@ -151,6 +150,8 @@ export default {
         this.casesData.push(data);
       }
 
+      this.headers.push(performanceColumn)
+
       Object.keys(this.cases[0].case_attributes).forEach(k => {
         this.headers.push(k);
       })
@@ -158,16 +159,16 @@ export default {
       this.isLoading = false;
     },
 
-    filterApplications(status){
+    filterCases(status){
       var rows = document.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
-      if (this.completedApplications === status){
-        this.completedApplications = null;
+      if (this.completedCases === status){
+        this.completedCases = null;
         for (let i = 0; i < rows.length; i++) {
           rows[i].style.display = "";
         }
         return;
       }
-      this.completedApplications = status;
+      this.completedCases = status;
       var filteredCases = this.cases.map(c => {if (c.case_completed === status) return c._id});
       for (let i = 0; i < rows.length; i++) {
         var routerLink = rows[i].getElementsByTagName("td")[0].getElementsByTagName("a")[0];
@@ -179,9 +180,6 @@ export default {
         }
       }
     },
-  },
-  created() {
-    if (localStorage.fileId !== 'null') this.getCases();
   },
 
 }

@@ -2,7 +2,7 @@
     <div class="diagram">
       <div id='cy'></div>
     </div>
-    </template>
+  </template>
 
 <script>    
 import cytoscape from 'cytoscape';
@@ -58,9 +58,6 @@ cytoscape.use( dagre );
               rankDir: 'LR', 
               align: 'DR',
             }).run()
-            // var node = this.cy.getElementById("an" + (this.currentCase.activities.length-1));
-            // this.cy.fit(node,100);
-            // this.cy.zoom(1);
           },
 
           createDiagram(){
@@ -69,7 +66,6 @@ cytoscape.use( dagre );
             var lineWidth = 2;
             var cy = cytoscape({
                 container: document.getElementById('cy'),
-                // autoungrabify: true, // lets you grab nodes in the diagram
 
                 style: [
                 
@@ -114,7 +110,7 @@ cytoscape.use( dagre );
                   selector: '.interventionEdge',
                   style: {
                     'line-color' : '#BB6BD9',
-                    'target-arrow-color': '##BB6BD9',
+                    'target-arrow-color': '#BB6BD9',
                   }
                 },
 

@@ -4,10 +4,7 @@
         <div v-else class="column">
             <div class="row">
                 <h2 class="bold blue">Column definition</h2>
-                <tooltip-component>
-                    <template v-slot:icon>
-                        <ion-icon class="blue" name="information-circle"></ion-icon>
-                    </template>
+                <tooltip-component icon="information-circle" :iconSize="25" color="blue">
                     <template v-slot:title>
                         <h3 class="bold">Column definition info</h3>
                     </template>
@@ -64,7 +61,7 @@
 
 <script>
 import Loading from "@/components/LoadingComponent.vue";
-import Service from "@/services/service.js"
+import logsService from "@/services/logs.service";
 import TooltipComponent from "@/components/TooltipComponent.vue";
 
 export default {
@@ -100,15 +97,15 @@ export default {
         }
     },
 
-    created() {
+    mounted() {
         this.loadCols();
     },
 
     methods: {
         loadCols() {
-            let fileId = localStorage.fileId;
+            let logId = localStorage.logId;
  
-            Service.getLog(fileId)
+            logsService.getLog(logId)
             .then(response => {
                 let log = response.data.event_log;
                 this.headers = log.columns_header;
@@ -157,7 +154,7 @@ export default {
                 "case_attributes": this.caseAttributes
             }
 
-            Service.updateTypes(localStorage.fileId,data)
+            logsService.defineColumnTypes(localStorage.logId,data)
             .then(response => {
                 console.log(response)
                 this.isLoading = false;

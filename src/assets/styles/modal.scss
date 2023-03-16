@@ -1,0 +1,25 @@
+#modal{
+    background-color: $k-white;
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 10px;
+
+    &>*{
+        margin: 5px 20px 5px 5px;
+        &>*{
+            margin-top: 5px
+        }
+    }
+
+    ion-icon{
+        position:absolute;
+        cursor: pointer;
+        height: 20px;
+        width: 20px;
+        top: 0px;
+        right: -10px;
+    }
+}

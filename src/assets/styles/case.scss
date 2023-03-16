@@ -33,35 +33,6 @@
 }
 
 
-
-// switch views
-
-.switch-views{
-  display: flex;
-  justify-content: center;
-  background-color: $k-white;
-  border-radius: 10px;
-
-  .btn{
-    margin: 5px;
-    padding: 10px;
-    border-radius: 8px;
-    border: none;
-    background-color: $k-blue3;
-    transition: 0.2s;
-
-    &:hover{
-        filter: brightness(98%);
-        cursor: pointer;
-    }
-    
-  }
-  .btn.active{
-    background-color: $k-blue4;
-  }
-}
-
-
 // tabs
 
 .tabs-component {
