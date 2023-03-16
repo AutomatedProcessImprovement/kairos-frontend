@@ -1,5 +1,6 @@
 <template>
 <side-bar></side-bar>
+<loading v-if="isLoading"></loading>
   <div id="dashboard">
       <h2>Dashboard</h2>
       <div class="column">
@@ -58,28 +59,27 @@
                 <p class="warning">No parameters defined.</p>
             </div>
         </div>
-        <!-- <div class="column">
-            <h3 class="bold blue">Actions</h3>
-            <p>Display interface for:</p>
-            <div class="select-view" v-for="view in views" :key="view">
-                <input type="radio" id="{{ view.value }}" :checked="selectedView===view.value" @click="selectView(view.value)">
-                <label for="{{view.value}}">{{ view.name }}</label>
-            </div>
-            <router-link class="btn-blue" :to="{name: 'cases'}">Show</router-link>
-        </div> -->
     </div>
   </div>
 </template>
 
 <script>
-import Service from "@/services/service.js"
+import logsService from "@/services/logs.service.js";
 import SideBar from '@/components/SideBar.vue';
+import Loading from "@/components/LoadingComponent.vue";
 
 export default {
     name: "DashBoard",
+
+    components: {
+        SideBar,
+        Loading,
+    },
+
     data () {
         return {
             timer: null,
+            isLoading: true,
             eventlogs: [],
             selectedLog: null,
             parameters: [],
@@ -93,11 +93,7 @@ export default {
         }
     },
 
-    components: {
-        SideBar
-    },
-
-    created() {
+    mounted() {
         this.getLogs();
     },
 
@@ -106,13 +102,13 @@ export default {
     },
 
     methods: {
-
         getLogs() {
-            Service.getLogs().then(
+            logsService.getLogs().then(
                 (response) => {
                     this.eventlogs = response.data.event_logs;
                     if(this.eventlogs.length === 0){
                         localStorage.fileId = null;
+                        this.isLoading = false;
                         return;
                     }
                     if (!localStorage.fileId){
@@ -150,7 +146,7 @@ export default {
         },
 
         startSimulation(){
-            Service.startSimulation(localStorage.fileId).then(
+            logsService.startSimulation(localStorage.fileId).then(
                 (response) => {
                     console.log(response);
                 },
@@ -171,17 +167,18 @@ export default {
         },
 
         stopSimulation(){
-            Service.stopSimulation(localStorage.fileId).then(
+            logsService.stopSimulation(localStorage.fileId).then(
                 (response) => {
                     console.log(response)
                 },
                 (error) => {
-                const resMessage =
-                    (error.response &&
-                    error.response.data &&
-                    error.response.data.message) ||
-                    error.message ||
-                    error.toString();
+                    this.isLoading = false;
+                    const resMessage =
+                        (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                        error.message ||
+                        error.toString();
                     this.$notify({
                         title: 'An error occured',
                         text: resMessage,
@@ -192,7 +189,7 @@ export default {
         },
 
         getProjectStatus(){
-            Service.getProjectStatus(localStorage.fileId).then(
+            logsService.getProjectStatus(localStorage.fileId).then(
                 (response) => {
                     let status = response.data.status;
                     if ((this.selectedLogStatus === 'TRAINED' && status === 'SIMULATING') ||
@@ -210,26 +207,23 @@ export default {
                         });
                     }
                     this.selectedLogStatus = status;
+                    this.isLoading = false;
                 },
                 (error) => {
-                const resMessage =
-                    (error.response &&
-                    error.response.data &&
-                    error.response.data.message) ||
-                    error.message ||
-                    error.toString();
+                    this.isLoading = false;
+                    const resMessage =
+                        (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                        error.message ||
+                        error.toString();
                     this.$notify({
                         title: 'An error occured',
                         text: resMessage,
                         type: 'error'
-                    }) 
+                    });
                 }
             ); 
-        },
-
-        selectView(view){
-          localStorage.view = view;
-          this.selectedView = view;
         },
 
         findLog(){
@@ -251,7 +245,3 @@ export default {
     }
 }
 </script>
-
-<style>
-
-</style>

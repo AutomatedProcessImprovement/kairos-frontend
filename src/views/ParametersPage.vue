@@ -172,7 +172,7 @@ export  default {
 
     data () {
         return {
-            isLoading: false,
+            isLoading: true,
             openModal: false,
 
             log: null,
@@ -207,7 +207,7 @@ export  default {
         }
     },
 
-    created() {
+    mounted() {
         this.getLog();
     },
 

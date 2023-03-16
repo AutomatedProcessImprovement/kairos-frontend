@@ -99,17 +99,16 @@
         },
         }
       },
+      computed: {
+        myParameters(){
+          return JSON.parse(JSON.stringify(this.parameters))
+        }
+      },
 
       watch:{
         currentCase(value){
           this.oldActivities = value.activities.slice(0,-1);
           this.lastActivity = value.activities.slice(-1)[0];
-        }
-      },
-
-      computed: {
-        myParameters(){
-          return JSON.parse(JSON.stringify(this.parameters))
         }
       },
 

@@ -16,17 +16,17 @@
 <script>
 export default {
     name: "LoadingComponent",
-    data: function () {
-        return {
-            modalIsOpen: true,
-        }
-    },
-
     props:{
         text: {
             type: String,
             default: 'Please wait...'
         },
-    }
+    },
+
+    data: function () {
+        return {
+            modalIsOpen: true,
+        }
+    },
 }
 </script>

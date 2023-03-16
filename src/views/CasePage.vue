@@ -46,7 +46,8 @@
   </template>
   
   <script>
-    import Service from "@/services/service";
+    import casesService from "@/services/cases.service";
+    import logsService from "@/services/logs.service";
     import OperationalView from '@/components/OperationalView.vue';
     import AnalyticalView from '@/components/AnalyticalView.vue';
     import SideBar from '@/components/SideBar.vue';
@@ -68,7 +69,7 @@
       },
       data() {
         return {
-          isLoading: false,
+          isLoading: true,
           currentCase: {},
           parameters: {},
           selectedView: null,
@@ -76,12 +77,22 @@
           caseDetails: {},
           recommendationsAvailable: false,
         }
+      }, 
+
+      mounted() {
+        this.getCase();
+        this.selectedView = localStorage.view;
+        window.addEventListener('view-changed', this.changeView);
       },
+
+      beforeUnmount() {
+        window.removeEventListener('view-changed',this.changeView);
+      },
+
       methods: {
         getCase(){
-          this.isLoading = true;
           this.caseId = (this.$route.params.caseId)
-          Service.getCase(this.caseId).then(
+          casesService.getCase(this.caseId).then(
             (response) => {
               console.log(response.data);
               this.currentCase = response.data.case;
@@ -104,7 +115,7 @@
         },
 
         getParameters(){
-          Service.getParameters(localStorage.fileId).then(
+          logsService.getParameters(localStorage.fileId).then(
             (response) => {
               this.parameters.kpi = response.data.kpi;
               this.parameters.caseCompletion = response.data.caseCompletion;
@@ -145,14 +156,6 @@
         }
         
       },
-      mounted() {
-        this.getCase();
-        this.selectedView = localStorage.view;
-        window.addEventListener('view-changed', this.changeView);
-      },
-
-      beforeUnmount() {
-        window.removeEventListener('view-changed',this.changeView);
-      },
+      
     };
   </script>

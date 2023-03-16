@@ -25,10 +25,13 @@
 
 <script>
 import Loading from "@/components/LoadingComponent.vue";
-import Service from "@/services/service.js"
+import logsService from "@/services/logs.service";
 
 export default {
     name: "HomePage",
+    components: {
+        Loading,
+    },
     data: function () {
         return {
             file: '',
@@ -38,11 +41,6 @@ export default {
             isDisabled: true
         }
     },
-
-    components: {
-        Loading,
-    },
-
     methods: {
         handleSeparator(){
             this.delimiter = this.$refs.delimiter.value;
@@ -62,7 +60,8 @@ export default {
 
             formData.append('file', this.file);
             formData.append('delimiter',this.delimiter);
-            Service.uploadFile(formData)
+            
+            logsService.uploadFile(formData)
             .then(response => {
               this.isLoading = false;
               localStorage.fileId = response.data.fileId;

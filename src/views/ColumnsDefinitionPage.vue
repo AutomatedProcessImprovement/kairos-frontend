@@ -61,7 +61,7 @@
 
 <script>
 import Loading from "@/components/LoadingComponent.vue";
-import Service from "@/services/service.js"
+import logsService from "@/services/logs.service";
 import TooltipComponent from "@/components/TooltipComponent.vue";
 
 export default {
@@ -97,7 +97,7 @@ export default {
         }
     },
 
-    created() {
+    mounted() {
         this.loadCols();
     },
 
@@ -105,7 +105,7 @@ export default {
         loadCols() {
             let fileId = localStorage.fileId;
  
-            Service.getLog(fileId)
+            logsService.getLog(fileId)
             .then(response => {
                 let log = response.data.event_log;
                 this.headers = log.columns_header;
@@ -154,7 +154,7 @@ export default {
                 "case_attributes": this.caseAttributes
             }
 
-            Service.updateTypes(localStorage.fileId,data)
+            logsService.updateTypes(localStorage.fileId,data)
             .then(response => {
                 console.log(response)
                 this.isLoading = false;

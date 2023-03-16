@@ -1,6 +1,6 @@
 import axios from "axios"; // responsible for communicating with api
 const http = axios.create({
-  baseURL: "http://localhost:5000/api"
+  baseURL: "http://localhost:5000"
 });
 
 class Service {
@@ -30,7 +30,7 @@ class Service {
     }
 
     uploadFile(file){
-        return http.post(`/upload`,file,{ headers: { 'Content-Type': 'multipart/form-data'} })
+        return http.post(`/event_logs`,file,{ headers: { 'Content-Type': 'multipart/form-data'} })
     }
 
     updateTypes(fileId,data){
