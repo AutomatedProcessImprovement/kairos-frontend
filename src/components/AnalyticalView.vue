@@ -2,7 +2,7 @@
     <div class="analytical-view">
       <div class="recommendations-list shadow">
         <div class="row center">
-          <h4 bold>Recommendations</h4>
+          <h4>Recommendations</h4>
           <tooltip-component :iconSize="20" :tooltipSize="600">           
             <template v-slot:title>
                 <h3 class="bold">Recommendation info</h3>
@@ -26,21 +26,21 @@
         </div>
 
         <tabs :options="tabOptions.recommendations">
-          <tab name="Past" id="tab-past">       
-            <recommendation-component v-for="activity in oldActivities" v-bind:key="activity"
-              :batch="activity"
-              :current="false"
-              :parameters="myParameters"
-              :selectedRec="selectedRec"
-              @recommendationSelected="selectRecommendation"
-              ></recommendation-component>
-          </tab>
           <tab name="Current" id="tab-current">
             <recommendation-component
               :batch="lastActivity"
               :current="true"
               :selectedRec="selectedRec"
               :parameters="myParameters"
+              @recommendationSelected="selectRecommendation"
+              ></recommendation-component>
+          </tab>
+          <tab name="Past" id="tab-past">       
+            <recommendation-component v-for="activity in oldActivities" v-bind:key="activity"
+              :batch="activity"
+              :current="false"
+              :parameters="myParameters"
+              :selectedRec="selectedRec"
               @recommendationSelected="selectRecommendation"
               ></recommendation-component>
           </tab>
