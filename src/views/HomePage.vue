@@ -6,7 +6,7 @@
         <loading v-if="isLoading" text="preprocessing data..."></loading>
         <h2>Upload</h2>
         <p>Upload an eventlog to start:</p>
-        <small>Supported file types: .csv, .xes, .zip. (Please make sure to indicate file type in the file name when uploading .zip)</small>
+        <small>Supported file types: .csv and .xes</small>
         <small>Max file size: 100 MiB.</small>
         
         <input class='btn' type="file" name="fileToUpload" ref="file" id="fileToUpload" v-on:change="handleFileUpload()" />
@@ -49,6 +49,15 @@ export default {
         handleFileUpload(){
             this.file = this.$refs.file.files[0];
             let fileSize = this.file.size/ 1024 / 1024; // in MiB
+            this.extension = this.file.name.split('.').pop();
+            if(this.extension !== 'xes' && this.extension !== 'csv' && this.extension !== 'zip'){
+                this.$notify({
+                        title: 'Warning',
+                        text: 'The uploaded file should be a .csv, .xes. or .zip',
+                        type: 'warning'
+                    });
+                return;
+            }
             if (fileSize > 100){
                 this.$notify({
                         title: 'Warning',
@@ -56,10 +65,6 @@ export default {
                         type: 'warning'
                     })
                 return;
-            }
-            this.extension = this.file.name.split('.').pop();
-            if(this.extension === 'zip'){
-                this.extension = this.file.name.toLowerCase().indexOf('csv') < 0 ? 'xes' : 'csv';
             }
             this.isDisabled = false;
         },
@@ -71,10 +76,10 @@ export default {
             formData.append('file', this.file);
             formData.append('delimiter',this.delimiter);
             
-            logsService.uploadFile(formData)
+            logsService.uploadLog(formData)
             .then(response => {
               this.isLoading = false;
-              localStorage.fileId = response.data.fileId;
+              localStorage.logId = response.data.logId;
               this.$router.push({name: "columns"});
             })
             .catch(error => {

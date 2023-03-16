@@ -145,7 +145,7 @@
         <modal-component v-if="openModal" title="Parameters group name" @closeModal="closeModal">
             <template v-slot:content>
                 <div class="column">
-                    <input type="text" minlength="2" maxlength="30" placeholder="Description..." v-model="parametersDescription"/>
+                    <input type="text" minlength="2" maxlength="100" placeholder="Description..." v-model="parametersDescription"/>
                     <button type="submit" class="btn-blue" @click="submit">Submit</button>
                 </div>
             </template>
@@ -159,7 +159,7 @@
 import Loading from "@/components/LoadingComponent.vue";
 import TooltipComponent from "@/components/TooltipComponent.vue";
 import ModalComponent from "@/components/ModalComponent.vue";
-import  Service from "@/services/service.js"
+import logsService from "@/services/logs.service.js"
 
 export  default {
     name: "ParametersPage",
@@ -213,9 +213,9 @@ export  default {
 
     methods: {
         getLog() {
-            let fileId = localStorage.fileId;
+            let logId = localStorage.logId;
  
-            Service.getLog(fileId)
+            logsService.getLog(logId)
             .then(response => {
                 this.log = response.data.event_log;
                 this.activities = this.log.activities;
@@ -290,7 +290,7 @@ export  default {
                 'parameters_description': this.parametersDescription
             }    
 
-            Service.parameters(localStorage.fileId,data)
+            logsService.defineParameters(localStorage.logId,data)
             .then(response => {
                 console.log(response)
                 this.isLoading = false;

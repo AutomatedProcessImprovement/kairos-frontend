@@ -9,7 +9,7 @@
             <ion-icon class="input-icon" name="search"></ion-icon>
             <input type="text" id="find-log" @keyup="findLog" placeholder="Find log...">
         </div>
-        <div v-if="eventlogs.length > 0" class='wrap center row'>
+        <div v-if="selectedLog" class='wrap center row'>
             <div class='log-card' :class="{'selected': log._id === selectedLog._id}" v-for="log in eventlogs" :key='log' @click="selectLog(log._id)">
                 <p>{{ log.filename }}</p>
                 <p>{{log.parameters_description}}</p>
@@ -20,13 +20,26 @@
             <p class="warning">No event log uploaded.</p>
         </div>
         <div v-if="selectedLog" class="column">
-            <h3 class="bold blue">Simulation details</h3>
+            <h3 class="bold blue">Event log details</h3>
             <p>{{ selectedLogStatus }} </p>
-            <small>Project status</small>
+            <small>Event log status</small>
             <div class="row">
                 <button :disabled="selectedLogStatus !== 'TRAINED'" class="btn-blue" @click="startSimulation">Start simulation</button>
                 <button :disabled="selectedLogStatus !== 'SIMULATING'" class="btn-blue margin" @click="stopSimulation">Stop simulation</button>
+                <button :disabled="selectedLogStatus !== 'TRAINED'" class="btn-blue margin" @click="clearSimulation">Clear stream data</button>
+                <button class="btn-blue margin" @click="openModal=true">Delete event log</button>
             </div>
+            <modal-component v-if="openModal" title="Are you sure?" @closeModal="closeModal">
+                <template v-slot:content>
+                    <div class="column">
+                        <p>Deleting this event log will result in deletion of all cases associated with it.</p>
+                        <div class="row">
+                            <button type="submit" class="btn-blue" @click="deleteLog">Delete</button>
+                            <button class="btn-blue margin" @click="openModal=false">Cancel</button>
+                        </div>
+                    </div>
+                </template>
+            </modal-component>
         </div>
         <div v-if="selectedLog" class="column">
             <div class="row">
@@ -67,6 +80,7 @@
 import logsService from "@/services/logs.service.js";
 import SideBar from '@/components/SideBar.vue';
 import Loading from "@/components/LoadingComponent.vue";
+import ModalComponent from "@/components/ModalComponent.vue";
 
 export default {
     name: "DashBoard",
@@ -74,12 +88,15 @@ export default {
     components: {
         SideBar,
         Loading,
+        ModalComponent
     },
 
     data () {
         return {
-            timer: null,
             isLoading: true,
+            openModal: false,
+
+            timer: null,
             eventlogs: [],
             selectedLog: null,
             parameters: [],
@@ -102,24 +119,28 @@ export default {
     },
 
     methods: {
+        closeModal(){
+            this.openModal = false;
+        },
         getLogs() {
             logsService.getLogs().then(
                 (response) => {
                     this.eventlogs = response.data.event_logs;
                     if(this.eventlogs.length === 0){
-                        localStorage.fileId = null;
+                        localStorage.logId = null;
+                        this.selectedLog = null;
                         this.isLoading = false;
                         return;
                     }
-                    if (!localStorage.fileId){
-                        localStorage.fileId = this.eventlogs[0]._id.toString();
+                    if (localStorage.logId === 'null'){
+                        localStorage.logId = this.eventlogs[0]._id.toString();
                     }
                     this.timer = setInterval(() => {
-                        if (localStorage.fileId){
+                        if (localStorage.logId){
                             this.getProjectStatus();
                         }
                     }, 4000)
-                    this.selectedLog = this.eventlogs.find(e => e._id.toString() === localStorage.fileId);
+                    this.selectedLog = this.eventlogs.find(e => e._id.toString() === localStorage.logId);
                     this.getProjectStatus();
                 },
                 (error) => {
@@ -138,15 +159,15 @@ export default {
             );      
         },
 
-        selectLog(fileId){
-            fileId = fileId.toString();
-            localStorage.fileId = fileId;
-            this.selectedLog = this.eventlogs.find(e => e._id.toString() === fileId);
+        selectLog(logId){
+            logId = logId.toString();
+            localStorage.logId = logId;
+            this.selectedLog = this.eventlogs.find(e => e._id.toString() === logId);
             this.getProjectStatus();
         },
 
         startSimulation(){
-            logsService.startSimulation(localStorage.fileId).then(
+            logsService.startSimulation(localStorage.logId).then(
                 (response) => {
                     console.log(response);
                 },
@@ -167,7 +188,7 @@ export default {
         },
 
         stopSimulation(){
-            logsService.stopSimulation(localStorage.fileId).then(
+            logsService.stopSimulation(localStorage.logId).then(
                 (response) => {
                     console.log(response)
                 },
@@ -188,8 +209,63 @@ export default {
             ); 
         },
 
+        clearSimulation(){
+            logsService.clearSimulation(localStorage.logId).then(
+                (response) => {
+                    this.$notify({
+                        title: 'Success',
+                        text: response.data.message,
+                        type: 'success'
+                    }) 
+                },
+                (error) => {
+                    this.isLoading = false;
+                    const resMessage =
+                        (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                        error.message ||
+                        error.toString();
+                    this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    }) 
+                }
+            ); 
+        },
+
+        deleteLog(){
+            clearInterval(this.timer);
+            logsService.deleteLog(localStorage.logId).then(
+                (response) => {
+                    this.$notify({
+                        title: 'Success',
+                        text: response.data.message,
+                        type: 'success'
+                    });
+                    localStorage.logId = null;
+                    this.getLogs();
+                },
+                (error) => {
+                    this.isLoading = false;
+                    const resMessage =
+                        (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                        error.message ||
+                        error.toString();
+                    this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    }) 
+                }
+            ); 
+        },
+
         getProjectStatus(){
-            logsService.getProjectStatus(localStorage.fileId).then(
+            logsService.getProjectStatus(localStorage.logId).then(
                 (response) => {
                     let status = response.data.status;
                     if ((this.selectedLogStatus === 'TRAINED' && status === 'SIMULATING') ||
@@ -202,7 +278,7 @@ export default {
                         }
                         this.$notify({
                             title: 'Success',
-                            text: `Successfully ${message} simulating log ${localStorage.fileId}`,
+                            text: `Successfully ${message} simulating log ${localStorage.logId}`,
                             type: 'success',
                         });
                     }
@@ -217,11 +293,13 @@ export default {
                         error.response.data.message) ||
                         error.message ||
                         error.toString();
-                    this.$notify({
+                    if(!this.timer){
+                        this.$notify({
                         title: 'An error occured',
                         text: resMessage,
                         type: 'error'
                     });
+                }
                 }
             ); 
         },

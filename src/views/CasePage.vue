@@ -115,7 +115,7 @@
         },
 
         getParameters(){
-          logsService.getParameters(localStorage.fileId).then(
+          logsService.getParameters(localStorage.logId).then(
             (response) => {
               this.parameters.kpi = response.data.kpi;
               this.parameters.caseCompletion = response.data.caseCompletion;

@@ -75,13 +75,13 @@ export default {
   },
 
   mounted() {
-    if (localStorage.fileId !== 'null') this.getCases();
+    if (localStorage.logId !== 'null') this.getCases();
   },
   
   methods: {
     getCases() {
       this.isLoading = true;
-      casesService.getCasesByLog(localStorage.fileId).then(
+      casesService.getCasesByLog(localStorage.logId).then(
         (response) => {
           this.cases = response.data.cases;
           if (this.cases.length > 0) this.formatCases();

@@ -103,9 +103,9 @@ export default {
 
     methods: {
         loadCols() {
-            let fileId = localStorage.fileId;
+            let logId = localStorage.logId;
  
-            logsService.getLog(fileId)
+            logsService.getLog(logId)
             .then(response => {
                 let log = response.data.event_log;
                 this.headers = log.columns_header;
@@ -154,7 +154,7 @@ export default {
                 "case_attributes": this.caseAttributes
             }
 
-            logsService.updateTypes(localStorage.fileId,data)
+            logsService.defineColumnTypes(localStorage.logId,data)
             .then(response => {
                 console.log(response)
                 this.isLoading = false;
