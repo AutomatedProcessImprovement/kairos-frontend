@@ -17,7 +17,17 @@
                 </div>
 
                 <div class="parameter">
-                    <p>Case completion</p>
+                    <div class="row">
+                        <p>Case completion</p>
+                        <tooltip-component :iconSize="15" :tooltipSize="400">  
+                            <template v-slot:title>
+                                <h3 class="bold">What is case completion?</h3>
+                            </template>
+                            <template v-slot:content>
+                            <p>The case completion parameter marks the event that is considered the end of a case.</p>
+                            </template>
+                        </tooltip-component>
+                    </div>
                     <small>Please specify what activity marks the case completion.</small>
                     <select v-model="caseCompletion">
                         <option v-for="activity in activities" :key="activity">{{ activity }}</option>
@@ -25,7 +35,21 @@
                 </div>
 
                 <div class="parameter">
-                    <p>Positive case outcome</p>
+                    <div class="row">
+                        <p>Positive case outcome</p>
+                        <tooltip-component :iconSize="15" :tooltipSize="400">
+                            <template v-slot:icon>
+                                <ion-icon class="small" name="information-circle-outline"></ion-icon>
+                            </template>            
+                            <template v-slot:title>
+                                <h3 class="bold">What is positive case outcome?</h3>
+                            </template>
+                            <template v-slot:content>
+                            <p>The positive case outcome parameter marks when the case is considered to have a positive outcome. This is the key performance indicator (KPI) for the log.</p>
+                            <p>For example, if positive case outcome is 'Duration less than or equal 12 days', then all cases that last for 12 days or less are considered to have a positive outcome, and those that do not - negative.</p>
+                            </template>
+                        </tooltip-component>
+                    </div>
                     <small>Please specify what is considered as the positive outcome of the case.</small>
 
                     <div class="input-group">
@@ -66,7 +90,21 @@
                 </div>
 
                 <div class="parameter">
-                    <p>Intervention</p>
+                    <div class="row">
+                        <p>Intervention</p>
+                        <tooltip-component :iconSize="15" :tooltipSize="400">
+                            <template v-slot:icon>
+                                <ion-icon class="small" name="information-circle-outline"></ion-icon>
+                            </template>            
+                            <template v-slot:title>
+                                <h3 class="bold">What is intervention?</h3>
+                            </template>
+                            <template v-slot:content>
+                            <p>The intervention parameter indicates the best possible course of action for achieveing a positive outcome as perceoved by the user.</p>
+                            <p>For example, if intervention is 'Activity equals offer-sent', then an algorithm estimates the causal effect of performing this activity at a given point in time. Causal effect may be positive or negative.</p>
+                            </template>
+                        </tooltip-component>
+                    </div>
                     <small>Please specify what is considered as intervention in the ongoing case.</small>
                     <div class="input-group">
                         <small>Intervention type</small>
@@ -101,10 +139,17 @@
                     <input type="number" v-model="alarmThreshold"/>
                 </div>
 
-                <button type="submit" class="btn-blue" @click="submit">Submit</button>
+                <button type="submit" class="btn-blue" @click="validate">Submit</button>
             </div>
         </div>
-
+        <modal-component v-if="openModal" title="Parameters group name" @closeModal="closeModal">
+            <template v-slot:content>
+                <div class="column">
+                    <input type="text" minlength="2" maxlength="30" placeholder="Description..." v-model="parametersDescription"/>
+                    <button type="submit" class="btn-blue" @click="submit">Submit</button>
+                </div>
+            </template>
+        </modal-component>
 
     </div>
 </template>
@@ -112,6 +157,8 @@
 
 <script>
 import Loading from "@/components/LoadingComponent.vue";
+import TooltipComponent from "@/components/TooltipComponent.vue";
+import ModalComponent from "@/components/ModalComponent.vue";
 import  Service from "@/services/service.js"
 
 export  default {
@@ -119,11 +166,14 @@ export  default {
 
     components: {
         Loading,
+        TooltipComponent,
+        ModalComponent
     },
 
     data () {
         return {
             isLoading: false,
+            openModal: false,
 
             log: null,
             activities: null,
@@ -151,7 +201,8 @@ export  default {
                 'END_TIMESTAMP': {operators:['equal','not equal','later than','earlier than','later than or equal','earlier than or equal'],inputType:'datetime-local'},
                 'DURATION': {operators:['equal','not equal','greater than','less than','greater than or equal','less than or equal'],inputType:'number'},
                 'COST': {operators:['equal','not equal','greater than','less than','greater than or equal','less than or equal'],inputType:'number'},
-        },
+            },
+            parametersDescription: null
 
         }
     },
@@ -186,7 +237,11 @@ export  default {
                 });
         },
 
-        submit() {
+        closeModal(){
+            this.openModal = false;
+        },
+
+        validate(){
             if(!this.caseCompletion || !this.alarmThreshold|| !this.intervention.column || !this.intervention.operator || !this.intervention.value ||
                 ! this.positiveOutcome.value || !this.positiveOutcome.column || !this.positiveOutcome.operator || (this.positiveOutcome.column ==='DURATION' && !this.positiveOutcome.unit)){
                     this.$notify({
@@ -204,6 +259,11 @@ export  default {
                     })
                 return;
             }
+            this.openModal=true;
+        },
+
+        submit() {
+            this.openModal=false;
             this.isLoading = true;
 
             let outcomeValue = !this.positiveOutcome.unit ? this.positiveOutcome.value : this.positiveOutcome.value + ' ' + this.positiveOutcome.unit;
@@ -226,7 +286,8 @@ export  default {
                 'case_completion': this.caseCompletion,
                 'positive_outcome': positiveOutcome,
                 'treatment': intervention,
-                'alarm_threshold': this.alarmThreshold
+                'alarm_threshold': this.alarmThreshold,
+                'parameters_description': this.parametersDescription
             }    
 
             Service.parameters(localStorage.fileId,data)

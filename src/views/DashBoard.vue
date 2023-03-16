@@ -11,6 +11,7 @@
         <div v-if="eventlogs.length > 0" class='wrap center row'>
             <div class='log-card' :class="{'selected': log._id === selectedLog._id}" v-for="log in eventlogs" :key='log' @click="selectLog(log._id)">
                 <p>{{ log.filename }}</p>
+                <p>{{log.parameters_description}}</p>
                 <small>{{ log.datetime }}</small>
             </div>
         </div>
@@ -57,7 +58,7 @@
                 <p class="warning">No parameters defined.</p>
             </div>
         </div>
-        <div class="column">
+        <!-- <div class="column">
             <h3 class="bold blue">Actions</h3>
             <p>Display interface for:</p>
             <div class="select-view" v-for="view in views" :key="view">
@@ -65,7 +66,7 @@
                 <label for="{{view.value}}">{{ view.name }}</label>
             </div>
             <router-link class="btn-blue" :to="{name: 'cases'}">Show</router-link>
-        </div>
+        </div> -->
     </div>
   </div>
 </template>

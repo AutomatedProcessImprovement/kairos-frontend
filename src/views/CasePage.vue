@@ -3,7 +3,6 @@
   <loading v-if="isLoading"></loading>
   <div id="case">
     <div class="case-top">
-      <router-link :to="{name: 'cases'}"><ion-icon name="chevron-back-outline"></ion-icon> Return</router-link>
       <div class="row">
         <h2>Case #{{caseId}}</h2>
         <div class="case-recommendations" :class="[recommendationsAvailable ? 'available' : 'unavailable']"> 
@@ -35,16 +34,11 @@
         </div>
       </div>
     </div>
-    <div class="switch-views shadow">
-      <button class="btn" :class="{ active: view==='analytical' }" @click="selectView('analytical')">Analytical</button>
-      <button class="btn" :class="{ active: view==='operational' }">Operational</button>
-      <button class="btn" :class="{ active: view==='tactical' }">Tactical</button>
-    </div>
-    <operational-view v-show="view==='operational'"
+    <operational-view v-show="selectedView==='operational'"
       :currentCase="currentCase"
-      :kpi="parameters.kpi"
+      :parameters="parameters"
       ></operational-view>
-      <analytical-view v-show="view==='analytical'"
+      <analytical-view v-show="selectedView==='analytical'"
       :currentCase="currentCase"
       :parameters="parameters"
     ></analytical-view>
@@ -77,7 +71,7 @@
           isLoading: false,
           currentCase: {},
           parameters: {},
-          view: null,
+          selectedView: null,
           caseKpi: {value: null,column: null, outcome: false},
           caseDetails: {},
           recommendationsAvailable: false,
@@ -146,19 +140,19 @@
           this.isLoading = false;
         },
 
-        selectView(view){
-          localStorage.view = view;
-          this.view = view;
+        changeView(event){
+          this.selectedView = event.detail.storage;
         }
         
       },
-      created() {
+      mounted() {
         this.getCase();
-        if(!localStorage.view){
-          this.selectView('analytical')
-        } else{
-          this.view = localStorage.view
-        }
-      }
+        this.selectedView = localStorage.view;
+        window.addEventListener('view-changed', this.changeView);
+      },
+
+      beforeUnmount() {
+        window.removeEventListener('view-changed',this.changeView);
+      },
     };
   </script>

@@ -10,7 +10,8 @@
       margin-right: 10px;
       border-radius: 10px;
       width: 350px;
-      max-height: calc(100vh - 253px);
+      min-width: 350px;
+      height: calc(100vh - $case-top);
       overflow-y: auto;
 
       h4 {
@@ -45,7 +46,7 @@
     }
 
     .recommendation-details{
-      height: calc(100vh - 253px);
+      height: calc(100vh - $case-top);
       background-color: $k-white;
       padding: 15px;
       border-radius: 10px;
