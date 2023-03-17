@@ -9,7 +9,7 @@
             <ion-icon class="input-icon" name="search"></ion-icon>
             <input type="text" id="find-log" @keyup="findLog" placeholder="Find log...">
         </div>
-        <div v-if="selectedLog" class='wrap center row'>
+        <div v-if="eventlogs.length > 0" class='wrap center row'>
             <div class='log-card' :class="{'selected': log._id === selectedLog._id}" v-for="log in eventlogs" :key='log' @click="selectLog(log._id)">
                 <p>{{ log.filename }}</p>
                 <p>{{log.parameters_description}}</p>
@@ -93,7 +93,7 @@ export default {
 
     data () {
         return {
-            isLoading: true,
+            isLoading: false,
             openModal: false,
 
             timer: null,
@@ -115,39 +115,46 @@ export default {
     },
 
     beforeUnmount() {
-        if(this.timer) clearInterval(this.timer);
     },
 
     methods: {
+
+        clearTimer(){
+            if(this.timer) clearInterval(this.timer);
+        },
+
         closeModal(){
             this.openModal = false;
         },
         getLogs() {
+            this.isLoading = true;
             logsService.getLogs().then(
                 (response) => {
                     this.eventlogs = response.data.event_logs;
                     if(this.eventlogs.length === 0){
-                        localStorage.logId = null;
+                        localStorage.logId = 'null';
                         this.selectedLog = null;
+                        this.clearTimer();
                         this.isLoading = false;
                         return;
                     }
-                    if (localStorage.logId === 'null'){
+                    if (String(localStorage.logId) === 'null'){
                         localStorage.logId = this.eventlogs[0]._id.toString();
                     }
+                    this.selectLog(localStorage.logId);
+
                     this.timer = setInterval(() => {
-                        if (localStorage.logId){
-                            this.getProjectStatus();
-                        }
-                    }, 4000)
-                    this.selectedLog = this.eventlogs.find(e => e._id.toString() === localStorage.logId);
-                    this.getProjectStatus();
+                        if(this.selectedLogStatus !== 'NULL') this.getProjectStatus();
+                    }, 4000);
+
+                    this.isLoading = false;
+                    
                 },
                 (error) => {
                 const resMessage =
                     (error.response &&
                     error.response.data &&
-                    error.response.data.message) ||
+                    error.response.data.error) ||
                     error.message ||
                     error.toString();
                     this.$notify({
@@ -159,11 +166,11 @@ export default {
             );      
         },
 
-        selectLog(fileId){
-            if (fileId === null) return;
-            fileId = fileId.toString();
-            localStorage.fileId = fileId;
-            this.selectedLog = this.eventlogs.find(e => e._id.toString() === fileId);
+        selectLog(logId){
+            logId = String(logId)
+            if (logId === 'null') return;
+            localStorage.logId = logId;
+            this.selectedLog = this.eventlogs.find(e => String(e._id) === logId);
             this.getProjectStatus();
         },
 
@@ -176,7 +183,7 @@ export default {
                 const resMessage =
                     (error.response &&
                     error.response.data &&
-                    error.response.data.message) ||
+                    error.response.data.error) ||
                     error.message ||
                     error.toString();
                     this.$notify({
@@ -198,7 +205,7 @@ export default {
                     const resMessage =
                         (error.response &&
                         error.response.data &&
-                        error.response.data.message) ||
+                        error.response.data.error) ||
                         error.message ||
                         error.toString();
                     this.$notify({
@@ -224,7 +231,7 @@ export default {
                     const resMessage =
                         (error.response &&
                         error.response.data &&
-                        error.response.data.message) ||
+                        error.response.data.error) ||
                         error.message ||
                         error.toString();
                     this.$notify({
@@ -238,6 +245,8 @@ export default {
 
         deleteLog(){
             clearInterval(this.timer);
+            this.closeModal();
+
             logsService.deleteLog(localStorage.logId).then(
                 (response) => {
                     this.$notify({
@@ -245,7 +254,7 @@ export default {
                         text: response.data.message,
                         type: 'success'
                     });
-                    localStorage.logId = null;
+                    localStorage.logId = 'null';
                     this.getLogs();
                 },
                 (error) => {
@@ -253,7 +262,7 @@ export default {
                     const resMessage =
                         (error.response &&
                         error.response.data &&
-                        error.response.data.message) ||
+                        error.response.data.error) ||
                         error.message ||
                         error.toString();
                     this.$notify({
@@ -291,7 +300,7 @@ export default {
                     const resMessage =
                         (error.response &&
                         error.response.data &&
-                        error.response.data.message) ||
+                        error.response.data.error) ||
                         error.message ||
                         error.toString();
                     if(!this.timer){

@@ -92,7 +92,7 @@ export default {
           const resMessage =
             (error.response &&
               error.response.data &&
-              error.response.data.message) ||
+              error.response.data.error) ||
             error.message ||
             error.toString();
             this.$notify({

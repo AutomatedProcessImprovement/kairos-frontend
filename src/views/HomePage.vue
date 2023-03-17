@@ -47,11 +47,15 @@ export default {
             this.delimiter = this.$refs.delimiter.value;
         },
         handleFileUpload(){
-            console.log(process.env.VUE_APP_ENV_TEST)
             this.file = this.$refs.file.files[0];
+            if(!this.file) {
+                this.isDisabled = true;
+                return;
+            }
             let fileSize = this.file.size/ 1024 / 1024; // in MiB
             this.extension = this.file.name.split('.').pop();
             if(this.extension !== 'xes' && this.extension !== 'csv' && this.extension !== 'zip'){
+                this.isDisabled = true;
                 this.$notify({
                         title: 'Warning',
                         text: 'The uploaded file should be a .csv, .xes. or .zip',
@@ -60,11 +64,12 @@ export default {
                 return;
             }
             if (fileSize > 100){
+                this.isDisabled = true;
                 this.$notify({
-                        title: 'Warning',
-                        text: 'File size should be less than 100 MiB.',
-                        type: 'warning'
-                    })
+                    title: 'Warning',
+                    text: 'File size should be less than 100 MiB.',
+                    type: 'warning'
+                })
                 return;
             }
             this.isDisabled = false;
@@ -85,16 +90,18 @@ export default {
             })
             .catch(error => {
                 this.isLoading = false;
+                this.isDisabled = true;
                 const resMessage =
                     (error.response &&
                     error.response.data &&
-                    error.response.data.message) ||
+                    error.response.data.error) ||
                     error.message ||
                     error.toString();
                     this.$notify({
                         title: 'An error occured',
                         text: resMessage,
-                        type: 'error'
+                        type: 'error',
+                        duration: 6000
                     })
             });
             

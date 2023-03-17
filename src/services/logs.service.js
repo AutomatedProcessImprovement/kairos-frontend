@@ -1,7 +1,4 @@
-import axios from "axios"; // responsible for communicating with api
-const http = axios.create({
-  baseURL: "https://kairos.cloud.ut.ee/frontend_api"
-});
+import http from './axios';
 
 class LogsService {
 
