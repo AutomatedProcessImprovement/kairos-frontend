@@ -156,7 +156,7 @@ export default {
 
             logsService.defineColumnTypes(localStorage.logId,data)
             .then(response => {
-                console.log(response)
+                console.log(response.data)
                 this.isLoading = false;
                 this.$router.push({name: 'parameters'})
             })

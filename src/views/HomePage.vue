@@ -6,7 +6,7 @@
         <loading v-if="isLoading" text="preprocessing data..."></loading>
         <h2>Upload</h2>
         <p>Upload an eventlog to start:</p>
-        <small>Supported file types: .csv and .xes</small>
+        <small>Supported file types: .csv, .xes and .zip.</small>
         <small>Max file size: 100 MiB.</small>
         
         <input class='btn' type="file" name="fileToUpload" ref="file" id="fileToUpload" v-on:change="handleFileUpload()" />
@@ -47,17 +47,9 @@ export default {
             this.delimiter = this.$refs.delimiter.value;
         },
         handleFileUpload(){
-            console.log(process.env.VUE_APP_BASE_URL)
+            console.log(process.env.VUE_APP_ENV_TEST)
             this.file = this.$refs.file.files[0];
             let fileSize = this.file.size/ 1024 / 1024; // in MiB
-            if (fileSize > 100){
-                this.$notify({
-                        title: 'Warning',
-                        text: 'File size should be less than 100 MiB.',
-                        type: 'warning'
-                    })
-                return;
-            }
             this.extension = this.file.name.split('.').pop();
             if(this.extension !== 'xes' && this.extension !== 'csv' && this.extension !== 'zip'){
                 this.$notify({

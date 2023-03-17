@@ -121,7 +121,6 @@
 
       methods: {
         selectRecommendation(selectedRec){
-          console.log('caught select recommendation')
           if (!selectedRec.index){
             this.selectedRec = {};
             this.selectedRecObject = null;

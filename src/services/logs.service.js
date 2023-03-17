@@ -1,6 +1,6 @@
 import axios from "axios"; // responsible for communicating with api
 const http = axios.create({
-  baseURL: process.env.VUE_APP_BASE_URL
+  baseURL: "https://kairos.cloud.ut.ee/frontend_api"
 });
 
 class LogsService {

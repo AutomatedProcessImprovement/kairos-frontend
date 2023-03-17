@@ -94,7 +94,6 @@
           this.caseId = (this.$route.params.caseId)
           casesService.getCase(this.caseId).then(
             (response) => {
-              console.log(response.data);
               this.currentCase = response.data.case;
               this.getParameters();
             },

@@ -81,7 +81,7 @@ export default {
     getResources(){
         casesService.getCases().then(
           (response) => {
-            console.log(response.message);
+            console.log(response.data);
             this.isLoading = false;
           },
           (error) => {

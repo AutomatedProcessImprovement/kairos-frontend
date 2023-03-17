@@ -275,7 +275,6 @@ export  default {
                 "operator": this.format(this.positiveOutcome.operator),
                 "value": outcomeValue
             }
-            console.log(positiveOutcome)
 
             let intervention = {
                 "column": this.intervention.column,
@@ -292,7 +291,7 @@ export  default {
 
             logsService.defineParameters(localStorage.logId,data)
             .then(response => {
-                console.log(response)
+                console.log(response.data)
                 this.isLoading = false;
                 this.$router.push({name: 'dashboard'})
             })

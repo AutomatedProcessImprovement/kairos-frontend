@@ -83,7 +83,6 @@ export default {
       this.isLoading = true;
       casesService.getCasesByLog(localStorage.logId).then(
         (response) => {
-          console.log(response);
           this.cases = response.data.cases;
           if (this.cases.length > 0) this.formatCases();
           else this.isLoading = false;
