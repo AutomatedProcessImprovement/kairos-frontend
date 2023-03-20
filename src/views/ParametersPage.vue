@@ -256,7 +256,6 @@ export  default {
                     }
                 }
             }
-            this.positiveOutcome.value = this.deformat(this.positiveOutcome.value);
             this.intervention = this.log.treatment;
             this.intervention.operator = this.deformat(this.intervention.operator);
         },
