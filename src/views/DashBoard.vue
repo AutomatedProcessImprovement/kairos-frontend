@@ -115,6 +115,7 @@ export default {
     },
 
     beforeUnmount() {
+        this.clearTimer();
     },
 
     methods: {
