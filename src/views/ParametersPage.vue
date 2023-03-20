@@ -136,7 +136,7 @@
                 <div class="parameter">
                     <p>Alarm Threshold</p>
                     <small>Please specify when an alarm should be triggered. Enter a value between 0.1 and 0.9.</small>
-                    <input type="number" v-model="alarmThreshold"/>
+                    <input type="number" step="0.1" v-model="alarmThreshold"/>
                 </div>
 
                 <button type="submit" class="btn-blue" @click="validate">Submit</button>
@@ -145,7 +145,7 @@
         <modal-component v-if="openModal" title="Parameters group name" @closeModal="closeModal">
             <template v-slot:content>
                 <div class="column">
-                    <input type="text" minlength="2" maxlength="30" placeholder="Description..." v-model="parametersDescription"/>
+                    <input type="text" minlength="2" maxlength="100" placeholder="Description..." v-model="parametersDescription"/>
                     <button type="submit" class="btn-blue" @click="submit">Submit</button>
                 </div>
             </template>
@@ -159,7 +159,7 @@
 import Loading from "@/components/LoadingComponent.vue";
 import TooltipComponent from "@/components/TooltipComponent.vue";
 import ModalComponent from "@/components/ModalComponent.vue";
-import  Service from "@/services/service.js"
+import logsService from "@/services/logs.service.js"
 
 export  default {
     name: "ParametersPage",
@@ -172,7 +172,7 @@ export  default {
 
     data () {
         return {
-            isLoading: false,
+            isLoading: true,
             openModal: false,
 
             log: null,
@@ -207,27 +207,31 @@ export  default {
         }
     },
 
-    created() {
+    mounted() {
         this.getLog();
     },
 
     methods: {
         getLog() {
-            let fileId = localStorage.fileId;
+            let logId = localStorage.logId;
  
-            Service.getLog(fileId)
+            logsService.getLog(logId)
             .then(response => {
                 this.log = response.data.event_log;
+                console.log(this.log);
                 this.activities = this.log.activities;
                 this.positiveOutcomeTypes = this.log.outcome_options;
                 this.interventionTypes = this.log.treatment_options;
                 this.columnsDefinition = this.log.columns_definition;
                 this.isLoading = false;
+                if(this.log.parameters_description){
+                    this.formatParameters();
+                }
             })
             .catch(error => {
                 this.isLoading = false;
                 const resMessage =
-                (error.response && error.response.data && error.response.data.message) ||
+                (error.response && error.response.data && error.response.data.error) ||
                 error.message || error.toString();
                 this.$notify({
                         title: 'An error occured',
@@ -235,6 +239,25 @@ export  default {
                         type: 'error'
                     })            
                 });
+        },
+
+        formatParameters(){
+            this.caseCompletion = this.log.case_completion;
+            this.alarmThreshold = this.log.alarm_threshold;
+            this.positiveOutcome = this.log.positive_outcome;
+            this.positiveOutcome.operator = this.deformat(this.positiveOutcome.operator);
+            if(this.positiveOutcome.column === 'DURATION'){
+                let caseDuration = this.positiveOutcome.value.split(' ');
+                this.positiveOutcome.value = caseDuration[0];
+                if (caseDuration.length === 2){
+                    this.positiveOutcome.unit = caseDuration[1];
+                    if(this.positiveOutcome.value > 1){
+                        this.positiveOutcome.unit = this.positiveOutcome.unit.slice(0,-1);
+                    }
+                }
+            }
+            this.intervention = this.log.treatment;
+            this.intervention.operator = this.deformat(this.intervention.operator);
         },
 
         closeModal(){
@@ -275,7 +298,6 @@ export  default {
                 "operator": this.format(this.positiveOutcome.operator),
                 "value": outcomeValue
             }
-            console.log(positiveOutcome)
 
             let intervention = {
                 "column": this.intervention.column,
@@ -290,16 +312,16 @@ export  default {
                 'parameters_description': this.parametersDescription
             }    
 
-            Service.parameters(localStorage.fileId,data)
+            logsService.defineParameters(localStorage.logId,data)
             .then(response => {
-                console.log(response)
+                console.log(response.data)
                 this.isLoading = false;
                 this.$router.push({name: 'dashboard'})
             })
             .catch(error => {
                 this.isLoading = false;
                 const resMessage =
-                (error.response && error.response.data && error.response.data.message) ||
+                (error.response && error.response.data && error.response.data.error) ||
                 error.message || error.toString();
                 this.$notify({
                         title: 'An error occured',
@@ -326,6 +348,10 @@ export  default {
 
         format(s){
             return s.replace(/\s+/g, '_').toUpperCase();
+        },
+
+        deformat(s){
+            return s.replace(/_+/g, ' ').toLowerCase();
         }
 
     },

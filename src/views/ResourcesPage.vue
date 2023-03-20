@@ -1,5 +1,6 @@
 <template>
 <side-bar></side-bar>
+<loading v-if="isLoading"></loading>
   <div id="resources">
       <h2>Resources</h2>
       <div class="stats">
@@ -51,61 +52,55 @@
 
 <script>
 
-import Service from "@/services/service";
+import casesService from "@/services/cases.service";
 import SideBar from '@/components/SideBar.vue';
-
+import Loading from "@/components/LoadingComponent.vue";
 
 export default {
   name: "ResourcesPage",
 
   components: {
-        SideBar
+        SideBar,
+        Loading
       },
 
   data(){
     return {
+      isLoading: true,
       headers: [],
       resources: null,
       available: 0,
       busy: 0
     }
   },
+  mounted() {
+    this.getResources();
+  },
 
   methods:{
     getResources(){
-        Service.getCases().then(
+        casesService.getCases().then(
           (response) => {
-            const cases = response.data.cases;
-
-            const resources = []
-            for (const c of cases) {
-              for (const a of c.activities) {
-                if (a.name !== "End Event" && a.name !== "Start Event") resources.push(a.resource)
-              }
-            }
-            
-            this.resources = [...new Map(resources.map(v => [v.name, v])).values()]
-
-            if(this.resources){
-              this.headers = Object.keys(this.resources[0]).map(h => h.charAt(0).toUpperCase() + h.slice(1))
-
-              this.resources.forEach(r => r.available? this.available += 1 : this.busy += 1)
-            }
+            console.log(response.data);
+            this.isLoading = false;
           },
           (error) => {
-            this.content =
+            this.isLoading = false;
+            const resMessage =
               (error.response &&
                 error.response.data &&
-                error.response.data.message) ||
+                error.response.data.error) ||
               error.message ||
               error.toString();
+              this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    }) 
           }
         );
       },
   },
-  created() {
-    this.getResources();
-  }
 
 }
 </script>

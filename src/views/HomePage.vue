@@ -6,7 +6,8 @@
         <loading v-if="isLoading" text="preprocessing data..."></loading>
         <h2>Upload</h2>
         <p>Upload an eventlog to start:</p>
-        <small>Supported file types: .csv, .xes, .zip. (Please make sure to indicate file type in the file name when uploading .zip)</small>
+        <small>Supported file types: .csv, .xes and .zip.</small>
+        <small>Max file size: 100 MiB.</small>
         
         <input class='btn' type="file" name="fileToUpload" ref="file" id="fileToUpload" v-on:change="handleFileUpload()" />
 
@@ -25,10 +26,13 @@
 
 <script>
 import Loading from "@/components/LoadingComponent.vue";
-import Service from "@/services/service.js"
+import logsService from "@/services/logs.service";
 
 export default {
     name: "HomePage",
+    components: {
+        Loading,
+    },
     data: function () {
         return {
             file: '',
@@ -38,20 +42,35 @@ export default {
             isDisabled: true
         }
     },
-
-    components: {
-        Loading,
-    },
-
     methods: {
         handleSeparator(){
             this.delimiter = this.$refs.delimiter.value;
         },
         handleFileUpload(){
             this.file = this.$refs.file.files[0];
+            if(!this.file) {
+                this.isDisabled = true;
+                return;
+            }
+            let fileSize = this.file.size/ 1024 / 1024; // in MiB
             this.extension = this.file.name.split('.').pop();
-            if(this.extension === 'zip'){
-                this.extension = this.file.name.toLowerCase().indexOf('csv') < 0 ? 'xes' : 'csv';
+            if(this.extension !== 'xes' && this.extension !== 'csv' && this.extension !== 'zip'){
+                this.isDisabled = true;
+                this.$notify({
+                        title: 'Warning',
+                        text: 'The uploaded file should be a .csv, .xes. or .zip',
+                        type: 'warning'
+                    });
+                return;
+            }
+            if (fileSize > 100){
+                this.isDisabled = true;
+                this.$notify({
+                    title: 'Warning',
+                    text: 'File size should be less than 100 MiB.',
+                    type: 'warning'
+                })
+                return;
             }
             this.isDisabled = false;
         },
@@ -62,24 +81,27 @@ export default {
 
             formData.append('file', this.file);
             formData.append('delimiter',this.delimiter);
-            Service.uploadFile(formData)
+            
+            logsService.uploadLog(formData)
             .then(response => {
               this.isLoading = false;
-              localStorage.fileId = response.data.fileId;
+              localStorage.logId = response.data.logId;
               this.$router.push({name: "columns"});
             })
             .catch(error => {
                 this.isLoading = false;
+                this.isDisabled = true;
                 const resMessage =
                     (error.response &&
                     error.response.data &&
-                    error.response.data.message) ||
+                    error.response.data.error) ||
                     error.message ||
                     error.toString();
                     this.$notify({
                         title: 'An error occured',
                         text: resMessage,
-                        type: 'error'
+                        type: 'error',
+                        duration: 6000
                     })
             });
             

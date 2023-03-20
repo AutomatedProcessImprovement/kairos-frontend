@@ -118,6 +118,11 @@
         },
         }
       },
+      computed: {
+        myParameters(){
+          return JSON.parse(JSON.stringify(this.parameters))
+        }
+      },
 
       watch:{
         currentCase(value){
@@ -125,13 +130,7 @@
           this.lastActivity = value.activities.slice(-1)[0];
         }
       },
-
-      computed: {
-        myParameters(){
-          return JSON.parse(JSON.stringify(this.parameters))
-        }
-      },
-
+      
       methods: {
   
         handleError: function(err) {

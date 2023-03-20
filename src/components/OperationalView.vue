@@ -15,6 +15,11 @@
       <div class="row">
         <div class="case-performance-details shadow">
           <h4>Case details</h4>
+          <div class="row">
+            <ion-icon v-if="!caseKpi.outcome" class="warning" name="alert"></ion-icon>
+            <p> Case {{ caseKpi.column }} equals {{ caseKpi.value }}.</p>
+          </div>
+          <small>The case performance {{ caseKpi.outcome ? 'does not violate' : 'violates'}} the positive outcome condition.</small>
         </div>
         <div class="recommendations-list shadow">
           <div class="row center">
@@ -93,30 +98,29 @@
           selectedRecObject: null,
           oldActivities: {},
           lastActivity: {},
+          caseKpi: {},
           tabOptions: {
             recommendations: { defaultTabHash: 'tab-current', useUrlFragment: false},
             recommendationDetails: { defaultTabHash: 'tab-diagram', useUrlFragment: false}
         },
         }
       },
+      computed: {
+        myParameters(){
+          return JSON.parse(JSON.stringify(this.parameters))
+        },
+      },
 
       watch:{
         currentCase(value){
           this.oldActivities = value.activities.slice(0,-1);
           this.lastActivity = value.activities.slice(-1)[0];
-        }
-      },
-
-      computed: {
-        myParameters(){
-          return JSON.parse(JSON.stringify(this.parameters))
+          this.caseKpi = value.case_performance;
         }
       },
 
       methods: {
-
         selectRecommendation(selectedRec){
-          console.log('caught select recommendation')
           if (!selectedRec.index){
             this.selectedRec = {};
             this.selectedRecObject = null;

@@ -31,17 +31,6 @@
       <thead>
       <tr>
         <th v-for="header in headers" :key="header"> {{ header }}
-          <!-- <tooltip-component v-if="header==='Intervened'">
-            <template v-slot:icon>
-              <ion-icon name="information-circle-outline"></ion-icon>
-            </template>            
-            <template v-slot:title>
-                <h3>Intervened</h3>
-            </template>
-            <template v-slot:content>
-              <p>Indicates whether another recommendation has already been implemented in this case.</p>
-            </template>
-          </tooltip-component> -->
         </th>
       </tr>
       </thead>
@@ -62,11 +51,9 @@
 
 <script>
 
-import Service from "../services/service";
+import casesService from "@/services/cases.service";
 import SideBar from '@/components/SideBar.vue';
 import Loading from "@/components/LoadingComponent.vue";
-
-
 
 export default {
   name: 'CasesList',
@@ -87,20 +74,25 @@ export default {
     };
   },
 
+  mounted() {
+    if (localStorage.logId !== 'null') this.getCases();
+  },
+  
   methods: {
     getCases() {
       this.isLoading = true;
-      Service.getCasesByLog(localStorage.fileId).then(
+      casesService.getCasesByLog(localStorage.logId).then(
         (response) => {
           this.cases = response.data.cases;
           if (this.cases.length > 0) this.formatCases();
           else this.isLoading = false;
           },
         (error) => {
+          this.isLoading = false;
           const resMessage =
             (error.response &&
               error.response.data &&
-              error.response.data.message) ||
+              error.response.data.error) ||
             error.message ||
             error.toString();
             this.$notify({
@@ -187,9 +179,6 @@ export default {
         }
       }
     },
-  },
-  created() {
-    if (localStorage.fileId !== 'null') this.getCases();
   },
 
 }

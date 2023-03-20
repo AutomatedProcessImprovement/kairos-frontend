@@ -61,7 +61,7 @@
 
 <script>
 import Loading from "@/components/LoadingComponent.vue";
-import Service from "@/services/service.js"
+import logsService from "@/services/logs.service";
 import TooltipComponent from "@/components/TooltipComponent.vue";
 
 export default {
@@ -97,22 +97,19 @@ export default {
         }
     },
 
-    created() {
+    mounted() {
         this.loadCols();
     },
 
     methods: {
         loadCols() {
-            let fileId = localStorage.fileId;
+            let logId = localStorage.logId;
  
-            Service.getLog(fileId)
+            logsService.getLog(logId)
             .then(response => {
                 let log = response.data.event_log;
                 this.headers = log.columns_header;
-                let types = log.columns_definition;
-                for (let i = 0; i < this.headers.length; i++) {
-                    this.types[this.headers[i]] = types[i];                    
-                }
+                this.types = log.columns_definition;
                 for (const r of log.columns_data) {
                     this.values.push(r)
                 }
@@ -121,7 +118,7 @@ export default {
             .catch(error => {
                 this.isLoading = false;
                 const resMessage =
-                (error.response && error.response.data && error.response.data.message) ||
+                (error.response && error.response.data && error.response.data.error) ||
                 error.message || error.toString();
                 this.$notify({
                         title: 'An error occured',
@@ -154,16 +151,16 @@ export default {
                 "case_attributes": this.caseAttributes
             }
 
-            Service.updateTypes(localStorage.fileId,data)
+            logsService.defineColumnTypes(localStorage.logId,data)
             .then(response => {
-                console.log(response)
+                console.log(response.data)
                 this.isLoading = false;
                 this.$router.push({name: 'parameters'})
             })
             .catch(error => {
                 this.isLoading = false;
                 const resMessage =
-                (error.response && error.response.data && error.response.data.message) ||
+                (error.response && error.response.data && error.response.data.error) ||
                 error.message || error.toString();
                 this.$notify({
                         title: 'An error occured',
