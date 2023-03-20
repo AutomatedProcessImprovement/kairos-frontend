@@ -136,7 +136,7 @@
                 <div class="parameter">
                     <p>Alarm Threshold</p>
                     <small>Please specify when an alarm should be triggered. Enter a value between 0.1 and 0.9.</small>
-                    <input type="number" v-model="alarmThreshold"/>
+                    <input type="number" step="0.1" v-model="alarmThreshold"/>
                 </div>
 
                 <button type="submit" class="btn-blue" @click="validate">Submit</button>
@@ -218,11 +218,15 @@ export  default {
             logsService.getLog(logId)
             .then(response => {
                 this.log = response.data.event_log;
+                console.log(this.log);
                 this.activities = this.log.activities;
                 this.positiveOutcomeTypes = this.log.outcome_options;
                 this.interventionTypes = this.log.treatment_options;
                 this.columnsDefinition = this.log.columns_definition;
                 this.isLoading = false;
+                if(this.log.parameters_description){
+                    this.formatParameters();
+                }
             })
             .catch(error => {
                 this.isLoading = false;
@@ -235,6 +239,26 @@ export  default {
                         type: 'error'
                     })            
                 });
+        },
+
+        formatParameters(){
+            this.caseCompletion = this.log.case_completion;
+            this.alarmThreshold = this.log.alarm_threshold;
+            this.positiveOutcome = this.log.positive_outcome;
+            this.positiveOutcome.operator = this.deformat(this.positiveOutcome.operator);
+            if(this.positiveOutcome.column === 'DURATION'){
+                let caseDuration = this.positiveOutcome.value.split(' ');
+                this.positiveOutcome.value = caseDuration[0];
+                if (caseDuration.length === 2){
+                    this.positiveOutcome.unit = caseDuration[1];
+                    if(this.positiveOutcome.value > 1){
+                        this.positiveOutcome.unit = this.positiveOutcome.unit.slice(0,-1);
+                    }
+                }
+            }
+            this.positiveOutcome.value = this.deformat(this.positiveOutcome.value);
+            this.intervention = this.log.treatment;
+            this.intervention.operator = this.deformat(this.intervention.operator);
         },
 
         closeModal(){
@@ -325,6 +349,10 @@ export  default {
 
         format(s){
             return s.replace(/\s+/g, '_').toUpperCase();
+        },
+
+        deformat(s){
+            return s.replace(/_+/g, ' ').toLowerCase();
         }
 
     },

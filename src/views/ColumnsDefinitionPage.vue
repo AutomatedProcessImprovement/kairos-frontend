@@ -109,10 +109,7 @@ export default {
             .then(response => {
                 let log = response.data.event_log;
                 this.headers = log.columns_header;
-                let types = log.columns_definition;
-                for (let i = 0; i < this.headers.length; i++) {
-                    this.types[this.headers[i]] = types[i];                    
-                }
+                this.types = log.columns_definition;
                 for (const r of log.columns_data) {
                     this.values.push(r)
                 }
