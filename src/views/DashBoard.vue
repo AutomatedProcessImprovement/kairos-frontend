@@ -4,7 +4,10 @@
   <div id="dashboard">
       <h2>Dashboard</h2>
       <div class="column">
-        <p>Event logs</p>
+        <div class="row center">
+            <h3 class="bold blue">Event logs</h3>
+            <button class="btn-blue margin" @click="goToHome">Upload log</button>
+        </div>
         <div class="row">
             <ion-icon class="input-icon" name="search"></ion-icon>
             <input type="text" id="find-log" @keyup="findLog" placeholder="Find log...">
@@ -119,6 +122,9 @@ export default {
     },
 
     methods: {
+        goToHome(){
+            this.$router.push({name: 'home'});
+        },
 
         clearTimer(){
             if(this.timer) clearInterval(this.timer);
