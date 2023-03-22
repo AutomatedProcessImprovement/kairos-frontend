@@ -139,7 +139,7 @@ export default {
                         this.isLoading = false;
                         return;
                     }
-                    if (String(localStorage.logId) === 'null'){
+                    if (String(localStorage.logId) === 'null' || !localStorage.logId){
                         localStorage.logId = this.eventlogs[0]._id.toString();
                     }
                     this.selectLog(localStorage.logId);
@@ -169,7 +169,7 @@ export default {
 
         selectLog(logId){
             logId = String(logId)
-            if (logId === 'null') return;
+            if (logId === 'null' || !logId) return;
             localStorage.logId = logId;
             this.selectedLog = this.eventlogs.find(e => String(e._id) === logId);
             this.getProjectStatus();
