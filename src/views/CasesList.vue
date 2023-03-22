@@ -23,28 +23,28 @@
       </div>
       <ion-icon name="albums"></ion-icon>
     </div>
-  </div>
-
-
+  </div>  
+  
   <div class="cases-table">
-    <table class="shadow">
-      <thead>
-      <tr>
-        <th v-for="header in headers" :key="header"> {{ header }}
-        </th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="item in casesData" :key='item'>
-          <td v-for="(value,name) in item" :key='name'>
-            <router-link :to="{name: 'case',params: {caseId: value}}" v-if="name==='id'">{{ value }}</router-link>
-            <div v-else-if="name=='recommendations'" class="case-recommendations" :class="[value ? 'available' : 'unavailable']"> {{ value ? "recommendations available" : "no new recommendations" }}</div>
-            <div v-else-if="name=='duration'">{{ value.value }} {{ value.measure }}</div>
-            <p v-else>{{ value }}</p>
-          </td>
-      </tr>
-      </tbody>
-    </table>
+    <table-lite
+    :is-hide-paging="true"
+    :is-slot-mode="true"
+    :columns="table.headers"
+    :rows="table.rows"
+    :total="table.rows.length"
+    :sortable="table.sortable"
+    @do-search="doSort"
+    @is-finished="table.isLoading = false"
+    @row-clicked="rowClicked"
+    >
+    <template v-slot:recommendations="data">
+      <div class="case-recommendations" :class="[data.value.recommendations ? 'available' : 'unavailable']"> 
+        {{ data.value.recommendations ? "recommendations available" : "no new recommendations" }}
+      </div>
+    </template>
+  
+  </table-lite>
+    
   </div>
   </div>
 </template>
@@ -54,31 +54,83 @@
 import casesService from "@/services/cases.service";
 import SideBar from '@/components/SideBar.vue';
 import Loading from "@/components/LoadingComponent.vue";
+import TableLite from "vue3-table-lite";
 
 export default {
   name: 'CasesList',
 
   components: {
         SideBar,
-        Loading
+        Loading,
+        TableLite,
       },
 
   data() {
     return {
       isLoading: false,
       cases: [],
-      headers: ["Case ID","Recommendations","Intervened"],
-      casesData: [],
       kpi: [],
+      casesData: [],
+      
+      isReSearch: null,
+      table: {
+        isLoading: false,
+        headers: [
+          {
+            label: 'Case ID',
+            field: 'id',
+            sortable: true,
+            isKey: true
+          },
+          {
+            label: "Recommendations",
+            field: "recommendations",
+            sortable: false,
+          },
+          {
+            label: "Intervened",
+            field: "intervened",
+            sortable: true,
+          },
+        ],
+        rows: [],
+        sortable: {
+          order: null,
+          sort: null
+        },
+      },
       completedCases: undefined,
     };
   },
 
   mounted() {
-    if (localStorage.logId !== 'null') this.getCases();
+    if (localStorage.logId !== 'null' && localStorage.logId !== 'undefined') this.getCases();
   },
   
   methods: {
+
+    rowClicked(row){
+      this.$router.push({name: 'case',params: {'caseId':row.id}})
+    },
+
+    doSort(offset,limit,order,sort){
+      const sortOrder = sort === 'asc' ? 1 : -1;
+      if (order === "performance" && this.cases[0].case_performance.column === "DURATION"){
+        this.table.rows = this.table.rows.sort((a, b) => 
+        (this.parseDuration(a[order]) > this.parseDuration(b[order])) ? (1 * sortOrder) : (-1 * sortOrder) );
+      } else{
+        this.table.rows = this.table.rows.sort((a, b) => (a[order] > b[order]) ? (1 * sortOrder) : (-1 * sortOrder) );
+      }
+      this.table.sortable.order = order;
+      this.table.sortable.sort = sort;
+    },
+
+    parseDuration(d){
+      const match = /^(\d+)\s*(\w+)$/.exec(d);
+      const units = { weeks:604800,week:604800, days:86400, day:86400, hours:3600,hour:3600, minutes:60,minute:60,seconds:1,second:1};
+      return match ? (units[match[2]] || NaN) * parseInt(match[1]) : NaN;
+    },
+    
     getCases() {
       this.isLoading = true;
       casesService.getCasesByLog(localStorage.logId).then(
@@ -145,41 +197,46 @@ export default {
         Object.keys(el.case_attributes).forEach(k => {
           data[k] = el.case_attributes[k];
         })
+
+        data['completed'] = el.case_completed;
         
         this.casesData.push(data);
       }
+      this.table.rows = this.casesData;
 
-      this.headers.push(performanceColumn)
-
-      Object.keys(this.cases[0].case_attributes).forEach(k => {
-        this.headers.push(k);
+      this.table.headers.push({
+        label:performanceColumn,
+        field:'performance',
+        sortable:true
       })
 
+      Object.keys(this.cases[0].case_attributes).forEach(k => {
+        this.table.headers.push({
+          label:k,
+          field:k,
+          sortable:true
+        });
+      })
+
+      this.table.headers.push({
+        label:'Completed',
+        field:'completed',
+        sortable:true
+      })
+      this.doSort(0,10,"id","asc");
       this.isLoading = false;
     },
 
     filterCases(status){
-      var rows = document.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
       if (this.completedCases === status){
         this.completedCases = null;
-        for (let i = 0; i < rows.length; i++) {
-          rows[i].style.display = "";
-        }
+        this.table.rows = this.casesData;
         return;
       }
       this.completedCases = status;
-      var filteredCases = this.cases.map(c => {if (c.case_completed === status) return c._id});
-      for (let i = 0; i < rows.length; i++) {
-        var routerLink = rows[i].getElementsByTagName("td")[0].getElementsByTagName("a")[0];
-        var caseId = routerLink.textContent || routerLink.innerText;
-        if (filteredCases.indexOf(caseId) < 0) {
-            rows[i].style.display = "none";
-        } else{
-            rows[i].style.display = "";
-        }
-      }
+      this.table.rows = this.casesData.filter(r => r.completed === status);
     },
-  },
+  }
 
 }
 </script>
