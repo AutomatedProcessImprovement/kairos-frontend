@@ -12,8 +12,10 @@
     height: 100px;
     // align-items: center;
 
-    &>.column p{
-      white-space: nowrap;
+    &>.column{
+      p{
+        white-space: nowrap;
+      }
     }
   }
 

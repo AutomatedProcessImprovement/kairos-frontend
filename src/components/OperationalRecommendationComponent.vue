@@ -15,7 +15,7 @@
                     </template>
                     <template v-slot:content>
                         <h4> Model description</h4>
-                        <p v-for="m in r.metrics" :key="m"> {{ m.name }}: {{ m.metric}}%</p>
+                        <p v-for="m in r.metrics" :key="m"> {{ m.name }}: {{ m.metric * 100}}%</p>
                     </template>
                 </tooltip-component>
                 <p :class="['bold', r.status ==='accepted' ? 'green' : 'warning']">{{r.status }}</p>
@@ -93,8 +93,10 @@ export default{
                 }
                 else if(p.type === 'ALARM') {
                     recommendationAttr = 'Action required';
-                    recommendedAttr = p.output < this.parameters.alarmThreshold ? 'Probability of not meeting the KPI is low. It is fine not to check on the application.' :
-                                                                                    'Probability of not meeting the KPI is high. It is recommended to check on the application.' ;
+                    if (p.output < this.parameters.alarmThreshold){
+                        continue;
+                    }
+                    recommendedAttr = 'Probability of not meeting the KPI is high. It is recommended to check on the application.' ;
                     recommendationMetrics = [
                         {name: 'Accuracy', metric: p.plugin.accuracy},
                         {name: 'Recall', metric: p.plugin.recall},
@@ -103,8 +105,10 @@ export default{
                 }
                 else if(p.type==='TREATMENT_EFFECT'){
                     recommendationAttr = this.formatIntervention(p.output);
-                    recommendedAttr = p.output.cate > 0 ? 'The causal effect of performing the intervention is positive.' :
-                                                            'The causal effect of performing this intervention is negative.';
+                    if(p.output.cate <= 0){
+                        continue;
+                    }
+                    recommendedAttr =  'The causal effect of performing the intervention is positive.';
                     recommendationMetrics = [
                         {name: 'CATE score', metric: p.output.cate},
                         {name: 'Probability if treated', metric: p.output.proba_if_treated},
