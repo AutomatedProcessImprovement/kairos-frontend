@@ -149,6 +149,9 @@ export default {
                         localStorage.logId = this.eventlogs[0]._id.toString();
                     }
                     this.selectLog(localStorage.logId);
+                    if (!this.selectedLog){
+                        this.selectLog(this.eventlogs[0]._id.toString());
+                    }
 
                     this.timer = setInterval(() => {
                         if(this.selectedLogStatus !== 'NULL') this.getProjectStatus();
