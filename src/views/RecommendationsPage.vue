@@ -67,22 +67,26 @@
             {
                 label: 'Case ID',
                 field: 'id',
+                width: "10%",
                 sortable: false,
                 isKey: true
             },
             {
                 label: "Performance",
                 field: "performance",
+                width: "10%",
                 sortable: false,
             },
             {
                 label: "Recommendation",
                 field: "recommendationAttribute",
+                width: "10%",
                 sortable: false,
             },
             {
                 label: "Details",
                 field: "details",
+                width: "20%",
                 sortable: false,
             },
             ],
@@ -152,6 +156,7 @@
               this.getRecommendations();
             },
             (error) => {
+              this.isLoading = false;
               const resMessage =
                 (error.response &&
                   error.response.data &&

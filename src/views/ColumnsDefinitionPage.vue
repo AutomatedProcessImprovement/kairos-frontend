@@ -20,7 +20,7 @@
             <div v-if="values.length === 0">
                 <h3 class="warning">Please upload a log first.</h3>
             </div>
-            <div v-else class="log-table shadow">
+            <div v-else class="log-table">
                 <table>
                     <thead>
                         <tr>
@@ -49,11 +49,11 @@
                     </tr>
                     </tbody>
                 </table>
-                <div class="buttons">
-                    <button class="btn-blue" v-on:click="submit">Upload log</button>
-                    <button class="btn-blue" v-on:click="goToHome">Cancel</button>
-                </div>
-
+                
+            </div>
+            <div class="buttons">
+                <button class="btn-blue" v-on:click="submit">Upload log</button>
+                <button class="btn-blue" v-on:click="goToHome">Cancel</button>
             </div>
         </div>
     </div>
