@@ -1,8 +1,9 @@
 <template>
   <side-bar></side-bar>
   <loading v-if="isLoading"></loading>
-  <div id="case">
+  <div id="case" v-if="currentCase._id">
     <div class="case-top">
+      <router-link class="bold" :to="{name: 'cases'}"><ion-icon name="chevron-back"></ion-icon> Return</router-link>
       <div class="row">
         <h2>Case #{{caseId}}</h2>
         <div class="case-recommendations" :class="[recommendationsAvailable ? 'available' : 'unavailable']"> 
@@ -13,13 +14,13 @@
       <div class="stats">
         <div v-if="parameters.kpi" class="stats-card column">
           <p>KPI</p>
-          <h3 class="blue">{{ parameters.kpi.value }}</h3>
+          <h3 class="blue">{{ parameters.kpi.value }} {{ parameters.kpi.unit }}</h3>
           <small>Case {{ parameters.kpi.column }}  {{ parameters.kpi.operator }}</small>
         </div>
         <div class="stats-card">
           <div class="case-performance">
             <p>Case performance</p>
-            <p :class="['bold', caseKpi.outcome? 'green' : 'warning']">{{ caseKpi.value }}</p>
+            <p :class="['bold', caseKpi.outcome? 'green' : 'warning']">{{ caseKpi.value }} {{ caseKpi.unit }}</p>
             <small>Case {{ caseKpi.column }}</small>
           </div>
           <div class="case-details">
@@ -43,6 +44,7 @@
       :parameters="parameters"
     ></analytical-view>
   </div>
+  <error v-else></error>
   </template>
   
   <script>
@@ -52,7 +54,7 @@
     import AnalyticalView from '@/components/AnalyticalView.vue';
     import SideBar from '@/components/SideBar.vue';
     import Loading from "@/components/LoadingComponent.vue";
-
+    import Error from "@/components/ErrorComponent.vue";
 
     export default {
       name: 'CasePage',
@@ -60,7 +62,8 @@
         SideBar,
         OperationalView,
         AnalyticalView,
-        Loading
+        Loading,
+        Error
       },
       params: {
           caseId:{
@@ -80,9 +83,9 @@
       }, 
 
       mounted() {
-        this.getCase();
-        this.selectedView = localStorage.view;
         window.addEventListener('view-changed', this.changeView);
+        this.selectedView = localStorage.view;
+        if (localStorage.logId !== 'null' && localStorage.logId !== undefined) this.getParameters();
       },
 
       beforeUnmount() {
@@ -95,9 +98,10 @@
           casesService.getCase(this.caseId).then(
             (response) => {
               this.currentCase = response.data.case;
-              this.getParameters();
+              this.getAdditionalInformation();
             },
             (error) => {
+              this.isLoading = false;
               const resMessage=
                 (error.response &&
                   error.response.data &&
@@ -116,14 +120,11 @@
         getParameters(){
           logsService.getParameters(localStorage.logId).then(
             (response) => {
-              this.parameters.kpi = response.data.kpi;
-              this.parameters.caseCompletion = response.data.caseCompletion;
-              this.parameters.alarmThreshold = response.data.alarmThreshold;
-              this.parameters.treatment = response.data.treatment;
-              this.parameters.columnsDefinition = response.data.columnsDefinition;
-              this.getAdditionalInformation();
+              this.parameters = response.data.parameters;
+              this.getCase();
             },
             (error) => {
+              this.isLoading = false;
               const resMessage =
                 (error.response &&
                   error.response.data &&

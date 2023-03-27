@@ -1,14 +1,15 @@
 <template>    
     <div class="operational-view">
       <div class="case-status shadow">
-        <div class="column">
+        <div v-if="parameters.columnsDefinitionReverse" class="column">
           <h4>Case status</h4>
-          <p>{{ lastActivity['ACTIVITY'] }} complete</p>
-          <small>{{ lastActivity['TIMESTAMP'] }}</small>
+          <p>{{ lastActivity[parameters.columnsDefinitionReverse['ACTIVITY']] }} complete</p>
+          <small>{{ lastActivity[parameters.columnsDefinitionReverse['START_TIMESTAMP']] }}</small>
         </div>
         <flow-diagram-component
         :oldActivities="oldActivities"
         :lastActivity="lastActivity"
+        :parameters="parameters"
         :caseCompleted="currentCase.case_completed"
         ></flow-diagram-component>
       </div>
@@ -17,7 +18,7 @@
           <h4>Case details</h4>
           <div class="row">
             <ion-icon v-if="!caseKpi.outcome" class="warning" name="alert"></ion-icon>
-            <p> Case {{ caseKpi.column }} equals {{ caseKpi.value }}.</p>
+            <p> Case {{ caseKpi.column }} equals {{ caseKpi.value }} {{ caseKpi.unit }}.</p>
           </div>
           <small>The case performance {{ caseKpi.outcome ? 'does not violate' : 'violates'}} the positive outcome condition.</small>
         </div>
@@ -52,7 +53,7 @@
                   :batch="lastActivity"
                   :current="true"
                   :selectedRec="selectedRec"
-                  :parameters="myParameters"
+                  :parameters="parameters"
                   @recommendationSelected="selectRecommendation"
                   ></operational-recommendation-component>
                 </tab>
@@ -60,7 +61,7 @@
               <operational-recommendation-component v-for="activity in oldActivities" v-bind:key="activity"
                 :batch="activity"
                 :current="false"
-                :parameters="myParameters"
+                :parameters="parameters"
                 :selectedRec="selectedRec"
                 @recommendationSelected="selectRecommendation"
                 ></operational-recommendation-component>
@@ -96,9 +97,6 @@
         return {
           selectedRec: {},
           selectedRecObject: null,
-          oldActivities: {},
-          lastActivity: {},
-          caseKpi: {},
           tabOptions: {
             recommendations: { defaultTabHash: 'tab-current', useUrlFragment: false},
             recommendationDetails: { defaultTabHash: 'tab-diagram', useUrlFragment: false}
@@ -106,18 +104,17 @@
         }
       },
       computed: {
-        myParameters(){
-          return JSON.parse(JSON.stringify(this.parameters))
+        oldActivities(){
+          return this.currentCase.activities.slice(0,-1);
         },
-      },
-
-      watch:{
-        currentCase(value){
-          this.oldActivities = value.activities.slice(0,-1);
-          this.lastActivity = value.activities.slice(-1)[0];
-          this.caseKpi = value.case_performance;
+        lastActivity(){
+          return this.currentCase.activities.slice(-1)[0];
+        },
+        caseKpi(){
+          return this.currentCase.case_performance;
         }
       },
+
 
       methods: {
         selectRecommendation(selectedRec){

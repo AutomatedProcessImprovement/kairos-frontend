@@ -104,7 +104,7 @@ td{
 
 td, th {
   padding: 10px 10px;
-  text-align: center;
+  text-align:left;
 }
 
 .case-recommendations{
@@ -144,6 +144,10 @@ td, th {
 
 .flex-end{
   align-items: flex-end;
+}
+
+.space-between{
+  justify-content: space-between;
 }
 
 center{

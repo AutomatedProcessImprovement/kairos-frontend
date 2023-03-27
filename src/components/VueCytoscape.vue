@@ -42,11 +42,12 @@ cytoscape.use( dagre );
           };
         },
 
+        mounted(){
+          this.$emit('loading');      
+          this.createDiagram();
+        },
+
         watch: {
-          parameters: function(){
-            this.$emit('loading');      
-            this.createDiagram();
-          },
           cy: function(){
             this.displayDiagram();
           }
@@ -194,8 +195,8 @@ cytoscape.use( dagre );
               const activity = activities[i];
 
               var options = {dateStyle:"short",timeStyle: "short"};
-              var date = new Date(activity['TIMESTAMP']).toLocaleString("en-GB",options);
-              var content = activity['ACTIVITY'] + "\n\n" + date;
+              var date = new Date(activity[this.parameters.columnsDefinitionReverse['START_TIMESTAMP']]).toLocaleString("en-GB",options);
+              var content = activity[this.parameters.columnsDefinitionReverse['ACTIVITY']] + "\n\n" + date;
               var activityClass = (i === (l-1)) ? 'selectedNode' :'activity';
 
               elems.push({

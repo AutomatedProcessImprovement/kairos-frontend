@@ -17,7 +17,8 @@ export default{
         props: {
           lastActivity: Object, 
           oldActivities: Array,
-          caseCompleted: Boolean
+          caseCompleted: Boolean,
+          parameters: Object
         },
     
         data(){
@@ -25,12 +26,13 @@ export default{
                 cy: null
             }
         },
+
+        mounted(){
+          this.$emit('loading');      
+          this.createDiagram();
+        },
     
         watch: {
-          oldActivities: function(){
-            this.$emit('loading');      
-            this.createDiagram();
-          },
           cy: function(){
             this.displayDiagram();
           }
@@ -104,6 +106,7 @@ export default{
               ],
             });
             let activities = JSON.parse(JSON.stringify(this.oldActivities));
+            console.log(activities);
             activities.push(this.lastActivity);
             // activities = activities.slice(-3);
             const l = activities.length;
@@ -111,7 +114,7 @@ export default{
 
             for (let i = 0; i < l; i++) {
               const activity = activities[i];
-              let content = activity['ACTIVITY']
+              let content = activity[this.parameters.columnsDefinitionReverse['ACTIVITY']]
 
               elems.push({
                 group: "nodes",

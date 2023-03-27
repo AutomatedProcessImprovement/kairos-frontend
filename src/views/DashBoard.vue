@@ -4,7 +4,10 @@
       <div id="dashboard">
           <h2>Dashboard</h2>
           <div class="column">
-            <p>Event logs</p>
+            <div class="row center">
+                <h3 class="bold blue">Event logs</h3>
+                <button class="btn-blue margin" @click="goToHome">Upload log</button>
+            </div>
             <div class="row">
                 <ion-icon class="input-icon" name="search"></ion-icon>
                 <input type="text" id="find-log" @keyup="findLog" placeholder="Find log...">
@@ -54,7 +57,7 @@
                     </div>
                     <div class="parameter">
                         <small>{{ selectedLog.positive_outcome.column }} {{ selectedLog.positive_outcome.operator }}</small>
-                        <p>{{ selectedLog.positive_outcome.value }}</p>
+                        <p>{{ selectedLog.positive_outcome.value }} {{ selectedLog.positive_outcome.unit }}</p>
                         <small>Positive case outcome</small>
                     </div>
                     <div class="parameter">
@@ -119,6 +122,9 @@
         },
     
         methods: {
+            goToHome(){
+                this.$router.push({name: 'home'});
+            },
     
             clearTimer(){
                 if(this.timer) clearInterval(this.timer);
@@ -139,10 +145,16 @@
                             this.isLoading = false;
                             return;
                         }
-                        if (String(localStorage.logId) === 'null'){
+                        if (String(localStorage.logId) === 'null' || !localStorage.logId){
                             localStorage.logId = this.eventlogs[0]._id.toString();
                         }
-                        this.selectLog(localStorage.logId);
+                        this.selectedLog = this.eventlogs.find(e => String(e._id) === localStorage.logId);
+    
+                        if (!this.selectedLog){
+                            this.selectLog(this.eventlogs[0]._id.toString());
+                        } else{
+                            this.getProjectStatus();
+                        }
     
                         this.timer = setInterval(() => {
                             if(this.selectedLogStatus !== 'NULL') this.getProjectStatus();
@@ -169,7 +181,7 @@
     
             selectLog(logId){
                 logId = String(logId)
-                if (logId === 'null') return;
+                if (logId === 'null' || !logId) return;
                 localStorage.logId = logId;
                 this.selectedLog = this.eventlogs.find(e => String(e._id) === logId);
                 this.getProjectStatus();
@@ -294,7 +306,6 @@
                             });
                         }
                         this.selectedLogStatus = status;
-                        this.isLoading = false;
                     },
                     (error) => {
                         this.isLoading = false;
@@ -304,13 +315,12 @@
                             error.response.data.error) ||
                             error.message ||
                             error.toString();
-                        if(!this.timer){
-                            this.$notify({
+                        this.selectedLogStatus = 'NULL';
+                        this.$notify({
                             title: 'An error occured',
                             text: resMessage,
                             type: 'error'
                         });
-                    }
                     }
                 ); 
             },

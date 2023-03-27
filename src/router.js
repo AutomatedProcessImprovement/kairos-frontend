@@ -6,6 +6,7 @@ import HomePage from "./views/HomePage"
 import DashBoard from './views/DashBoard'
 import ParametersPage from './views/ParametersPage'
 import ColumnsDefinitionPage from "./views/ColumnsDefinitionPage"
+import RecommendationsPage from './views/RecommendationsPage'
 
 const routes = [
     {
@@ -44,6 +45,11 @@ const routes = [
                 params: true
             },
         ]
+    },
+    {
+        path: "/recommendations",
+        name: "recommendations",
+        component: RecommendationsPage,
     },
 ];
 

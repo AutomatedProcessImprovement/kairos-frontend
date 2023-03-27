@@ -42,7 +42,7 @@
     }
   }
   
-  #cases {
+  #cases,#recommendations {
     padding: 20px 30px;
     display: flex;
     flex-direction: column;
@@ -50,13 +50,15 @@
     overflow-y: hidden;
   }
   
-  .cases-table{
+  .cases-table,.recommendations-table{
     display:flex;
     flex: 1;
     align-items: flex-start;
     margin-top: 10px;
   
     .vtl{
+      box-shadow: 0px 10px 27px rgba(0, 0, 0, 0.05);
+
       tr{
         cursor: pointer;
       }
