@@ -106,11 +106,11 @@ export default{
               ],
             });
             let activities = JSON.parse(JSON.stringify(this.oldActivities));
-            console.log(activities);
             activities.push(this.lastActivity);
             // activities = activities.slice(-3);
             const l = activities.length;
             var elems = [];
+            var lastNodeId = 'an'+(l-1)
 
             for (let i = 0; i < l; i++) {
               const activity = activities[i];
@@ -136,8 +136,10 @@ export default{
                   });
               }
             }
+            console.log(this.lastActivity)
             let lastRecommendations = JSON.parse(JSON.stringify(this.lastActivity.prescriptions));
             if (lastRecommendations.length > 0){
+              console.log(lastRecommendations)
                 let content = lastRecommendations[0].output;
                 elems.push({
                 group: "nodes",
@@ -156,7 +158,7 @@ export default{
                     target: "rn",
                 },
                 });
-
+                lastNodeId = 'rn';
             }
 
             if(elems.length > 0 && !this.caseCompleted){
@@ -171,7 +173,7 @@ export default{
                 group: "edges",
                 data: {
                     id: "ne",
-                    source: "rn",
+                    source: lastNodeId,
                     target: "nn",
                     },
                 });

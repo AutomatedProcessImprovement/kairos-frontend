@@ -83,17 +83,20 @@ export default {
           {
             label: 'Case ID',
             field: 'id',
+            width: "10%",
             sortable: true,
             isKey: true
           },
           {
             label: "Recommendations",
             field: "recommendations",
+            width: "5%",
             sortable: false,
           },
           {
             label: "Intervened",
             field: "intervened",
+            width: "5%",
             sortable: true,
           },
         ],
