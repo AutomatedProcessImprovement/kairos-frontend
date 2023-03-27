@@ -4,7 +4,10 @@
   <div id="dashboard">
       <h2>Dashboard</h2>
       <div class="column">
-        <p>Event logs</p>
+        <div class="row center">
+            <h3 class="bold blue">Event logs</h3>
+            <button class="btn-blue margin" @click="goToHome">Upload log</button>
+        </div>
         <div class="row">
             <ion-icon class="input-icon" name="search"></ion-icon>
             <input type="text" id="find-log" @keyup="findLog" placeholder="Find log...">
@@ -115,9 +118,13 @@ export default {
     },
 
     beforeUnmount() {
+        this.clearTimer();
     },
 
     methods: {
+        goToHome(){
+            this.$router.push({name: 'home'});
+        },
 
         clearTimer(){
             if(this.timer) clearInterval(this.timer);
@@ -138,7 +145,7 @@ export default {
                         this.isLoading = false;
                         return;
                     }
-                    if (String(localStorage.logId) === 'null'){
+                    if (String(localStorage.logId) === 'null' || !localStorage.logId){
                         localStorage.logId = this.eventlogs[0]._id.toString();
                     }
                     this.selectLog(localStorage.logId);
@@ -168,7 +175,7 @@ export default {
 
         selectLog(logId){
             logId = String(logId)
-            if (logId === 'null') return;
+            if (logId === 'null' || !logId) return;
             localStorage.logId = logId;
             this.selectedLog = this.eventlogs.find(e => String(e._id) === logId);
             this.getProjectStatus();

@@ -47,8 +47,8 @@ export default{
           },
 
           createDiagram(){
-            var width = 20;
-            var height = 20;
+            var width = 15;
+            var height = 15;
             var lineWidth = 1;
             var cy = cytoscape({
                 container: document.getElementById('flow-cy'),
@@ -64,6 +64,7 @@ export default{
                   style: {
                     'text-halign': 'center',
                     'text-valign': 'bottom',
+                    'text-margin-y': 5,
                     'shape': 'ellipse',
                     'background-color' : '#d2d6da',
                     'border-width' : 0,
@@ -71,7 +72,7 @@ export default{
                     'text-max-width' : width-10,
                     'height' : height,
                     'width' : width,
-                    'font-size' : 8,
+                    'font-size' : 6,
                     'font-family' : 'arial'
                   }
                 },
@@ -104,7 +105,7 @@ export default{
             });
             let activities = JSON.parse(JSON.stringify(this.oldActivities));
             activities.push(this.lastActivity);
-            activities = activities.slice(-3);
+            // activities = activities.slice(-3);
             const l = activities.length;
             var elems = [];
 

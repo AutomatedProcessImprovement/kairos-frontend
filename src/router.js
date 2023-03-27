@@ -3,7 +3,6 @@ import {h} from 'vue';
 import CasePage from "./views/CasePage.vue"
 import CasesList from "./views/CasesList.vue"
 import HomePage from "./views/HomePage"
-import ResourcesPage from "./views/ResourcesPage"
 import DashBoard from './views/DashBoard'
 import ParametersPage from './views/ParametersPage'
 import ColumnsDefinitionPage from "./views/ColumnsDefinitionPage"
@@ -46,11 +45,6 @@ const routes = [
             },
         ]
     },
-    {
-        path: "/resources",
-        name: "resources",
-        component: ResourcesPage
-    }
 ];
 
 const router = createRouter({

@@ -34,7 +34,7 @@
         </div>
       </div>
     </div>
-    <operational-view v-show="selectedView==='operational'"
+    <operational-view v-show="selectedView==='operational' || selectedView==='tactical'"
       :currentCase="currentCase"
       :parameters="parameters"
       ></operational-view>
