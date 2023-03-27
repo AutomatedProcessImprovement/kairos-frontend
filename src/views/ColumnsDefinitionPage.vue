@@ -128,21 +128,17 @@ export default {
             });
         },
         submit() {
-            let alarm = false;
+
             Object.values(this.types).forEach(value => {  
                 if (!value){
-                    alarm = true;
-                    return;
-                }
-            })
-            if (alarm){
-                this.$notify({
+                    this.$notify({
                         title: 'Warning',
                         text: 'Please define all the columns!',
                         type: 'warning'
                     })
-                return;
-            }
+                    return;
+                }
+            })
             
             this.isLoading = true;
 

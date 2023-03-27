@@ -90,7 +90,6 @@ export default {
             })
             .catch(error => {
                 this.isLoading = false;
-                this.isDisabled = true;
                 const resMessage =
                     (error.response &&
                     error.response.data &&

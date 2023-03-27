@@ -34,13 +34,15 @@
     :total="table.rows.length"
     :sortable="table.sortable"
     @do-search="doSort"
-    @is-finished="table.isLoading = false"
     @row-clicked="rowClicked"
     >
     <template v-slot:recommendations="data">
       <div class="case-recommendations" :class="[data.value.recommendations ? 'available' : 'unavailable']"> 
         {{ data.value.recommendations ? "recommendations available" : "no new recommendations" }}
       </div>
+    </template>
+    <template v-slot:performance="data">
+      <p>{{ data.value.performance.value}} {{ data.value.performance.unit }}</p>
     </template>
   
   </table-lite>
@@ -55,6 +57,7 @@ import casesService from "@/services/cases.service";
 import SideBar from '@/components/SideBar.vue';
 import Loading from "@/components/LoadingComponent.vue";
 import TableLite from "vue3-table-lite";
+import shared from '@/services/shared';
 
 export default {
   name: 'CasesList',
@@ -72,7 +75,8 @@ export default {
       kpi: [],
       casesData: [],
       
-      isReSearch: null,
+      performanceColumn: undefined,
+      completedCases: undefined,
       table: {
         isLoading: false,
         headers: [
@@ -99,12 +103,11 @@ export default {
           sort: null
         },
       },
-      completedCases: undefined,
     };
   },
 
   mounted() {
-    if (localStorage.logId !== 'null' && localStorage.logId !== 'undefined') this.getCases();
+    if (localStorage.logId !== 'null' && localStorage.logId !== undefined) this.getCases();
   },
   
   methods: {
@@ -117,24 +120,24 @@ export default {
       const sortOrder = sort === 'asc' ? 1 : -1;
       if (order === "performance" && this.cases[0].case_performance.column === "DURATION"){
         this.table.rows = this.table.rows.sort((a, b) => 
-        (this.parseDuration(a[order]) > this.parseDuration(b[order])) ? (1 * sortOrder) : (-1 * sortOrder) );
-      } else{
+        (shared.parseDuration(a[order]) > shared.parseDuration(b[order])) ? (1 * sortOrder) : (-1 * sortOrder) );
+      } else if (order === "performance"){
+        this.table.rows = this.table.rows.sort((a, b) => 
+        (a[order].value > b[order].value) ? (1 * sortOrder) : (-1 * sortOrder) );
+      }
+      else{
         this.table.rows = this.table.rows.sort((a, b) => (a[order] > b[order]) ? (1 * sortOrder) : (-1 * sortOrder) );
       }
       this.table.sortable.order = order;
       this.table.sortable.sort = sort;
     },
 
-    parseDuration(d){
-      const match = /^(\d+)\s*(\w+)$/.exec(d);
-      const units = { weeks:604800,week:604800, days:86400, day:86400, hours:3600,hour:3600, minutes:60,minute:60,seconds:1,second:1};
-      return match ? (units[match[2]] || NaN) * parseInt(match[1]) : NaN;
-    },
     
     getCases() {
       this.isLoading = true;
       casesService.getCasesByLog(localStorage.logId).then(
         (response) => {
+          console.log(response.data)
           this.cases = response.data.cases;
           if (this.cases.length > 0) this.formatCases();
           else this.isLoading = false;
@@ -157,57 +160,18 @@ export default {
     },
 
     formatCases(){
-      let performanceColumn = null;
+      let data = {};
       
       for (const el of this.cases) {
-        if(!performanceColumn){
-          performanceColumn = el.case_performance.column;
-        }
-        let performanceValue = el.case_performance.value;
-        
-        let caseActivities = el.activities;
-        let data = {}
-        if (!caseActivities.length) {
-          data = {
-              id: el._id,
-              recommendations: false,
-              intervened: "No",
-              performance: performanceValue,
-          }
-        }
-        else{
-          let intervened = "No";
-          caseActivities.forEach(activity => {
-            activity.prescriptions.forEach(prescription => {
-              if (prescription.status === 'accepted'){
-                intervened = "Yes";
-                return;
-              }
-            })
-          });
-          
-          data = {
-            id: el._id, 
-            recommendations: caseActivities[caseActivities.length-1].prescriptions.length === 0 ? false : true,
-            intervened: intervened,
-            performance: performanceValue, 
-          }
-        }
-        
-        Object.keys(el.case_attributes).forEach(k => {
-          data[k] = el.case_attributes[k];
-        })
-
-        data['completed'] = el.case_completed;
-        
+        data = this.formatCase(el);
         this.casesData.push(data);
       }
       this.table.rows = this.casesData;
 
       this.table.headers.push({
-        label:performanceColumn,
-        field:'performance',
-        sortable:true
+        label: this.performanceColumn,
+        field: 'performance',
+        sortable: true
       })
 
       Object.keys(this.cases[0].case_attributes).forEach(k => {
@@ -223,8 +187,38 @@ export default {
         field:'completed',
         sortable:true
       })
-      this.doSort(0,10,"id","asc");
+
       this.isLoading = false;
+    },
+
+    formatCase(singleCase){
+        if (!this.performanceColumn && singleCase.case_performance.column !== null) this.performanceColumn = singleCase.case_performance.column;
+        
+        let caseActivities = singleCase.activities;
+        let intervened = "No";
+
+        caseActivities.forEach(activity => {
+          activity.prescriptions.forEach(prescription => {
+            if (prescription.status === 'accepted'){
+              intervened = "Yes";
+              return;
+            }
+          })
+        });
+        
+        let data = {
+          id: singleCase._id, 
+          recommendations: singleCase.case_completed || caseActivities[caseActivities.length-1].prescriptions.length === 0 ? false : true,
+          intervened: intervened,
+          performance: {value:singleCase.case_performance.value,unit:singleCase.case_performance.unit}, 
+        }
+        
+        Object.keys(singleCase.case_attributes).forEach(k => {
+          data[k] = singleCase.case_attributes[k];
+        })
+
+        data['completed'] = singleCase.case_completed;
+        return data;
     },
 
     filterCases(status){

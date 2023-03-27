@@ -57,7 +57,7 @@
                 </div>
                 <div class="parameter">
                     <small>{{ selectedLog.positive_outcome.column }} {{ selectedLog.positive_outcome.operator }}</small>
-                    <p>{{ selectedLog.positive_outcome.value }}</p>
+                    <p>{{ selectedLog.positive_outcome.value }} {{ selectedLog.positive_outcome.unit }}</p>
                     <small>Positive case outcome</small>
                 </div>
                 <div class="parameter">
@@ -148,9 +148,12 @@ export default {
                     if (String(localStorage.logId) === 'null' || !localStorage.logId){
                         localStorage.logId = this.eventlogs[0]._id.toString();
                     }
-                    this.selectLog(localStorage.logId);
+                    this.selectedLog = this.eventlogs.find(e => String(e._id) === localStorage.logId);
+
                     if (!this.selectedLog){
                         this.selectLog(this.eventlogs[0]._id.toString());
+                    } else{
+                        this.getProjectStatus();
                     }
 
                     this.timer = setInterval(() => {
@@ -303,7 +306,6 @@ export default {
                         });
                     }
                     this.selectedLogStatus = status;
-                    this.isLoading = false;
                 },
                 (error) => {
                     this.isLoading = false;
@@ -313,13 +315,12 @@ export default {
                         error.response.data.error) ||
                         error.message ||
                         error.toString();
-                    if(!this.timer){
-                        this.$notify({
+                    this.selectedLogStatus = 'NULL';
+                    this.$notify({
                         title: 'An error occured',
                         text: resMessage,
                         type: 'error'
                     });
-                }
                 }
             ); 
         },
