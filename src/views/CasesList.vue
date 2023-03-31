@@ -140,7 +140,6 @@ export default {
       this.isLoading = true;
       casesService.getCasesByLog(localStorage.logId).then(
         (response) => {
-          console.log(response.data)
           this.cases = response.data.cases;
           if (this.cases.length > 0) this.formatCases();
           else this.isLoading = false;
@@ -201,12 +200,14 @@ export default {
         let intervened = "No";
 
         caseActivities.forEach(activity => {
-          activity.prescriptions.forEach(prescription => {
-            if (prescription.status === 'accepted'){
-              intervened = "Yes";
-              return;
-            }
-          })
+          if(activity.prescriptions){
+            activity.prescriptions.forEach(prescription => {
+              if (prescription.status === 'accepted'){
+                intervened = "Yes";
+                return;
+              }
+            })
+          }
         });
         
         let data = {

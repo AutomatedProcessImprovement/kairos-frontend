@@ -1,6 +1,6 @@
 <template>
     <div id="log-columns">
-        <loading v-if="isLoading" text="getting supported parameters..."></loading>
+        <loading v-if="isLoading" :text="loadingText"></loading>
         <div v-else class="column">
             <div class="row">
                 <h2 class="bold blue">Column definition</h2>
@@ -74,6 +74,9 @@ export default {
 
     data () {
         return {
+            isLoading: true,
+            loadingText: "Please wait...",
+
             typeList: [
                 {type: 'CASE_ID', text: 'Case id',definition:'Identifier associated with each trace. At least one column with given type should be defined.'},
                 {type: 'TEXT', text: 'Text',definition:'Textual information.'},
@@ -93,7 +96,6 @@ export default {
             types: {},
             values: [],
             caseAttributes: [],
-            isLoading: true,
         }
     },
 
@@ -139,7 +141,7 @@ export default {
                     return;
                 }
             })
-            
+            this.loadingText = "Getting supported parameters...";
             this.isLoading = true;
 
             var data = {

@@ -60,7 +60,7 @@ export default{
 
         formatRecommendations() {
             this.batchId = this.batch.event_id;
-
+            if (!this.batch.prescriptions) return;
             for (let i = 0; i < this.batch.prescriptions.length; i++) {
                 let p = this.batch.prescriptions[i];
 

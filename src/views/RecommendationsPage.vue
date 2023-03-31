@@ -13,6 +13,7 @@
           </div>
           <ion-icon name="albums"></ion-icon>
         </div>
+        <button :disabled="table.rows.length < 1" class="btn-blue" @click="exportData()">Export recommendations as CSV</button>
       </div>  
       
       <div class="recommendations-table">
@@ -68,14 +69,14 @@
                 label: 'Case ID',
                 field: 'id',
                 width: "10%",
-                sortable: false,
+                sortable: true,
                 isKey: true
             },
             {
                 label: "Performance",
                 field: "performance",
                 width: "10%",
-                sortable: false,
+                sortable: true,
             },
             {
                 label: "Recommendation",
@@ -111,7 +112,7 @@
 
         doSort(offset,limit,order,sort){
             const sortOrder = sort === 'asc' ? 1 : -1;
-            if (order === "performance" && this.cases[0].case_performance.column === "DURATION"){
+            if (order === "performance" && this.recommendations[0].case_performance.column === "DURATION"){
                 this.table.rows = this.table.rows.sort((a, b) => 
                 (shared.parseDuration(a[order]) > shared.parseDuration(b[order])) ? (1 * sortOrder) : (-1 * sortOrder) );
             } else if (order === "performance"){
@@ -123,6 +124,28 @@
             }
             this.table.sortable.order = order;
             this.table.sortable.sort = sort;
+        },
+
+        exportData(){
+          let csv = this.table.headers.map(h => h.label);
+          this.table.rows.forEach((row) => {
+            row = Object.values(row);
+            row = row.map(data => {
+              if (data.value) {
+                return [data.value, data.unit].filter(Boolean).join(' ')
+              } else{
+                return data
+              }
+            })
+            csv += "\n";
+            csv += row.join(',');
+          });
+      
+          const anchor = document.createElement('a');
+          anchor.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+          anchor.target = '_blank';
+          anchor.download = 'recommendations.csv';
+          anchor.click(); 
         },
         
         getRecommendations() {
@@ -192,7 +215,7 @@
             let recommendationAttr,recommendedAttr;
             if(p.type === 'NEXT_ACTIVITY'){
                 recommendationAttr = 'Perform ' + p.output;
-                recommendedAttr = 'Recommended now.';
+                recommendedAttr = 'Recommended now';
             }
             else if(p.type === 'ALARM') {
                 recommendationAttr = 'Action required';

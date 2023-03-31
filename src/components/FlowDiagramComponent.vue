@@ -136,10 +136,8 @@ export default{
                   });
               }
             }
-            console.log(this.lastActivity)
             let lastRecommendations = JSON.parse(JSON.stringify(this.lastActivity.prescriptions));
             if (lastRecommendations.length > 0){
-              console.log(lastRecommendations)
                 let content = lastRecommendations[0].output;
                 elems.push({
                 group: "nodes",
