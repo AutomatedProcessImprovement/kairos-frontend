@@ -1,7 +1,13 @@
 <template>
   <div class="legend">
-    <label class="past-activity">Completed</label>
-    <label class="recommendation">Current case status</label>
+    <div class="row">
+      <div class="past-activity"></div>
+      <p>Completed</p>
+    </div>
+    <div class="row">
+      <div class="recommendation"></div>
+      <p>Current case status</p>
+    </div>
   </div>
 </template>
 
