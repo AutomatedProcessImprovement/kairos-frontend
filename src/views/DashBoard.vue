@@ -15,7 +15,8 @@
             <div v-if="eventlogs.length > 0" class='wrap center row'>
                 <div class='log-card' :class="{'selected': log._id === selectedLog._id}" v-for="log in eventlogs" :key='log' @click="selectLog(log._id)">
                     <p>{{ log.filename }}</p>
-                    <p>{{log.parameters_description}}</p>
+                    <p v-if="log.test_filename">Test set: {{ log.test_filename }}</p>
+                    <small>{{log.parameters_description}}</small>
                     <small>{{ log.datetime }}</small>
                 </div>
             </div>
@@ -26,7 +27,11 @@
                 <h3 class="bold blue">Event log details</h3>
                 <p>{{ selectedLogStatus }} </p>
                 <small>Event log status</small>
-                <div class="row">
+                <div v-if="selectedLog.result_key" class="row">
+                    <button :disabled="selectedLogStatus !== 'TRAINED' || selectedLog.got_results" class="btn-blue" @click="getStaticResults">Get results</button>
+                    <button class="btn-blue margin" @click="openModal=true">Delete event log</button>
+                </div>
+                <div v-else class="row">
                     <button :disabled="selectedLogStatus !== 'TRAINED'" class="btn-blue" @click="startSimulation">Start simulation</button>
                     <button :disabled="selectedLogStatus !== 'SIMULATING'" class="btn-blue margin" @click="stopSimulation">Stop simulation</button>
                     <button :disabled="selectedLogStatus !== 'TRAINED'" class="btn-blue margin" @click="clearSimulation">Clear stream data</button>
@@ -278,6 +283,36 @@
                             error.response.data.error) ||
                             error.message ||
                             error.toString();
+                        this.$notify({
+                            title: 'An error occured',
+                            text: resMessage,
+                            type: 'error'
+                        }) 
+                    }
+                ); 
+            },
+
+            getStaticResults(){
+                this.$notify({
+                    title: 'Warning',
+                    text: "Getting results may take a while...",
+                    type: 'success'
+                }) 
+                logsService.getStaticResults(localStorage.logId).then(
+                    (response) => {
+                        this.$notify({
+                            title: 'Success',
+                            text: response.data.message,
+                            type: 'success'
+                        }) 
+                    },
+                    (error) => {
+                    const resMessage =
+                        (error.response &&
+                        error.response.data &&
+                        error.response.data.error) ||
+                        error.message ||
+                        error.toString();
                         this.$notify({
                             title: 'An error occured',
                             text: resMessage,
