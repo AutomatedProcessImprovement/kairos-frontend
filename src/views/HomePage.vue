@@ -3,13 +3,26 @@
       <h1>Kairos</h1>
       <small>Kairos is a tool that visualises prescriptive process monitoring output.</small>
       <div class="upload-file">
-        <loading v-if="isLoading" text="preprocessing data..."></loading>
+        <loading v-if="isLoading" text="Preprocessing data..."></loading>
         <h2>Upload</h2>
-        <p>Upload an eventlog to start:</p>
+        <div class="row">
+            <p>Upload an eventlog to start: </p>
+                <tooltip-component :iconSize="15" :tooltipSize="400">  
+                    <template v-slot:title>
+                        <h3 class="bold">Uploading info</h3>
+                    </template>
+                    <template v-slot:content>
+                        <p>The user may upload two event logs.</p>
+                        <p>If the test set is not uploaded then the first event log is split into train (80%) and test sets (20%). The sets are used for training and streaming the prescription results respectively.</p>
+                        <p>If the test set is uploaded, then the first event log is used for training and the test set is used for producing all prescriptions at once. Please note that in this case streaming is not enabled.</p>
+                    </template>
+                </tooltip-component>
+            </div>
         <small>Supported file types: .csv, .xes and .zip. (max file size: 100 MiB)</small>
         
         <input class='btn' type="file" name="fileToUpload" ref="trainLog" v-on:change="handleFileUpload(true)" />
         <p>Upload test set? <toggle v-model="uploadTestSet"/></p>
+            
         <input v-if="uploadTestSet" class='btn' type="file" name="fileToUpload" ref="testLog" v-on:change="handleFileUpload(false)" />
 
         <div v-if="extension == 'csv'">
@@ -29,12 +42,14 @@
 import Loading from "@/components/LoadingComponent.vue";
 import logsService from "@/services/logs.service";
 import Toggle from '@vueform/toggle'
+import TooltipComponent from "@/components/TooltipComponent.vue";
 
 export default {
     name: "HomePage",
     components: {
         Loading,
-        Toggle
+        Toggle,
+        TooltipComponent
     },
     data: function () {
         return {
