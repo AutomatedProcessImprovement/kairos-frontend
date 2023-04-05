@@ -70,7 +70,6 @@
                 field: 'id',
                 width: "10%",
                 sortable: true,
-                isKey: true
             },
             {
                 label: "Performance",
@@ -112,7 +111,7 @@
 
         doSort(offset,limit,order,sort){
             const sortOrder = sort === 'asc' ? 1 : -1;
-            if (order === "performance" && this.recommendations[0].case_performance.column === "DURATION"){
+            if (order === "performance" && this.performanceColumn === "DURATION"){
                 this.table.rows = this.table.rows.sort((a, b) => 
                 (shared.parseDuration(a[order]) > shared.parseDuration(b[order])) ? (1 * sortOrder) : (-1 * sortOrder) );
             } else if (order === "performance"){

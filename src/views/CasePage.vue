@@ -94,7 +94,7 @@
 
       methods: {
         getCase(){
-          this.caseId = (this.$route.params.caseId)
+          this.caseId = (this.$route.params.caseId);
           casesService.getCase(this.caseId).then(
             (response) => {
               this.currentCase = response.data.case;

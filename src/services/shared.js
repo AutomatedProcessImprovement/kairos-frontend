@@ -22,5 +22,16 @@ export default{
         let columnType = columnsDefinition[prescription.treatment[0][0].column];
         let recommendationAttr = this.typeGuide[columnType][prescription.treatment[0][0].operator] + ' ' + prescription.treatment[0][0].value;
         return recommendationAttr;
-    }
+    },
+
+    groupByAndCount(xs, key) {
+        return xs.reduce((acc, x) => {
+          const value = x[key]
+          if (!acc[value]) {
+            acc[value] = 0;
+          }
+          acc[value]++;
+          return acc;
+        }, {});
+      },
 }

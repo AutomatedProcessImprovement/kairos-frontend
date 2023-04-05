@@ -69,3 +69,15 @@
       }
     }
   }
+
+  #cases{
+    #chart{
+      flex-grow: 0;
+      padding: 10px;
+      background-color: $k-white;
+      margin-top: 10px;
+      border-radius: 10px;
+      width: max-content;
+    }
+
+  }
