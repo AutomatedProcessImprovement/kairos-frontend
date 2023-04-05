@@ -294,16 +294,20 @@
 
             getStaticResults(){
                 this.$notify({
-                    title: 'Warning',
-                    text: "Getting results may take a while...",
-                    type: 'success'
+                    title: 'warning',
+                    text: "Getting results may take a while, please wait...",
+                    type: 'warning'
                 }) 
                 logsService.getStaticResults(localStorage.logId).then(
                     (response) => {
+                        let type = 'success';
+                        if (response.data.message === 'Ongoing dataset result is still processing'){
+                            type = 'warning'
+                        }
                         this.$notify({
-                            title: 'Success',
+                            title: type,
                             text: response.data.message,
-                            type: 'success'
+                            type: type
                         }) 
                     },
                     (error) => {

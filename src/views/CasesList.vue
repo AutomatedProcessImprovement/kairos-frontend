@@ -188,11 +188,12 @@
 
       createPieChart(){
         let outcomeCounts = shared.groupByAndCount(this.table.completedRows,'outcome','intervened');
-        const propertiesToCheck = [true, false, null];
-
-        this.pieChart.series = propertiesToCheck.map(property => {
-          return outcomeCounts[property] || 0;
-        });
+        if(Object.keys(outcomeCounts).length > 0){
+          const propertiesToCheck = [true, false, null];
+          this.pieChart.series = propertiesToCheck.map(property => {
+            return outcomeCounts[property] || 0;
+          });
+        }
       },
       
       getCases() {
