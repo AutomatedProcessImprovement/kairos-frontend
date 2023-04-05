@@ -31,7 +31,7 @@
               :batch="lastActivity"
               :current="true"
               :selectedRec="selectedRec"
-              :parameters="myParameters"
+              :parameters="parameters"
               @recommendationSelected="selectRecommendation"
               ></recommendation-component>
           </tab>
@@ -39,7 +39,7 @@
             <recommendation-component v-for="activity in oldActivities" v-bind:key="activity"
               :batch="activity"
               :current="false"
-              :parameters="myParameters"
+              :parameters="parameters"
               :selectedRec="selectedRec"
               @recommendationSelected="selectRecommendation"
               ></recommendation-component>
@@ -53,7 +53,7 @@
           <tab name="Process model" id="tab-diagram">
             <legend-component></legend-component>
               <vue-cytoscape
-              :parameters="myParameters"
+              :parameters="parameters"
               :currentCase="currentCase"
               :selectedRec="selectedRec"
               @loading="handleLoading"
@@ -66,14 +66,14 @@
               <h4> Model description</h4>
                 <div v-if="selectedRecObject.type === 'TREATMENT_EFFECT'">
                     <p>CATE score: {{ selectedRecObject.output.cate }}</p>
-                    <p>Probability if treated: {{ selectedRecObject.output.proba_if_treated * 100 }} %</p>
-                    <p>Probability if untreated: {{ selectedRecObject.output.proba_if_untreated * 100 }} %</p>
+                    <p>Probability if treated: {{ Math.round(selectedRecObject.output.proba_if_treated * 100) }} %</p>
+                    <p>Probability if untreated: {{ Math.round(selectedRecObject.output.proba_if_untreated * 100) }} %</p>
 
                   </div>
                   <div  v-else>
-                    <p>Accuracy: {{ selectedRecObject.plugin.accuracy * 100 }} %</p>
-                    <p>Recall: {{ selectedRecObject.plugin.recall * 100 }} %</p>
-                    <p>Precision: {{ selectedRecObject.plugin.precision * 100 }} %</p>
+                    <p>Accuracy: {{ Math.round(selectedRecObject.plugin.accuracy * 100) }} %</p>
+                    <p>Recall: {{ Math.round(selectedRecObject.plugin.recall * 100) }} %</p>
+                    <p>Precision: {{ Math.round(selectedRecObject.plugin.precision * 100) }} %</p>
                   </div>
                   
             </div>
@@ -110,8 +110,6 @@
         return {
           selectedRec: {},
           selectedRecObject: null,
-          oldActivities: {},
-          lastActivity: {},
           tabOptions: {
             recommendations: { defaultTabHash: 'tab-current', useUrlFragment: false},
             recommendationDetails: { defaultTabHash: 'tab-diagram', useUrlFragment: false}
@@ -119,15 +117,13 @@
         }
       },
       computed: {
-        myParameters(){
-          return JSON.parse(JSON.stringify(this.parameters))
-        }
-      },
 
-      watch:{
-        currentCase(value){
-          this.oldActivities = value.activities.slice(0,-1);
-          this.lastActivity = value.activities.slice(-1)[0];
+        oldActivities(){
+          return this.currentCase.activities.slice(0,-1);
+        },
+
+        lastActivity(){
+          return this.currentCase.activities.slice(-1)[0];
         }
       },
       

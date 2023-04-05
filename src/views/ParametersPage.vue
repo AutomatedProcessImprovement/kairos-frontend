@@ -1,6 +1,6 @@
 <template>
     <div id="parameters">
-        <loading v-if="isLoading" text="creating project..."></loading>
+        <loading v-if="isLoading" :text="loadingText"></loading>
         <div v-else class="column">
             <a @click="$router.go(-1)"><ion-icon name="chevron-back-outline"></ion-icon> Return</a>
             <h2 class="bold blue">Recommendation Parameters</h2>
@@ -12,6 +12,7 @@
                     <p>Uploaded log</p>
                     <div class='log-card'>
                         <p>{{ log.filename }}</p>
+                        <p v-if="log.test_filename">Test set: {{ log.test_filename }}</p>
                         <small>{{ log.datetime }}</small>
                     </div>
                 </div>
@@ -74,14 +75,14 @@
                         </select>
                         <span v-else-if="positiveOutcome.columnDefinition === 'BOOLEAN'"></span>
                         <div class="double-input" v-else-if="positiveOutcome.columnDefinition === 'DURATION'">
-                            <input type="number" v-model="positiveOutcome.value"/>
+                            <input type="number" min="0" v-model="positiveOutcome.value"/>
                             <select v-model="positiveOutcome.unit">
                                 <!-- <option>month</option> -->
-                                <option>week</option>
-                                <option>day</option>
-                                <option>hour</option>
-                                <option>minute</option>
-                                <option>second</option>
+                                <option>weeks</option>
+                                <option>days</option>
+                                <option>hours</option>
+                                <option>minutes</option>
+                                <option>seconds</option>
                             </select>
                         </div>
                         <input v-else-if="positiveOutcome.columnDefinition" :type="getInputType(positiveOutcome.columnDefinition)" v-model="positiveOutcome.value"/>
@@ -100,7 +101,7 @@
                                 <h3 class="bold">What is intervention?</h3>
                             </template>
                             <template v-slot:content>
-                            <p>The intervention parameter indicates the best possible course of action for achieveing a positive outcome as perceoved by the user.</p>
+                            <p>The intervention parameter indicates the best possible course of action for achieveing a positive outcome as perceived by the user.</p>
                             <p>For example, if intervention is 'Activity equals offer-sent', then an algorithm estimates the causal effect of performing this activity at a given point in time. Causal effect may be positive or negative.</p>
                             </template>
                         </tooltip-component>
@@ -136,7 +137,7 @@
                 <div class="parameter">
                     <p>Alarm Threshold</p>
                     <small>Please specify when an alarm should be triggered. Enter a value between 0.1 and 0.9.</small>
-                    <input type="number" step="0.1" v-model="alarmThreshold"/>
+                    <input type="number" min="0.1" max="0.9" step="0.1" v-model="alarmThreshold"/>
                 </div>
 
                 <button type="submit" class="btn-blue" @click="validate">Submit</button>
@@ -173,6 +174,7 @@ export  default {
     data () {
         return {
             isLoading: true,
+            loadingText: "Please wait...",
             openModal: false,
 
             log: null,
@@ -218,7 +220,6 @@ export  default {
             logsService.getLog(logId)
             .then(response => {
                 this.log = response.data.event_log;
-                console.log(this.log);
                 this.activities = this.log.activities;
                 this.positiveOutcomeTypes = this.log.outcome_options;
                 this.interventionTypes = this.log.treatment_options;
@@ -246,16 +247,6 @@ export  default {
             this.alarmThreshold = this.log.alarm_threshold;
             this.positiveOutcome = this.log.positive_outcome;
             this.positiveOutcome.operator = this.deformat(this.positiveOutcome.operator);
-            if(this.positiveOutcome.column === 'DURATION'){
-                let caseDuration = this.positiveOutcome.value.split(' ');
-                this.positiveOutcome.value = caseDuration[0];
-                if (caseDuration.length === 2){
-                    this.positiveOutcome.unit = caseDuration[1];
-                    if(this.positiveOutcome.value > 1){
-                        this.positiveOutcome.unit = this.positiveOutcome.unit.slice(0,-1);
-                    }
-                }
-            }
             this.intervention = this.log.treatment;
             this.intervention.operator = this.deformat(this.intervention.operator);
         },
@@ -287,16 +278,14 @@ export  default {
 
         submit() {
             this.openModal=false;
+            this.loadingText = "Creating project...";
             this.isLoading = true;
-
-            let outcomeValue = !this.positiveOutcome.unit ? this.positiveOutcome.value : this.positiveOutcome.value + ' ' + this.positiveOutcome.unit;
-            if (this.positiveOutcome.column === 'DURATION' && this.positiveOutcome.value > 1) outcomeValue += 's';
-
             
             let positiveOutcome = {
                 "column": this.positiveOutcome.column,
                 "operator": this.format(this.positiveOutcome.operator),
-                "value": outcomeValue
+                "value": this.positiveOutcome.value,
+                "unit": this.positiveOutcome.unit
             }
 
             let intervention = {

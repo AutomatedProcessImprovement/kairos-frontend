@@ -23,6 +23,7 @@ that contains all the variables.
 @import 'tooltip.scss';
 @import 'notification.scss';
 @import 'modal.scss';
+@import "@vueform/toggle/themes/default.css";
 
 
 #app{
@@ -71,25 +72,40 @@ a{
 }
 
 th {
+  white-space: nowrap;
   font-weight: bold;
   text-transform: uppercase;
   color: $k-blue2;
+  background-color: $k-white !important;
+  border: none !important;
 }
 
 table {
   background-color: $k-white;
   border-collapse: collapse;
   border-radius: 10px;
-
+}
+.vtl{
+  border-radius: 10px;
+  .vtl-paging{
+    select{
+      border-radius: 5px !important;
+      margin: 0px 5px;
+    }
+  }
+  th div{
+    color: $k-blue2;
+  }
 }
 
 td{
-  border-top: 1px solid $k-gray1;
+  border: none !important;
+  border-top: 1px solid $k-gray1 !important;
 }
 
 td, th {
   padding: 10px 10px;
-  text-align: center;
+  text-align:left;
 }
 
 .case-recommendations{
@@ -131,8 +147,16 @@ td, th {
   align-items: flex-end;
 }
 
-.center{
+.space-between{
+  justify-content: space-between;
+}
+
+center{
   align-items: center;
+}
+
+.content-center{
+  justify-content: center;
 }
 
 .wrap{
@@ -210,15 +234,20 @@ input::placeholder{
   text-transform: uppercase;
   font-size: 0.7rem;
   width:max-content;
+  transition: 0.1s;
+  cursor: pointer;
 
   &.margin{
       margin-left: 10px;
   }
 
   &:hover{
-      filter: brightness(98%);
-      cursor: pointer;
+      filter: brightness(93%);
   }
+
+  &:active{
+    filter: brightness(85%);
+}
 
   &:disabled{
     filter: opacity(50%);

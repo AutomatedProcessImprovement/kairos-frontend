@@ -1,7 +1,7 @@
 <template>
   <div class="sidebar">
 
-    <div class="sidebar-heading">
+    <div class="sidebar-heading pointer" @click="goToHome">
       <ion-icon name="laptop-outline"></ion-icon>
       <h3 class="bold">Kairos</h3>
     </div>
@@ -10,7 +10,7 @@
       <div class="sidebar-items">
         <router-link class = "sidebar-item"  :to="{ name: 'dashboard'}"><ion-icon name="home"></ion-icon>Dashboard</router-link>
         <router-link class = "sidebar-item"  :to="{ name: 'cases'}"><ion-icon name="stats-chart"></ion-icon>Cases</router-link>
-        <!-- <router-link class = "sidebar-item"  :to="{ name: 'resources'}"><ion-icon name="people"></ion-icon>Resources</router-link> -->
+        <router-link class = "sidebar-item"  :to="{ name: 'recommendations'}"><ion-icon name="document-text"></ion-icon>Recommendations</router-link>
       </div>
   
       <div class="switch-views">
@@ -23,6 +23,7 @@
 </template>
 
 <script>
+
 export default {
   name: 'SideBarComponent',
 
@@ -53,6 +54,9 @@ export default {
           storage: localStorage.view
         }
       }));
+    },
+    goToHome(){
+      this.$router.push({name: 'home'});
     }
   }
 

@@ -1,6 +1,6 @@
 <template>
     <div id="log-columns">
-        <loading v-if="isLoading" text="getting supported parameters..."></loading>
+        <loading v-if="isLoading" :text="loadingText"></loading>
         <div v-else class="column">
             <div class="row">
                 <h2 class="bold blue">Column definition</h2>
@@ -20,7 +20,7 @@
             <div v-if="values.length === 0">
                 <h3 class="warning">Please upload a log first.</h3>
             </div>
-            <div v-else class="log-table shadow">
+            <div v-else class="log-table">
                 <table>
                     <thead>
                         <tr>
@@ -49,11 +49,11 @@
                     </tr>
                     </tbody>
                 </table>
-                <div class="buttons">
-                    <button class="btn-blue" v-on:click="submit">Upload log</button>
-                    <button class="btn-blue" v-on:click="goToHome">Cancel</button>
-                </div>
-
+                
+            </div>
+            <div class="buttons">
+                <button class="btn-blue" v-on:click="submit">Upload log</button>
+                <button class="btn-blue" v-on:click="goToHome">Cancel</button>
             </div>
         </div>
     </div>
@@ -74,6 +74,9 @@ export default {
 
     data () {
         return {
+            isLoading: true,
+            loadingText: "Please wait...",
+
             typeList: [
                 {type: 'CASE_ID', text: 'Case id',definition:'Identifier associated with each trace. At least one column with given type should be defined.'},
                 {type: 'TEXT', text: 'Text',definition:'Textual information.'},
@@ -93,7 +96,6 @@ export default {
             types: {},
             values: [],
             caseAttributes: [],
-            isLoading: true,
         }
     },
 
@@ -128,22 +130,18 @@ export default {
             });
         },
         submit() {
-            let alarm = false;
+
             Object.values(this.types).forEach(value => {  
                 if (!value){
-                    alarm = true;
-                    return;
-                }
-            })
-            if (alarm){
-                this.$notify({
+                    this.$notify({
                         title: 'Warning',
                         text: 'Please define all the columns!',
                         type: 'warning'
                     })
-                return;
-            }
-            
+                    return;
+                }
+            })
+            this.loadingText = "Getting supported parameters...";
             this.isLoading = true;
 
             var data = {

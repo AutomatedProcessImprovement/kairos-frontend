@@ -1,7 +1,10 @@
 // Cases
 .stats{
     display: flex;
-  
+    
+    .btn-blue{
+      margin: 20px 20px 10px 0px;
+    }
     .stats-card{
       display: flex;
       align-items: center;
@@ -12,6 +15,7 @@
       color: $k-black;
       border-radius: 10px;
       transition: 0.2s;
+
 
       &.selected{
         background-color: $k-blue4;
@@ -24,11 +28,7 @@
           padding: 0;
           margin: 0;
         }
-        .row{
-          *{
-            font-weight: bold;
-          }
-        }
+
       }
   
         ion-icon{
@@ -46,21 +46,38 @@
     }
   }
   
-  #cases {
+  #cases,#recommendations {
     padding: 20px 30px;
     display: flex;
     flex-direction: column;
     flex: 1;
+    overflow-y: hidden;
   }
   
-  .cases-table{
+  .cases-table,.recommendations-table{
     display:flex;
     flex: 1;
     align-items: flex-start;
     margin-top: 10px;
   
-    table{
-      width: 100%;
+    .vtl{
+      flex:1;
+      box-shadow: 0px 10px 27px rgba(0, 0, 0, 0.05);
+
+      tr{
+        cursor: pointer;
+      }
+    }
+  }
+
+  #cases{
+    #chart{
+      flex-grow: 0;
+      padding: 10px;
+      background-color: $k-white;
+      margin-top: 10px;
+      border-radius: 10px;
+      width: max-content;
     }
 
   }

@@ -17,7 +17,8 @@ export default{
         props: {
           lastActivity: Object, 
           oldActivities: Array,
-          caseCompleted: Boolean
+          caseCompleted: Boolean,
+          parameters: Object
         },
     
         data(){
@@ -25,12 +26,13 @@ export default{
                 cy: null
             }
         },
+
+        mounted(){
+          this.$emit('loading');      
+          this.createDiagram();
+        },
     
         watch: {
-          oldActivities: function(){
-            this.$emit('loading');      
-            this.createDiagram();
-          },
           cy: function(){
             this.displayDiagram();
           }
@@ -47,8 +49,8 @@ export default{
           },
 
           createDiagram(){
-            var width = 20;
-            var height = 20;
+            var width = 15;
+            var height = 15;
             var lineWidth = 1;
             var cy = cytoscape({
                 container: document.getElementById('flow-cy'),
@@ -64,6 +66,7 @@ export default{
                   style: {
                     'text-halign': 'center',
                     'text-valign': 'bottom',
+                    'text-margin-y': 5,
                     'shape': 'ellipse',
                     'background-color' : '#d2d6da',
                     'border-width' : 0,
@@ -71,7 +74,7 @@ export default{
                     'text-max-width' : width-10,
                     'height' : height,
                     'width' : width,
-                    'font-size' : 8,
+                    'font-size' : 6,
                     'font-family' : 'arial'
                   }
                 },
@@ -104,13 +107,14 @@ export default{
             });
             let activities = JSON.parse(JSON.stringify(this.oldActivities));
             activities.push(this.lastActivity);
-            activities = activities.slice(-3);
+            // activities = activities.slice(-3);
             const l = activities.length;
             var elems = [];
+            var lastNodeId = 'an'+(l-1)
 
             for (let i = 0; i < l; i++) {
               const activity = activities[i];
-              let content = activity['ACTIVITY']
+              let content = activity[this.parameters.columnsDefinitionReverse['ACTIVITY']]
 
               elems.push({
                 group: "nodes",
@@ -152,7 +156,7 @@ export default{
                     target: "rn",
                 },
                 });
-
+                lastNodeId = 'rn';
             }
 
             if(elems.length > 0 && !this.caseCompleted){
@@ -167,7 +171,7 @@ export default{
                 group: "edges",
                 data: {
                     id: "ne",
-                    source: "rn",
+                    source: lastNodeId,
                     target: "nn",
                     },
                 });
