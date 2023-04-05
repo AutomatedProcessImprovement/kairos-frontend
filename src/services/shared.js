@@ -24,7 +24,8 @@ export default{
         return recommendationAttr;
     },
 
-    groupByAndCount(xs, key) {
+    groupByAndCount(xs, key, condition) {
+      xs = xs.filter(x => x[condition] === 'Yes');
         return xs.reduce((acc, x) => {
           const value = x[key]
           if (!acc[value]) {

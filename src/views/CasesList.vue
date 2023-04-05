@@ -187,7 +187,7 @@
       },
 
       createPieChart(){
-        let outcomeCounts = shared.groupByAndCount(this.table.completedRows,'outcome');
+        let outcomeCounts = shared.groupByAndCount(this.table.completedRows,'outcome','intervened');
         const propertiesToCheck = [true, false, null];
 
         this.pieChart.series = propertiesToCheck.map(property => {

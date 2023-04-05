@@ -58,6 +58,10 @@
       background-color: $k-blue3;
       border-radius: 10px;
       justify-content: space-between;
+
+      .column{
+        margin-right: 5px;
+      }
     }
   
     // .selected{
