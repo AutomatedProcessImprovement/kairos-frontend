@@ -1,6 +1,6 @@
 <template>
   <side-bar></side-bar>
-  <loading v-if="isLoading"></loading>
+  <loading v-if="isLoading" :startPosition="200"></loading>
   <div id="cases">
     <h2>Cases</h2>
     <div class="stats">
@@ -64,6 +64,7 @@
   <script>
   
   import casesService from "@/services/cases.service";
+  import logsService from "@/services/logs.service";
   import SideBar from '@/components/SideBar.vue';
   import Loading from "@/components/LoadingComponent.vue";
   import TableLite from "vue3-table-lite";
@@ -82,6 +83,9 @@
   
     data() {
       return {
+        timer: null,
+        logStatus: 'NULL',
+
         isLoading: false,
         cases: [],
         casesData: [],
@@ -93,6 +97,9 @@
           series: [0, 0, 1],
           chartOptions: {
             chart: {
+              animations:{
+                enabled: false,
+              },
               width: 380,
               type: 'pie',
             },
@@ -160,8 +167,14 @@
   
     mounted() {
       if (localStorage.logId !== 'null' && localStorage.logId !== undefined) {
+        this.isLoading = true;
         this.getCases();
+        this.getProjectStatus();
       }
+    },
+
+    beforeUnmount(){
+      clearInterval(this.timer);
     },
     
     methods: {
@@ -171,6 +184,7 @@
       },
   
       doSort(offset,limit,order,sort){
+        if (order === null || sort === null) return;
         const sortOrder = sort === 'asc' ? 1 : -1;
         if (order === "performance" && this.performanceColumn === "DURATION"){
           this.table.rows = this.table.rows.sort((a, b) => 
@@ -197,7 +211,6 @@
       },
       
       getCases() {
-        this.isLoading = true;
         casesService.getCasesByLog(localStorage.logId).then(
           (response) => {
             this.cases = response.data.cases;
@@ -222,15 +235,28 @@
       },
   
       formatCases(){
-        let data = {};
         
+        if (this.casesData.length > 0){
+          this.casesData = [];
+          this.table.ongoingRows = [];
+          this.table.completedRows = [];
+        } else{
+          Object.keys(this.cases[0].case_attributes).forEach(k => {
+          this.table.headers.push({
+            label:k,
+            field:k,
+            sortable:true
+          });
+        })
+      }
+      
+      let data = {};
         for (const el of this.cases) {
           data = this.formatCase(el);
           this.casesData.push(data);
         }  
-        
         this.table.headers[2].label = this.performanceColumn;
-
+        
         this.casesData.reduce((acc, row) => {
           if (row.completed === false) {
             acc[0].push(row);
@@ -240,18 +266,15 @@
           return acc;
         }, [this.table.ongoingRows, this.table.completedRows]);
 
-        this.table.rows = this.table.ongoingRows;
-  
-        Object.keys(this.cases[0].case_attributes).forEach(k => {
-          this.table.headers.push({
-            label:k,
-            field:k,
-            sortable:true
-          });
-        })
+        if(this.completedCases){
+          this.table.rows = this.table.completedRows;
+        } else{
+          this.table.rows = this.table.ongoingRows;
+        }
+        this.doSort(null,null,this.table.sortable.order,this.table.sortable.sort);
 
         this.createPieChart();
-        
+
         this.cases = null;
         this.isLoading = false;
       },
@@ -304,6 +327,23 @@
         if(status) this.table.rows = this.table.completedRows;
         else this.table.rows = this.table.ongoingRows;
       },
+
+      getProjectStatus(){
+        logsService.getProjectStatus(localStorage.logId).then(
+            (response) => {
+                let status = response.data.status;
+
+                if(status === 'SIMULATING'){
+                  this.timer = setInterval(() => {
+                      this.getCases();
+                  }, 5000);
+                }
+            },
+            (error) => {
+                console.log(error);
+            }
+        ); 
+    },
     }
   
   }

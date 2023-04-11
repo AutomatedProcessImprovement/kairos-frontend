@@ -1,6 +1,6 @@
 <template>
     <side-bar></side-bar>
-    <loading v-if="isLoading"></loading>
+    <loading v-if="isLoading" :startPosition="200"></loading>
       <div id="dashboard">
           <h2>Dashboard</h2>
           <div class="column">
@@ -25,16 +25,16 @@
             </div>
             <div v-if="selectedLog" class="column">
                 <h3 class="bold blue">Event log details</h3>
-                <p>{{ selectedLogStatus }} </p>
+                <p>{{ selectedLogStatus.status }} </p>
                 <small>Event log status</small>
                 <div v-if="selectedLog.result_key" class="row">
                     <button :disabled="selectedLogStatus !== 'TRAINED' || selectedLog.got_results" class="btn-blue" @click="getStaticResults">Get results</button>
                     <button class="btn-blue margin" @click="openModal=true">Delete event log</button>
                 </div>
                 <div v-else class="row">
-                    <button :disabled="selectedLogStatus !== 'TRAINED'" class="btn-blue" @click="startSimulation">Start simulation</button>
-                    <button :disabled="selectedLogStatus !== 'SIMULATING'" class="btn-blue margin" @click="stopSimulation">Stop simulation</button>
-                    <button :disabled="selectedLogStatus !== 'TRAINED'" class="btn-blue margin" @click="clearSimulation">Clear stream data</button>
+                    <button :disabled="selectedLogStatus.status !== 'TRAINED'" class="btn-blue" @click="startSimulation">Start simulation</button>
+                    <button :disabled="selectedLogStatus.status !== 'SIMULATING'" class="btn-blue margin" @click="stopSimulation">Stop simulation</button>
+                    <button :disabled="selectedLogStatus.status !== 'TRAINED'" class="btn-blue margin" @click="clearSimulation">Clear stream data</button>
                     <button class="btn-blue margin" @click="openModal=true">Delete event log</button>
                 </div>
                 <modal-component v-if="openModal" title="Are you sure?" @closeModal="closeModal">
@@ -114,7 +114,7 @@
                     {value: 'tactical', name:'Tactical manager'}
                 ],
                 selectedView: localStorage.view,
-                selectedLogStatus: null,
+                selectedLogStatus: {id: null,status:null},
             }
         },
     
@@ -195,7 +195,7 @@
             startSimulation(){
                 logsService.startSimulation(localStorage.logId).then(
                     (response) => {
-                        console.log(response);
+                        console.log(response.data.message.project_id);
                     },
                     (error) => {
                     const resMessage =
@@ -216,7 +216,12 @@
             stopSimulation(){
                 logsService.stopSimulation(localStorage.logId).then(
                     (response) => {
-                        console.log(response)
+                        console.log(response.data.message.message);
+                        this.$notify({
+                            title: 'Success',
+                            text: `Successfully stopped simulating log ${localStorage.logId}`,
+                            type: 'success',
+                        });
                     },
                     (error) => {
                         this.isLoading = false;
@@ -329,22 +334,11 @@
             getProjectStatus(){
                 logsService.getProjectStatus(localStorage.logId).then(
                     (response) => {
+                        let oldLogstatus = this.selectedLogStatus;
                         let status = response.data.status;
-                        if ((this.selectedLogStatus === 'TRAINED' && status === 'SIMULATING') ||
-                            (this.selectedLogStatus === 'SIMULATING' && status === 'TRAINED')) {
-                            let message = '';
-                            if (status === 'SIMULATING') {
-                                message = 'started';
-                            } else if (status === 'TRAINED') {
-                                message = 'stopped';
-                            }
-                            this.$notify({
-                                title: 'Success',
-                                text: `Successfully ${message} simulating log ${localStorage.logId}`,
-                                type: 'success',
-                            });
-                        }
-                        this.selectedLogStatus = status;
+                        let newLogStatus = {id: localStorage.logId, status: status};
+                        this.notifyForNewStatus(oldLogstatus,newLogStatus);
+                        this.selectedLogStatus = newLogStatus;
                     },
                     (error) => {
                         this.isLoading = false;
@@ -362,6 +356,17 @@
                         });
                     }
                 ); 
+            },
+
+            notifyForNewStatus(oldLogStatus,newLogStatus){
+                if(oldLogStatus.id !== newLogStatus.id) return;
+                if ((oldLogStatus.status === 'TRAINED' && newLogStatus.status === 'SIMULATING')) {
+                    this.$notify({
+                        title: 'Success',
+                        text: `Successfully started simulating log ${localStorage.logId}`,
+                        type: 'success',
+                    });
+                }
             },
     
             findLog(){

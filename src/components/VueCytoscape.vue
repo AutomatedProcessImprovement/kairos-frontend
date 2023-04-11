@@ -36,20 +36,23 @@ cytoscape.use( dagre );
                       edgeClass: 'interventionEdge',
                       isValidNode: (recommendation,columnsDefinition) =>
                         columnsDefinition[recommendation.output.treatment[0][0].column] === 'ACTIVITY' &&
-                        recommendation.output.treatment[0][0].operator === 'EQUAL'
+                        recommendation.output.treatment[0][0].operator === 'EQUAL' && recommendation.output.cate > 0
                     }
                   }
           };
         },
 
         mounted(){
-          this.$emit('loading');      
           this.createDiagram();
         },
 
         watch: {
-          cy: function(){
+          cy(){
             this.displayDiagram();
+          },
+
+          currentCase(){
+            this.createDiagram();
           }
         },
         methods: {
@@ -62,6 +65,8 @@ cytoscape.use( dagre );
           },
 
           createDiagram(){
+            // this.$emit('loading');      
+
             var width = 120;
             var height = 60;
             var lineWidth = 2;

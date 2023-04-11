@@ -1,6 +1,6 @@
 <template>
     <side-bar></side-bar>
-    <loading v-if="isLoading"></loading>
+    <loading v-if="isLoading" :startPosition="200"></loading>
     <div id="recommendations">
       <h2>Recommendations</h2>
       <div class="stats">
@@ -56,6 +56,7 @@
     
       data() {
         return {
+          timer: null,
           isLoading: false,
           recommendations: [],
           formattedData: [],
@@ -100,7 +101,14 @@
       },
     
       mounted() {
-        if (localStorage.logId !== 'null' && localStorage.logId !== undefined) this.getParameters();
+        if (localStorage.logId !== 'null' && localStorage.logId !== undefined) {
+          this.getParameters();
+          this.getProjectStatus();
+        }
+      },
+
+      beforeUnmount(){
+        clearInterval(this.timer);
       },
       
       methods: {
@@ -195,6 +203,7 @@
         },
     
         formatRecommendations(){
+          this.formattedData = [];
             for (const el of this.recommendations) {
                 if (!this.performanceColumn && el.case_performance.column !== null) this.performanceColumn = el.case_performance.column;
                 var caseId = el._id;
@@ -208,6 +217,7 @@
             }
             this.table.headers[1].label = this.performanceColumn;
             this.table.rows = this.formattedData;
+            this.doSort(null,null,this.table.sortable.order,this.table.sortable.sort);
             },
     
         formatRecommendation(id,performance,p){
@@ -234,7 +244,24 @@
                 details: recommendedAttr,
             }
             return data;
-        }
+        },
+
+        getProjectStatus(){
+        logsService.getProjectStatus(localStorage.logId).then(
+            (response) => {
+                let status = response.data.status;
+
+                if(status === 'SIMULATING'){
+                  this.timer = setInterval(() => {
+                      this.getRecommendations();
+                  }, 4000);
+                }
+            },
+            (error) => {
+                console.log(error);
+            }
+        ); 
+    },
     
         
       }
