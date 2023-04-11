@@ -67,7 +67,7 @@
       
         .legend {
           display:flex;
-          flex-direction: row;
+          flex-direction: column;
           padding: 5px 10px 5px 5px;
           position:absolute;
           top: 5px;
@@ -80,17 +80,24 @@
             margin: 0px 5px;
           }
       
-          .past-activity, .recommendation {
+          .past-activity, .current-activity, .next-activity, .intervention {
             height: 10px;
             width: 20px;     
             margin: 5px; 
+            border-radius: 5px;
           }
 
           .past-activity {
             background-color: $k-gray2;    
           }
-          .recommendation {
+          .current-activity {
             background-color: $k-blue;
+          }
+          .next-activity {
+            background-color: $k-orange;    
+          }
+          .intervention {
+            background-color: $k-purple;
           }
       
         }
