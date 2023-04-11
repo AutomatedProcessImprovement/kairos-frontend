@@ -159,8 +159,8 @@
           ongoingRows: [],
           completedRows:[],
           sortable: {
-            order: null,
-            sort: null
+            order: localStorage.casesListOrder,
+            sort:  localStorage.casesListSort
           },
         },
 
@@ -204,6 +204,9 @@
         else{
           this.table.rows = this.table.rows.sort((a, b) => (a[order] > b[order]) ? (1 * sortOrder) : (-1 * sortOrder) );
         }
+        localStorage.casesListOrder = order;
+        localStorage.casesListSort = sort;
+
         this.table.sortable.order = order;
         this.table.sortable.sort = sort;
       },

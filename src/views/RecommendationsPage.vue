@@ -27,6 +27,11 @@
         @do-search="doSort"
         @row-clicked="rowClicked"
         >
+
+        <template v-slot:id="data">
+          <p>{{ formatId(data.value.id) }}</p>
+        </template>
+
         <template v-slot:performance="data">
           <p>{{ data.value.performance.value}} {{ data.value.performance.unit }}</p>
         </template>
@@ -93,8 +98,8 @@
             ],
             rows: [],
             sortable: {
-                order: null,
-                sort: null
+                order: localStorage.recommendationsOrder,
+                sort: localStorage.recommendationsSort
             },
         },
         };
@@ -113,6 +118,11 @@
       
       methods: {
 
+        formatId(id){
+          if(!id) return null;
+          return id.slice(id.indexOf('-') + 1);
+        },
+
         rowClicked(row){
             this.$router.push({name: 'case',params: {'caseId':row.id}})
         },
@@ -129,6 +139,9 @@
             else{
                 this.table.rows = this.table.rows.sort((a, b) => (a[order] > b[order]) ? (1 * sortOrder) : (-1 * sortOrder) );
             }
+
+            localStorage.recommendationsOrder = order;
+            localStorage.recommendationsSort = sort;
             this.table.sortable.order = order;
             this.table.sortable.sort = sort;
         },

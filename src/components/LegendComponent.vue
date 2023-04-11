@@ -6,7 +6,7 @@
     </div>
     <div class="row">
       <div class="current-activity"></div>
-      <p>Current case status</p>
+      <p>Current status</p>
     </div>
     <div class="row">
       <div class="next-activity"></div>
