@@ -41,6 +41,9 @@
       @do-search="doSort"
       @row-clicked="rowClicked"
       >
+      <template v-slot:id="data">
+        <p>{{ formatId(data.value.id) }}</p>
+      </template>
       <template v-slot:recommendations="data">
         <div class="case-recommendations" :class="[data.value.recommendations ? 'available' : 'unavailable']"> 
           {{ data.value.recommendations ? "recommendations available" : "no new recommendations" }}
@@ -178,6 +181,11 @@
     },
     
     methods: {
+
+      formatId(id){
+        if(!id) return null;
+        return id.slice(id.indexOf('-') + 1);
+      },
   
       rowClicked(row){
         this.$router.push({name: 'case',params: {'caseId':row.id}})
