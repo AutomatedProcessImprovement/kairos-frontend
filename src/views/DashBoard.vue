@@ -28,7 +28,7 @@
                 <p>{{ selectedLogStatus.status }} </p>
                 <small>Event log status</small>
                 <div v-if="selectedLog.result_key" class="row">
-                    <button :disabled="selectedLogStatus !== 'TRAINED' || selectedLog.got_results" class="btn-blue" @click="getStaticResults">Get results</button>
+                    <button :disabled="selectedLogStatus.status !== 'TRAINED' || selectedLog.got_results" class="btn-blue" @click="getStaticResults">Get results</button>
                     <button class="btn-blue margin" @click="openModal=true">Delete event log</button>
                 </div>
                 <div v-else class="row">
