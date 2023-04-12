@@ -1,6 +1,6 @@
 <template>
     <div id="parameters">
-        <loading v-if="isLoading" text="creating project..."></loading>
+        <loading v-if="isLoading" :text="loadingText"></loading>
         <div v-else class="column">
             <a @click="$router.go(-1)"><ion-icon name="chevron-back-outline"></ion-icon> Return</a>
             <h2 class="bold blue">Recommendation Parameters</h2>
@@ -12,6 +12,7 @@
                     <p>Uploaded log</p>
                     <div class='log-card'>
                         <p>{{ log.filename }}</p>
+                        <p v-if="log.test_filename">Test set: {{ log.test_filename }}</p>
                         <small>{{ log.datetime }}</small>
                     </div>
                 </div>
@@ -74,7 +75,7 @@
                         </select>
                         <span v-else-if="positiveOutcome.columnDefinition === 'BOOLEAN'"></span>
                         <div class="double-input" v-else-if="positiveOutcome.columnDefinition === 'DURATION'">
-                            <input type="number" v-model="positiveOutcome.value"/>
+                            <input type="number" min="0" v-model="positiveOutcome.value"/>
                             <select v-model="positiveOutcome.unit">
                                 <!-- <option>month</option> -->
                                 <option>weeks</option>
@@ -136,7 +137,7 @@
                 <div class="parameter">
                     <p>Alarm Threshold</p>
                     <small>Please specify when an alarm should be triggered. Enter a value between 0.1 and 0.9.</small>
-                    <input type="number" step="0.1" v-model="alarmThreshold"/>
+                    <input type="number" min="0.1" max="0.9" step="0.1" v-model="alarmThreshold"/>
                 </div>
 
                 <button type="submit" class="btn-blue" @click="validate">Submit</button>
@@ -173,6 +174,7 @@ export  default {
     data () {
         return {
             isLoading: true,
+            loadingText: "Please wait...",
             openModal: false,
 
             log: null,
@@ -276,6 +278,7 @@ export  default {
 
         submit() {
             this.openModal=false;
+            this.loadingText = "Creating project...";
             this.isLoading = true;
             
             let positiveOutcome = {

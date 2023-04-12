@@ -18,7 +18,7 @@
           <h4>Case details</h4>
           <div class="row">
             <ion-icon v-if="!caseKpi.outcome" class="warning" name="alert"></ion-icon>
-            <p> Case {{ caseKpi.column }} equals {{ caseKpi.value }} {{ caseKpi.unit }}.</p>
+            <p> Case {{ caseKpi.column }} equals {{ caseKpi.value }} {{ caseKpi.unit }}</p>
           </div>
           <small>The case performance {{ caseKpi.outcome ? 'does not violate' : 'violates'}} the positive outcome condition.</small>
         </div>

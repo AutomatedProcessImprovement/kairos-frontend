@@ -1,11 +1,11 @@
 <template>
   <side-bar></side-bar>
-  <loading v-if="isLoading"></loading>
+  <loading v-if="isLoading" :startPosition="200"></loading>
   <div id="case" v-if="currentCase._id">
     <div class="case-top">
       <router-link class="bold" :to="{name: 'cases'}"><ion-icon name="chevron-back"></ion-icon> Return</router-link>
       <div class="row">
-        <h2>Case #{{caseId}}</h2>
+        <h2>Case #{{caseId.slice(caseId.indexOf('-') + 1)}}</h2>
         <div class="case-recommendations" :class="[recommendationsAvailable ? 'available' : 'unavailable']"> 
           {{ recommendationsAvailable ? "recommendations available" : "no new recommendations" }}
         </div>
@@ -72,6 +72,7 @@
       },
       data() {
         return {
+          timer: null,
           isLoading: true,
           currentCase: {},
           parameters: {},
@@ -85,16 +86,20 @@
       mounted() {
         window.addEventListener('view-changed', this.changeView);
         this.selectedView = localStorage.view;
-        if (localStorage.logId !== 'null' && localStorage.logId !== undefined) this.getParameters();
+        if (localStorage.logId !== 'null' && localStorage.logId !== undefined){ 
+          this.getParameters();
+          this.getProjectStatus();
+        }
       },
 
       beforeUnmount() {
         window.removeEventListener('view-changed',this.changeView);
+        clearInterval(this.timer);
       },
 
       methods: {
         getCase(){
-          this.caseId = (this.$route.params.caseId)
+          this.caseId = (this.$route.params.caseId);
           casesService.getCase(this.caseId).then(
             (response) => {
               this.currentCase = response.data.case;
@@ -153,7 +158,23 @@
 
         changeView(event){
           this.selectedView = event.detail.storage;
-        }
+        },
+
+        getProjectStatus(){
+        logsService.getProjectStatus(localStorage.logId).then(
+            (response) => {
+                let status = response.data.status;
+                if(status === 'SIMULATING'){
+                  this.timer = setInterval(() => {
+                      this.getCase();
+                  }, 5000);
+                }
+            },
+            (error) => {
+                console.log(error);
+            }
+        ); 
+    },
         
       },
       

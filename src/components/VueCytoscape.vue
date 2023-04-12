@@ -36,20 +36,23 @@ cytoscape.use( dagre );
                       edgeClass: 'interventionEdge',
                       isValidNode: (recommendation,columnsDefinition) =>
                         columnsDefinition[recommendation.output.treatment[0][0].column] === 'ACTIVITY' &&
-                        recommendation.output.treatment[0][0].operator === 'EQUAL'
+                        recommendation.output.treatment[0][0].operator === 'EQUAL' && recommendation.output.cate > 0
                     }
                   }
           };
         },
 
         mounted(){
-          this.$emit('loading');      
           this.createDiagram();
         },
 
         watch: {
-          cy: function(){
+          cy(){
             this.displayDiagram();
+          },
+
+          currentCase(){
+            this.createDiagram();
           }
         },
         methods: {
@@ -62,6 +65,8 @@ cytoscape.use( dagre );
           },
 
           createDiagram(){
+            // this.$emit('loading');      
+
             var width = 120;
             var height = 60;
             var lineWidth = 2;
@@ -220,38 +225,42 @@ cytoscape.use( dagre );
 
               let recommendations = activity.prescriptions;
 
-              for (let j=0; j < recommendations.length; j++) {
-                const recommendation = recommendations[j];
-                const recommendationType = this.recommendationTypes[recommendation.type];
-
-                if (!recommendationType) continue;
-                if (recommendationType.isValidNode && !recommendationType.isValidNode(recommendation,this.parameters.columnsDefinition)) continue;
-
-                const label = recommendationType.label(recommendation);
-                const nodeClass = recommendationType.nodeClass;
-                const edgeClass = recommendationType.edgeClass;
-
-                const index = activity.event_id + '-' + j;
-                elems.push({
-                  group: "nodes",
-                  data: {
-                    id: "rn"+ index, 
-                    label: label,
-                  },
-                  classes: nodeClass
-                });
+              if(recommendations){
+                for (let j=0; j < recommendations.length; j++) {
+                  const recommendation = recommendations[j];
+                  const recommendationType = this.recommendationTypes[recommendation.type];
   
-                elems.push({
-                  group: "edges",
-                  data: {
-                    id: "re" + index,
-                    source: "an" + i,
-                    target: "rn"+ index,
-                  },
-                  classes: edgeClass
-                });
+                  if (!recommendationType) continue;
+                  if (recommendationType.isValidNode && !recommendationType.isValidNode(recommendation,this.parameters.columnsDefinition)) continue;
+  
+                  const label = recommendationType.label(recommendation);
+                  const nodeClass = recommendationType.nodeClass;
+                  const edgeClass = recommendationType.edgeClass;
+  
+                  const index = activity.event_id + '-' + j;
+                  elems.push({
+                    group: "nodes",
+                    data: {
+                      id: "rn"+ index, 
+                      label: label,
+                    },
+                    classes: nodeClass
+                  });
+    
+                  elems.push({
+                    group: "edges",
+                    data: {
+                      id: "re" + index,
+                      source: "an" + i,
+                      target: "rn"+ index,
+                    },
+                    classes: edgeClass
+                  });
+                }
               }
-            }
+
+              }
+
 
             if(this.currentCase.case_completed){
               elems.push({

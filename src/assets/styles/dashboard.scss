@@ -9,6 +9,9 @@
     }
 
     .log-card{
+        display: flex;
+        flex-direction: column;
+        height: max-content;
     
         &.selected{
             background-color: $k-blue4;

@@ -28,13 +28,15 @@ export default{
         },
 
         mounted(){
-          this.$emit('loading');      
           this.createDiagram();
         },
     
         watch: {
-          cy: function(){
+          cy(){
             this.displayDiagram();
+          },
+          currentCase(){
+            this.createDiagram();
           }
         },
 
@@ -49,6 +51,8 @@ export default{
           },
 
           createDiagram(){
+            // this.$emit('loading');      
+
             var width = 15;
             var height = 15;
             var lineWidth = 1;
@@ -136,29 +140,30 @@ export default{
                   });
               }
             }
-            console.log(this.lastActivity)
-            let lastRecommendations = JSON.parse(JSON.stringify(this.lastActivity.prescriptions));
-            if (lastRecommendations.length > 0){
-              console.log(lastRecommendations)
-                let content = lastRecommendations[0].output;
-                elems.push({
-                group: "nodes",
-                data: {
-                  id: "rn", 
-                  label: content,
-                },
-                classes: 'nextActivity'
-              });
-
-                elems.push({
-                group: "edges",
-                data: {
-                    id: "re",
-                    source: "an" + (l-1),
-                    target: "rn",
-                },
+            let lastRecommendations = this.lastActivity.prescriptions;
+            if (lastRecommendations){
+                let nextActivityRecommendation = lastRecommendations.filter(r => r.type === 'NEXT_ACTIVITY');
+                if (nextActivityRecommendation.length > 0){
+                  let content = nextActivityRecommendation[0].output;
+                  elems.push({
+                  group: "nodes",
+                  data: {
+                    id: "rn", 
+                    label: content,
+                  },
+                  classes: 'nextActivity'
                 });
-                lastNodeId = 'rn';
+  
+                  elems.push({
+                  group: "edges",
+                  data: {
+                      id: "re",
+                      source: "an" + (l-1),
+                      target: "rn",
+                  },
+                  });
+                  lastNodeId = 'rn';
+              }
             }
 
             if(elems.length > 0 && !this.caseCompleted){

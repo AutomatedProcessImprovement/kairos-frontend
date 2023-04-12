@@ -44,13 +44,14 @@ export default{
 
     data(){
         return{
-            batchRecommendations: [],
             batchId: null,
         }
     },
 
-    mounted(){
-        this.formatRecommendations();
+    computed:{
+        batchRecommendations(){
+            return this.formatRecommendations();
+        }
     },
 
     methods: {
@@ -59,8 +60,9 @@ export default{
         },
 
         formatRecommendations() {
+            let temp = [];
             this.batchId = this.batch.event_id;
-
+            if (!this.batch.prescriptions) return [];
             for (let i = 0; i < this.batch.prescriptions.length; i++) {
                 let p = this.batch.prescriptions[i];
 
@@ -107,8 +109,9 @@ export default{
                     recommended: recommendedAttr,
                     metrics: recommendationMetrics
                 }
-                this.batchRecommendations.push(data);
+                temp.push(data);
             }
+            return temp;
         },
 
     }

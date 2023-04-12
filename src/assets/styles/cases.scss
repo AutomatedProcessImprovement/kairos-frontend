@@ -1,7 +1,10 @@
 // Cases
 .stats{
     display: flex;
-  
+    
+    .btn-blue{
+      margin: 20px 20px 10px 0px;
+    }
     .stats-card{
       display: flex;
       align-items: center;
@@ -12,6 +15,7 @@
       color: $k-black;
       border-radius: 10px;
       transition: 0.2s;
+
 
       &.selected{
         background-color: $k-blue4;
@@ -64,4 +68,16 @@
         cursor: pointer;
       }
     }
+  }
+
+  #cases{
+    #chart{
+      flex-grow: 0;
+      padding: 10px;
+      background-color: $k-white;
+      margin-top: 10px;
+      border-radius: 10px;
+      width: max-content;
+    }
+
   }

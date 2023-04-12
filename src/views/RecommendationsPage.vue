@@ -1,6 +1,6 @@
 <template>
     <side-bar></side-bar>
-    <loading v-if="isLoading"></loading>
+    <loading v-if="isLoading" :startPosition="200"></loading>
     <div id="recommendations">
       <h2>Recommendations</h2>
       <div class="stats">
@@ -13,6 +13,7 @@
           </div>
           <ion-icon name="albums"></ion-icon>
         </div>
+        <button :disabled="table.rows.length < 1" class="btn-blue" @click="exportData()">Export recommendations as CSV</button>
       </div>  
       
       <div class="recommendations-table">
@@ -26,6 +27,11 @@
         @do-search="doSort"
         @row-clicked="rowClicked"
         >
+
+        <template v-slot:id="data">
+          <p>{{ formatId(data.value.id) }}</p>
+        </template>
+
         <template v-slot:performance="data">
           <p>{{ data.value.performance.value}} {{ data.value.performance.unit }}</p>
         </template>
@@ -55,6 +61,7 @@
     
       data() {
         return {
+          timer: null,
           isLoading: false,
           recommendations: [],
           formattedData: [],
@@ -68,14 +75,13 @@
                 label: 'Case ID',
                 field: 'id',
                 width: "10%",
-                sortable: false,
-                isKey: true
+                sortable: true,
             },
             {
                 label: "Performance",
                 field: "performance",
                 width: "10%",
-                sortable: false,
+                sortable: true,
             },
             {
                 label: "Recommendation",
@@ -92,18 +98,30 @@
             ],
             rows: [],
             sortable: {
-                order: null,
-                sort: null
+                order: localStorage.recommendationsOrder,
+                sort: localStorage.recommendationsSort
             },
         },
         };
       },
     
       mounted() {
-        if (localStorage.logId !== 'null' && localStorage.logId !== undefined) this.getParameters();
+        if (localStorage.logId !== 'null' && localStorage.logId !== undefined) {
+          this.getParameters();
+          this.getProjectStatus();
+        }
+      },
+
+      beforeUnmount(){
+        clearInterval(this.timer);
       },
       
       methods: {
+
+        formatId(id){
+          if(!id) return null;
+          return id.slice(id.indexOf('-') + 1);
+        },
 
         rowClicked(row){
             this.$router.push({name: 'case',params: {'caseId':row.id}})
@@ -111,7 +129,7 @@
 
         doSort(offset,limit,order,sort){
             const sortOrder = sort === 'asc' ? 1 : -1;
-            if (order === "performance" && this.cases[0].case_performance.column === "DURATION"){
+            if (order === "performance" && this.performanceColumn === "DURATION"){
                 this.table.rows = this.table.rows.sort((a, b) => 
                 (shared.parseDuration(a[order]) > shared.parseDuration(b[order])) ? (1 * sortOrder) : (-1 * sortOrder) );
             } else if (order === "performance"){
@@ -121,8 +139,33 @@
             else{
                 this.table.rows = this.table.rows.sort((a, b) => (a[order] > b[order]) ? (1 * sortOrder) : (-1 * sortOrder) );
             }
+
+            localStorage.recommendationsOrder = order;
+            localStorage.recommendationsSort = sort;
             this.table.sortable.order = order;
             this.table.sortable.sort = sort;
+        },
+
+        exportData(){
+          let csv = this.table.headers.map(h => h.label);
+          this.table.rows.forEach((row) => {
+            row = Object.values(row);
+            row = row.map(data => {
+              if (data.value) {
+                return [data.value, data.unit].filter(Boolean).join(' ')
+              } else{
+                return data
+              }
+            })
+            csv += "\n";
+            csv += row.join(',');
+          });
+      
+          const anchor = document.createElement('a');
+          anchor.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+          anchor.target = '_blank';
+          anchor.download = 'recommendations.csv';
+          anchor.click(); 
         },
         
         getRecommendations() {
@@ -173,6 +216,7 @@
         },
     
         formatRecommendations(){
+          this.formattedData = [];
             for (const el of this.recommendations) {
                 if (!this.performanceColumn && el.case_performance.column !== null) this.performanceColumn = el.case_performance.column;
                 var caseId = el._id;
@@ -186,13 +230,14 @@
             }
             this.table.headers[1].label = this.performanceColumn;
             this.table.rows = this.formattedData;
+            this.doSort(null,null,this.table.sortable.order,this.table.sortable.sort);
             },
     
         formatRecommendation(id,performance,p){
             let recommendationAttr,recommendedAttr;
             if(p.type === 'NEXT_ACTIVITY'){
                 recommendationAttr = 'Perform ' + p.output;
-                recommendedAttr = 'Recommended now.';
+                recommendedAttr = 'Recommended now';
             }
             else if(p.type === 'ALARM') {
                 recommendationAttr = 'Action required';
@@ -212,7 +257,24 @@
                 details: recommendedAttr,
             }
             return data;
-        }
+        },
+
+        getProjectStatus(){
+        logsService.getProjectStatus(localStorage.logId).then(
+            (response) => {
+                let status = response.data.status;
+
+                if(status === 'SIMULATING'){
+                  this.timer = setInterval(() => {
+                      this.getRecommendations();
+                  }, 4000);
+                }
+            },
+            (error) => {
+                console.log(error);
+            }
+        ); 
+    },
     
         
       }

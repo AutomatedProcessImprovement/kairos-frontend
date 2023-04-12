@@ -54,6 +54,12 @@ class LogsService {
     clearSimulation(logId){
         return http.put(`/event_logs/${logId}/simulate/clear`)
     }
+
+    // static results
+
+    getStaticResults(logId){
+        return http.get(`/event_logs/${logId}/results`)
+    }
 }
 
 export default new LogsService();
