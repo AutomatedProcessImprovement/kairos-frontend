@@ -47,12 +47,8 @@ cytoscape.use( dagre );
         },
 
         watch: {
-          cy(){
-            this.displayDiagram();
-          },
-
           currentCase(){
-            this.createDiagram();
+            this.createNodes();
           }
         },
         methods: {
@@ -72,7 +68,6 @@ cytoscape.use( dagre );
             var lineWidth = 2;
             var cy = cytoscape({
                 container: document.getElementById('cy'),
-
                 style: [
                 
                   {
@@ -183,9 +178,14 @@ cytoscape.use( dagre );
                   },
               ],
             });
+            this.cy = cy;
+            this.createNodes();
+          },
 
+          createNodes(){
             const activities = this.currentCase.activities;
             const l = activities.length;
+            
             var elems = [];
             
             elems.push({
@@ -281,12 +281,14 @@ cytoscape.use( dagre );
                 classes: 'activityEdge'
               }); 
             }
-            this.elems = elems;
-            cy.add(elems);
-            this.cy = cy;
-                            
+
+            if(this.elems.length > 0){
+              this.cy.elements().remove();
             }
-                    
+            this.cy.add(elems);
+            this.elems = elems; 
+            this.displayDiagram();
+          }      
         }
       };
     </script>
