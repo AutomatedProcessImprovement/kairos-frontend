@@ -55,6 +55,7 @@
     import SideBar from '@/components/SideBar.vue';
     import Loading from "@/components/LoadingComponent.vue";
     import Error from "@/components/ErrorComponent.vue";
+    import shared from "@/services/shared";
 
     export default {
       name: 'CasePage',
@@ -85,8 +86,8 @@
 
       mounted() {
         window.addEventListener('view-changed', this.changeView);
-        this.selectedView = localStorage.view;
-        if (localStorage.logId !== 'null' && localStorage.logId !== undefined){ 
+        this.selectedView = shared.getLocal('view');
+        if (shared.getLocal('logId')){ 
           this.getParameters();
           this.getProjectStatus();
         }
@@ -102,6 +103,9 @@
           this.caseId = (this.$route.params.caseId);
           casesService.getCase(this.caseId).then(
             (response) => {
+              if (this.currentCase.activities){
+                if (this.currentCase.activities.length === response.data.case.activities.length ) return;
+              }
               this.currentCase = response.data.case;
               this.getAdditionalInformation();
             },
@@ -123,7 +127,7 @@
         },
 
         getParameters(){
-          logsService.getParameters(localStorage.logId).then(
+          logsService.getParameters(shared.getLocal('logId')).then(
             (response) => {
               this.parameters = response.data.parameters;
               this.getCase();
@@ -161,7 +165,7 @@
         },
 
         getProjectStatus(){
-        logsService.getProjectStatus(localStorage.logId).then(
+        logsService.getProjectStatus(shared.getLocal('logId')).then(
             (response) => {
                 let status = response.data.status;
                 if(status === 'SIMULATING'){

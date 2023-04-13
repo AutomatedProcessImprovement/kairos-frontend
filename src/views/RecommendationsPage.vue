@@ -98,15 +98,15 @@
             ],
             rows: [],
             sortable: {
-                order: localStorage.recommendationsOrder,
-                sort: localStorage.recommendationsSort
+                order: shared.getLocal('recommendationsOrder'),
+                sort: shared.getLocal('recommendationsSort')
             },
         },
         };
       },
     
       mounted() {
-        if (localStorage.logId !== 'null' && localStorage.logId !== undefined) {
+        if (shared.getLocal('logId')) {
           this.getParameters();
           this.getProjectStatus();
         }
@@ -139,9 +139,9 @@
             else{
                 this.table.rows = this.table.rows.sort((a, b) => (a[order] > b[order]) ? (1 * sortOrder) : (-1 * sortOrder) );
             }
+            shared.setLocal('recommendationsOrder',order,30);
+            shared.setLocal('recommendationsSort',sort,30);
 
-            localStorage.recommendationsOrder = order;
-            localStorage.recommendationsSort = sort;
             this.table.sortable.order = order;
             this.table.sortable.sort = sort;
         },
@@ -169,7 +169,7 @@
         },
         
         getRecommendations() {
-          logsService.getRecommendations(localStorage.logId).then(
+          logsService.getRecommendations(shared.getLocal('logId')).then(
             (response) => {
                 this.recommendations = response.data.prescriptions;
                 if (this.recommendations.length > 0) this.formatRecommendations();
@@ -193,7 +193,7 @@
         },
         getParameters(){
             this.isLoading = true;
-          logsService.getParameters(localStorage.logId).then(
+          logsService.getParameters(shared.getLocal('logId')).then(
             (response) => {
               this.parameters = response.data.parameters;
               this.getRecommendations();
@@ -260,7 +260,7 @@
         },
 
         getProjectStatus(){
-        logsService.getProjectStatus(localStorage.logId).then(
+        logsService.getProjectStatus(shared.getLocal('logId')).then(
             (response) => {
                 let status = response.data.status;
 

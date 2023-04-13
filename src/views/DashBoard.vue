@@ -25,7 +25,13 @@
             </div>
             <div v-if="selectedLog" class="column">
                 <h3 class="bold blue">Event log details</h3>
-                <p>{{ selectedLogStatus.status }} </p>
+                <steps-progress-bar :options="progressBarOptions" ref="progress"/>
+                <div class="row center">
+                    <ion-icon v-if="selectedLogStatus.status !== 'TRAINED' && selectedLogStatus.status !== 'NULL'" class="rotate status-icon" name="reload-circle-outline"></ion-icon>
+                    <p>{{ selectedLogStatus.status }} </p>
+                </div>
+
+
                 <small>Event log status</small>
                 <div v-if="selectedLog.result_key" class="row">
                     <button :disabled="selectedLogStatus.status !== 'TRAINED' || selectedLog.got_results" class="btn-blue" @click="getStaticResults">Get results</button>
@@ -89,6 +95,7 @@
     import SideBar from '@/components/SideBar.vue';
     import Loading from "@/components/LoadingComponent.vue";
     import ModalComponent from "@/components/ModalComponent.vue";
+    import shared from "@/services/shared";
     
     export default {
         name: "DashBoard",
@@ -96,7 +103,7 @@
         components: {
             SideBar,
             Loading,
-            ModalComponent
+            ModalComponent,
         },
     
         data () {
@@ -113,7 +120,7 @@
                     {value: 'operational', name:'Operational worker'},
                     {value: 'tactical', name:'Tactical manager'}
                 ],
-                selectedView: localStorage.view,
+                selectedView: shared.getLocal('view'),
                 selectedLogStatus: {id: null,status:null},
             }
         },
@@ -144,19 +151,19 @@
                     (response) => {
                         this.eventlogs = response.data.event_logs;
                         if(this.eventlogs.length === 0){
-                            localStorage.logId = 'null';
+                            shared.setLocal('logId',null);
                             this.selectedLog = null;
                             this.clearTimer();
                             this.isLoading = false;
                             return;
                         }
-                        if (String(localStorage.logId) === 'null' || !localStorage.logId){
-                            localStorage.logId = this.eventlogs[0]._id.toString();
+                        if (!shared.getLocal('logId')){
+                            shared.setLocal('logId',this.eventlogs[0]._id,30);
                         }
-                        this.selectedLog = this.eventlogs.find(e => String(e._id) === localStorage.logId);
+                        this.selectedLog = this.eventlogs.find(e => e._id === shared.getLocal('logId'));
     
                         if (!this.selectedLog){
-                            this.selectLog(this.eventlogs[0]._id.toString());
+                            this.selectLog(this.eventlogs[0]._id);
                         } else{
                             this.getProjectStatus();
                         }
@@ -185,17 +192,16 @@
             },
     
             selectLog(logId){
-                logId = String(logId)
-                if (logId === 'null' || !logId) return;
-                localStorage.logId = logId;
-                this.selectedLog = this.eventlogs.find(e => String(e._id) === logId);
-                this.getProjectStatus();
+                if (!logId) return;
+                shared.setLocal('logId',logId,30);
+                this.selectedLog = this.eventlogs.find(e => e._id === logId);
+                this.getProjectStatus(true);
             },
     
             startSimulation(){
-                logsService.startSimulation(localStorage.logId).then(
+                logsService.startSimulation(shared.getLocal('logId')).then(
                     (response) => {
-                        console.log(response.data.message.project_id);
+                        console.log(response.data.message.message);
                     },
                     (error) => {
                     const resMessage =
@@ -214,12 +220,12 @@
             },
     
             stopSimulation(){
-                logsService.stopSimulation(localStorage.logId).then(
+                logsService.stopSimulation(shared.getLocal('logId')).then(
                     (response) => {
                         console.log(response.data.message.message);
                         this.$notify({
                             title: 'Success',
-                            text: `Successfully stopped simulating log ${localStorage.logId}`,
+                            text: `Successfully stopped simulating log ${shared.getLocal('logId')}`,
                             type: 'success',
                         });
                     },
@@ -241,7 +247,7 @@
             },
     
             clearSimulation(){
-                logsService.clearSimulation(localStorage.logId).then(
+                logsService.clearSimulation(shared.getLocal('logId')).then(
                     (response) => {
                         this.$notify({
                             title: 'Success',
@@ -270,14 +276,14 @@
                 clearInterval(this.timer);
                 this.closeModal();
     
-                logsService.deleteLog(localStorage.logId).then(
+                logsService.deleteLog(shared.getLocal('logId')).then(
                     (response) => {
                         this.$notify({
                             title: 'Success',
                             text: response.data.message,
                             type: 'success'
                         });
-                        localStorage.logId = 'null';
+                        shared.setLocal('logId',null);
                         this.getLogs();
                     },
                     (error) => {
@@ -303,12 +309,13 @@
                     text: "Getting results may take a while, please wait...",
                     type: 'warning'
                 }) 
-                logsService.getStaticResults(localStorage.logId).then(
+                logsService.getStaticResults(shared.getLocal('logId')).then(
                     (response) => {
                         let type = 'success';
                         if (response.data.message === 'Ongoing dataset result is still processing'){
-                            type = 'warning'
+                            type = 'warning';
                         }
+                        if(type === 'success') this.selectedLog.got_results = true;
                         this.$notify({
                             title: type,
                             text: response.data.message,
@@ -331,12 +338,13 @@
                 ); 
             },
     
-            getProjectStatus(){
-                logsService.getProjectStatus(localStorage.logId).then(
+            getProjectStatus(delay = false){
+                let oldLogstatus = this.selectedLogStatus;
+                if(delay) this.selectedLogStatus.status = null;
+                logsService.getProjectStatus(shared.getLocal('logId')).then(
                     (response) => {
-                        let oldLogstatus = this.selectedLogStatus;
                         let status = response.data.status;
-                        let newLogStatus = {id: localStorage.logId, status: status};
+                        let newLogStatus = {id: shared.getLocal('logId'), status: status};
                         this.notifyForNewStatus(oldLogstatus,newLogStatus);
                         this.selectedLogStatus = newLogStatus;
                     },
@@ -363,7 +371,7 @@
                 if ((oldLogStatus.status === 'TRAINED' && newLogStatus.status === 'SIMULATING')) {
                     this.$notify({
                         title: 'Success',
-                        text: `Successfully started simulating log ${localStorage.logId}`,
+                        text: `Successfully started simulating log ${shared.getLocal('logId')}`,
                         type: 'success',
                     });
                 }

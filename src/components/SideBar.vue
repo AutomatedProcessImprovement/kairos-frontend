@@ -24,6 +24,8 @@
 
 <script>
 
+import shared from '@/services/shared';
+
 export default {
   name: 'SideBarComponent',
 
@@ -39,19 +41,20 @@ export default {
   },
 
   mounted() {
-    if(!localStorage.view){
-      localStorage.view = 'analytical';
+    if(!shared.getLocal('view')){
+      
+      shared.setLocal('view','analytical',30);
     }
-    this.selectedView = localStorage.view;
+    this.selectedView = shared.getLocal('view');
   },
 
   methods:{
     selectView(view){
       this.selectedView = view;
-      localStorage.view = view;
+      shared.setLocal('view',view,30);
       window.dispatchEvent(new CustomEvent('view-changed', {
         detail: {
-          storage: localStorage.view
+          storage: shared.getLocal('view')
         }
       }));
     },
