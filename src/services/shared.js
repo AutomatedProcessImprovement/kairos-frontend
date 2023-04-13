@@ -48,19 +48,25 @@ export default{
       },
     
     getLocal(key){
-      const itemStr = localStorage.getItem(key)
+      const itemStr = localStorage.getItem(key);
 
       if (!itemStr) {
-        return null
+        return null;
       }
-      const item = JSON.parse(itemStr)
+      var item;
+      try{
+        item = JSON.parse(itemStr);
+      }catch(SyntaxError){
+        console.log('syntax error')
+        return null;
+      }
       const now = new Date()
       if (now.getTime() > item.expiry) {
 
-        localStorage.removeItem(key)
-        return null
+        localStorage.removeItem(key);
+        return null;
       }
-      return item.value
+      return item.value;
     },
 
     removeLocal(key){
