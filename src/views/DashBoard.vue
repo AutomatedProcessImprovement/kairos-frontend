@@ -283,7 +283,8 @@
                             text: response.data.message,
                             type: 'success'
                         });
-                        shared.setLocal('logId',null);
+                        shared.removeLocal(`casesListClickedRows${shared.getLocal('logId')}`);
+                        shared.removeLocal('logId');
                         this.getLogs();
                     },
                     (error) => {
