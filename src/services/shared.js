@@ -57,7 +57,6 @@ export default{
       try{
         item = JSON.parse(itemStr);
       }catch(SyntaxError){
-        console.log('syntax error')
         return null;
       }
       const now = new Date()
