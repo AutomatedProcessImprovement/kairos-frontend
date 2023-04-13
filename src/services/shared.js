@@ -61,5 +61,14 @@ export default{
         return null
       }
       return item.value
+    },
+
+    removeLocal(key){
+      const itemStr = localStorage.getItem(key)
+
+      if (itemStr) {
+        localStorage.removeItem(key)
+      }
+      
     }
 }

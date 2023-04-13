@@ -171,10 +171,8 @@
     },
   
     mounted() {
-      if(shared.getLocal("casesListClickedRows")){
-        this.table.clickedRows = shared.getLocal("casesListClickedRows");
-      }
       if (shared.getLocal('logId')) {
+        this.table.clickedRows = shared.getLocal(`casesListClickedRows${shared.getLocal('logId')}`) || [];
         this.isLoading = true;
         this.getCases();
         this.getProjectStatus();
@@ -205,7 +203,7 @@
         }
         this.table.clickedRows.unshift(row.id);
 
-        shared.setLocal("casesListClickedRows",this.table.clickedRows,1);
+        shared.setLocal(`casesListClickedRows${shared.getLocal('logId')}`,this.table.clickedRows,1);
         this.$router.push({name: 'case',params: {'caseId': row.id}})
       },
   
