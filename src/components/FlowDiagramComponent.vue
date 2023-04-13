@@ -40,6 +40,7 @@ export default{
     methods: {
           displayDiagram(){
             this.cy.layout({
+                fit:false,
                 name:'dagre',
                 rankDir: 'LR', 
                 align: 'DR',
