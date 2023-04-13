@@ -1,5 +1,5 @@
 <template>
-    <div class="overlay transparent">
+    <div class="overlay transparent modal-overlay">
         <div id="modal">
             <h3>{{ title }}</h3>
             <slot name="content"/>
