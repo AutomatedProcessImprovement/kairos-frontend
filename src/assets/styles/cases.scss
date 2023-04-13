@@ -66,6 +66,13 @@
 
       tr{
         cursor: pointer;
+        
+        &.clicked-row{
+          background-color: $k-blue4;
+        }
+        &.last-clicked-row{
+          background-color: $k-green3;
+        }
       }
     }
   }

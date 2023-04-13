@@ -36,6 +36,7 @@
       :is-slot-mode="true"
       :columns="table.headers"
       :rows="table.rows"
+      :rowClasses="getRowClasses"
       :total="table.rows.length"
       :sortable="table.sortable"
       @do-search="doSort"
@@ -99,6 +100,7 @@
         pieChart: {
           series: [0, 0, 1],
           chartOptions: {
+            colors: ['#17ad37','#F5222D','#a0a3a5'],
             chart: {
               animations:{
                 enabled: false,
@@ -159,17 +161,20 @@
           ongoingRows: [],
           completedRows:[],
           sortable: {
-            order: localStorage.casesListOrder,
-            sort:  localStorage.casesListSort
+            order: shared.getLocal('casesListOrder'),
+            sort:  shared.getLocal('casesListSort')
           },
+          clickedRows: [],
         },
-
 
       };
     },
   
     mounted() {
-      if (localStorage.logId !== 'null' && localStorage.logId !== undefined) {
+      if(shared.getLocal("casesListClickedRows")){
+        this.table.clickedRows = shared.getLocal("casesListClickedRows");
+      }
+      if (shared.getLocal('logId')) {
         this.isLoading = true;
         this.getCases();
         this.getProjectStatus();
@@ -181,6 +186,12 @@
     },
     
     methods: {
+      getRowClasses(row){
+        let index = this.table.clickedRows.indexOf(row.id);
+        if (index < 0) return '';
+        if (index === 0) return 'last-clicked-row';
+        return 'clicked-row';
+      },
 
       formatId(id){
         if(!id) return null;
@@ -188,7 +199,14 @@
       },
   
       rowClicked(row){
-        this.$router.push({name: 'case',params: {'caseId':row.id}})
+        let index = this.table.clickedRows.indexOf(row.id);
+        if(index > -1) {
+          this.table.clickedRows.splice(index, 1);
+        }
+        this.table.clickedRows.unshift(row.id);
+
+        shared.setLocal("casesListClickedRows",this.table.clickedRows,1);
+        this.$router.push({name: 'case',params: {'caseId': row.id}})
       },
   
       doSort(offset,limit,order,sort){
@@ -204,8 +222,8 @@
         else{
           this.table.rows = this.table.rows.sort((a, b) => (a[order] > b[order]) ? (1 * sortOrder) : (-1 * sortOrder) );
         }
-        localStorage.casesListOrder = order;
-        localStorage.casesListSort = sort;
+        shared.setLocal('casesListOrder',order,5);
+        shared.setLocal('casesListSort',sort,5);
 
         this.table.sortable.order = order;
         this.table.sortable.sort = sort;
@@ -222,7 +240,7 @@
       },
       
       getCases() {
-        casesService.getCasesByLog(localStorage.logId).then(
+        casesService.getCasesByLog(shared.getLocal('logId')).then(
           (response) => {
             this.cases = response.data.cases;
             if (this.cases.length > 0) this.formatCases();
@@ -340,7 +358,7 @@
       },
 
       getProjectStatus(){
-        logsService.getProjectStatus(localStorage.logId).then(
+        logsService.getProjectStatus(shared.getLocal('logId')).then(
             (response) => {
                 let status = response.data.status;
 
