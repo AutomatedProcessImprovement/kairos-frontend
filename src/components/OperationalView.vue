@@ -7,10 +7,8 @@
           <small>{{ lastActivity[parameters.columnsDefinitionReverse['START_TIMESTAMP']] }}</small>
         </div>
         <flow-diagram-component
-        :oldActivities="oldActivities"
-        :lastActivity="lastActivity"
+        :currentCase="currentCase"
         :parameters="parameters"
-        :caseCompleted="currentCase.case_completed"
         ></flow-diagram-component>
       </div>
       <div class="row">

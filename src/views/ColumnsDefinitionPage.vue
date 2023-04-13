@@ -50,10 +50,10 @@
                     </tbody>
                 </table>
                 
-            </div>
-            <div class="buttons">
-                <button class="btn-blue" v-on:click="submit">Upload log</button>
-                <button class="btn-blue" v-on:click="goToHome">Cancel</button>
+                <div class="buttons">
+                    <button class="btn-blue" v-on:click="submit">Upload log</button>
+                    <button class="btn-blue" v-on:click="goToHome">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
@@ -63,6 +63,7 @@
 import Loading from "@/components/LoadingComponent.vue";
 import logsService from "@/services/logs.service";
 import TooltipComponent from "@/components/TooltipComponent.vue";
+import shared from "@/services/shared";
 
 export default {
     name: "ColumnsDefinitionPage",
@@ -74,7 +75,7 @@ export default {
 
     data () {
         return {
-            isLoading: true,
+            isLoading: false,
             loadingText: "Please wait...",
 
             typeList: [
@@ -100,12 +101,14 @@ export default {
     },
 
     mounted() {
-        this.loadCols();
+        if(shared.getLocal('logId')) this.loadCols();
     },
 
     methods: {
         loadCols() {
-            let logId = localStorage.logId;
+            this.isLoading = true;
+
+            let logId = shared.getLocal('logId');
  
             logsService.getLog(logId)
             .then(response => {
@@ -149,7 +152,7 @@ export default {
                 "case_attributes": this.caseAttributes
             }
 
-            logsService.defineColumnTypes(localStorage.logId,data)
+            logsService.defineColumnTypes(shared.getLocal('logId'),data)
             .then(response => {
                 console.log(response.data)
                 this.isLoading = false;

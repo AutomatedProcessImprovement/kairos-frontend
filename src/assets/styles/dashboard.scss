@@ -4,6 +4,12 @@
     flex-direction: column;
     flex: 1;
 
+    .status-icon{
+        width: 20px;
+        height: 20px;
+        margin-right: 4px;
+      }
+
     *{
         margin-bottom: 5px;
     }
