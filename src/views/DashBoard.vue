@@ -153,6 +153,7 @@
                         if(this.eventlogs.length === 0){
                             shared.setLocal('logId',null);
                             this.selectedLog = null;
+                            this.selectedLogStatus = {id: null,status:null};
                             this.clearTimer();
                             this.isLoading = false;
                             return;
@@ -165,7 +166,7 @@
                         if (!this.selectedLog){
                             this.selectLog(this.eventlogs[0]._id);
                         } else{
-                            this.getProjectStatus();
+                            this.getProjectStatus(true);
                         }
     
                         this.timer = setInterval(() => {
@@ -285,6 +286,7 @@
                         });
                         shared.removeLocal(`casesListClickedRows${shared.getLocal('logId')}`);
                         shared.removeLocal('logId');
+                        this.selectedLogStatus.status = null;
                         this.getLogs();
                     },
                     (error) => {
