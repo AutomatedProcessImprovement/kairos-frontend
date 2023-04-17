@@ -23,6 +23,12 @@
         </div>
         <ion-icon name="albums"></ion-icon>
       </div>
+
+      <div v-if="parameters.kpi" class="stats-card column">
+          <p>KPI</p>
+          <h3 class="blue">{{ parameters.kpi.value }} {{ parameters.kpi.unit }}</h3>
+          <small>Case {{ parameters.kpi.column }}  {{ parameters.kpi.operator }}</small>
+        </div>
     </div> 
     
     <div v-if="completedCases" id="chart" class="shadow">
@@ -93,6 +99,8 @@
         isLoading: false,
         cases: [],
         casesData: [],
+
+        parameters: {},
         
         performanceColumn: undefined,
         completedCases: false,
@@ -174,7 +182,7 @@
       if (shared.getLocal('logId')) {
         this.table.clickedRows = shared.getLocal(`casesListClickedRows${shared.getLocal('logId')}`) || [];
         this.isLoading = true;
-        this.getCases();
+        this.getParameters();
         this.getProjectStatus();
       }
     },
@@ -236,6 +244,29 @@
           });
         }
       },
+
+      getParameters(){
+          logsService.getParameters(shared.getLocal('logId')).then(
+            (response) => {
+              this.parameters = response.data.parameters;
+              this.getCases();
+            },
+            (error) => {
+              this.isLoading = false;
+              const resMessage =
+                (error.response &&
+                  error.response.data &&
+                  error.response.data.error) ||
+                error.message ||
+                error.toString();
+                this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    }) 
+            }
+          );
+        },
       
       getCases() {
         casesService.getCasesByLog(shared.getLocal('logId')).then(

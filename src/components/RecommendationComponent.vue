@@ -1,6 +1,6 @@
 <template>
     <div class="column">
-        <p v-if="batchRecommendations.length > 0 || current">Case status: {{ caseStatus }} complete</p>
+        <p class="bold" v-if="batchRecommendations.length > 0 || current">Case status: {{ caseStatus }} complete</p>
         <div class="recommendation" v-for="(r,index) in batchRecommendations" :key="index" @click="selectRecommendation(index)" :class="{selected: selectedRec.batchId === batchId && selectedRec.index === index}">
             <div class="row">
                 <small class="black">{{ r.recType }}</small>

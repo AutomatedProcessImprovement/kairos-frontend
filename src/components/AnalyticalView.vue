@@ -1,23 +1,20 @@
 <template>    
     <div class="analytical-view">
       <div class="recommendations-list shadow">
-        <div class="row center">
+        <div class="row content-start">
           <h4>Recommendations</h4>
-          <tooltip-component :iconSize="20" :tooltipSize="600">           
+          <tooltip-component :iconSize="25" icon="information-circle" color="blue" :tooltipSize="600">           
             <template v-slot:title>
                 <h3 class="bold">Recommendation info</h3>
             </template>
             <template v-slot:content>
               <p>How are recommendations calculated?</p>
+              <p>There are three different algorithms that prescribe recommendations.</p>
               <p class="bold">Intervention</p>
-              <p>Intervention was defined by process owner in the settings. An algorithm estimates
-                the causal effect of performing the intervention at a given point in time. It is shown
-                as ”recommended” when an estimated effect is positive (above 0).</p>
+              <p>An algorithm estimates the causal effect of performing the intervention at a given point in time. It is shown as ”recommended” when an estimated effect is positive (above 0).</p>
 
               <p class="bold">Alarm</p>
-              <p>A process owner defined in the settings the alarm threshold. When an alarm is 
-              triggered, it shows that the case is likely to lead to an undesired outcome. This
-              means that the worker should look closer into the case.</p>
+              <p>A threshold is defined in the settings for when an alarm should be triggered. When an alarm is triggered, it means that the case is likely to lead to an undesired outcome. This means that the worker should look closer into the case..</p>
 
               <p class="bold">Next activity</p>
               <p>Another algorithm predicts the next best activity in the case and displays it.</p>

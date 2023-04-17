@@ -23,7 +23,7 @@
         <div class="recommendations-list shadow">
           <div class="row center">
             <h4>Recommendations</h4>
-            <tooltip-component :iconSize="20" :tooltipSize="600">           
+            <tooltip-component :iconSize="25" icon="information-circle" color="blue" :tooltipSize="600">           
               <template v-slot:title>
                   <h3 class="bold">Recommendation info</h3>
               </template>

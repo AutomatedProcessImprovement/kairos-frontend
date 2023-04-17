@@ -7,7 +7,7 @@
     }
     .stats-card{
       display: flex;
-      align-items: center;
+      justify-content: center;
       padding: 10px;
       margin: 10px 20px 0px 0px;
       background-color: $k-white;
@@ -22,7 +22,7 @@
       }
   
       .column{
-        padding-right: 10px;
+        padding: 10px 10px 0 0;
   
         * {
           padding: 0;
@@ -38,6 +38,7 @@
           height: 20px;
           padding: 5px;
           border-radius: 5px;
+          margin-top: 10px;
         }
     }
   
@@ -71,7 +72,7 @@
           background-color: $k-blue4;
         }
         &.last-clicked-row{
-          background-color: $k-green3;
+          background-color: $k-gray2;
         }
       }
     }
