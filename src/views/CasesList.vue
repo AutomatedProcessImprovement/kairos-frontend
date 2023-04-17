@@ -159,12 +159,12 @@
               width: "5%",
               sortable: true,
             },
-            {
+          ],
+          outcomeHeader: {
               label: "Positive outcome",
               field: "outcome",
               sortable: true,
             },
-          ],
           rows: [],
           ongoingRows: [],
           completedRows:[],
@@ -382,8 +382,14 @@
           return;
         }
         this.completedCases = status;
-        if(status) this.table.rows = this.table.completedRows;
-        else this.table.rows = this.table.ongoingRows;
+        if(status) {
+          this.table.rows = this.table.completedRows;
+          this.table.headers.splice(4,0,this.table.outcomeHeader);
+        }
+        else {
+          this.table.rows = this.table.ongoingRows;
+          this.table.headers.splice(4,1);
+        }
       },
 
       getProjectStatus(){
