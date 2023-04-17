@@ -277,6 +277,7 @@
             },
           (error) => {
             this.isLoading = false;
+            if (error.response.status === 504) return;
             const resMessage =
               (error.response &&
                 error.response.data &&
