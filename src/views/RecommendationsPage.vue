@@ -1,6 +1,6 @@
 <template>
     <side-bar></side-bar>
-    <loading v-if="isLoading"></loading>
+    <loading v-if="isLoading" :startPosition="200"></loading>
     <div id="recommendations">
       <h2>Recommendations</h2>
       <div class="stats">
@@ -27,6 +27,11 @@
         @do-search="doSort"
         @row-clicked="rowClicked"
         >
+
+        <template v-slot:id="data">
+          <p>{{ formatId(data.value.id) }}</p>
+        </template>
+
         <template v-slot:performance="data">
           <p>{{ data.value.performance.value}} {{ data.value.performance.unit }}</p>
         </template>
@@ -56,6 +61,7 @@
     
       data() {
         return {
+          timer: null,
           isLoading: false,
           recommendations: [],
           formattedData: [],
@@ -92,18 +98,30 @@
             ],
             rows: [],
             sortable: {
-                order: null,
-                sort: null
+                order: shared.getLocal('recommendationsOrder'),
+                sort: shared.getLocal('recommendationsSort')
             },
         },
         };
       },
     
       mounted() {
-        if (localStorage.logId !== 'null' && localStorage.logId !== undefined) this.getParameters();
+        if (shared.getLocal('logId')) {
+          this.getParameters();
+          this.getProjectStatus();
+        }
+      },
+
+      beforeUnmount(){
+        clearInterval(this.timer);
       },
       
       methods: {
+
+        formatId(id){
+          if(!id) return null;
+          return id.slice(id.indexOf('-') + 1);
+        },
 
         rowClicked(row){
             this.$router.push({name: 'case',params: {'caseId':row.id}})
@@ -121,6 +139,9 @@
             else{
                 this.table.rows = this.table.rows.sort((a, b) => (a[order] > b[order]) ? (1 * sortOrder) : (-1 * sortOrder) );
             }
+            shared.setLocal('recommendationsOrder',order,30);
+            shared.setLocal('recommendationsSort',sort,30);
+
             this.table.sortable.order = order;
             this.table.sortable.sort = sort;
         },
@@ -148,7 +169,7 @@
         },
         
         getRecommendations() {
-          logsService.getRecommendations(localStorage.logId).then(
+          logsService.getRecommendations(shared.getLocal('logId')).then(
             (response) => {
                 this.recommendations = response.data.prescriptions;
                 if (this.recommendations.length > 0) this.formatRecommendations();
@@ -172,7 +193,7 @@
         },
         getParameters(){
             this.isLoading = true;
-          logsService.getParameters(localStorage.logId).then(
+          logsService.getParameters(shared.getLocal('logId')).then(
             (response) => {
               this.parameters = response.data.parameters;
               this.getRecommendations();
@@ -195,6 +216,7 @@
         },
     
         formatRecommendations(){
+          this.formattedData = [];
             for (const el of this.recommendations) {
                 if (!this.performanceColumn && el.case_performance.column !== null) this.performanceColumn = el.case_performance.column;
                 var caseId = el._id;
@@ -208,6 +230,7 @@
             }
             this.table.headers[1].label = this.performanceColumn;
             this.table.rows = this.formattedData;
+            this.doSort(null,null,this.table.sortable.order,this.table.sortable.sort);
             },
     
         formatRecommendation(id,performance,p){
@@ -234,7 +257,24 @@
                 details: recommendedAttr,
             }
             return data;
-        }
+        },
+
+        getProjectStatus(){
+        logsService.getProjectStatus(shared.getLocal('logId')).then(
+            (response) => {
+                let status = response.data.status;
+
+                if(status === 'SIMULATING'){
+                  this.timer = setInterval(() => {
+                      this.getRecommendations();
+                  }, 4000);
+                }
+            },
+            (error) => {
+                console.log(error);
+            }
+        ); 
+    },
     
         
       }

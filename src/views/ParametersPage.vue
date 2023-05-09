@@ -160,7 +160,8 @@
 import Loading from "@/components/LoadingComponent.vue";
 import TooltipComponent from "@/components/TooltipComponent.vue";
 import ModalComponent from "@/components/ModalComponent.vue";
-import logsService from "@/services/logs.service.js"
+import logsService from "@/services/logs.service.js";
+import shared from "@/services/shared";
 
 export  default {
     name: "ParametersPage",
@@ -173,7 +174,7 @@ export  default {
 
     data () {
         return {
-            isLoading: true,
+            isLoading: false,
             loadingText: "Please wait...",
             openModal: false,
 
@@ -210,12 +211,13 @@ export  default {
     },
 
     mounted() {
-        this.getLog();
+        if(shared.getLocal('logId')) this.getLog();
     },
 
     methods: {
         getLog() {
-            let logId = localStorage.logId;
+            this.isLoading = true;
+            let logId = shared.getLocal('logId');
  
             logsService.getLog(logId)
             .then(response => {
@@ -301,7 +303,7 @@ export  default {
                 'parameters_description': this.parametersDescription
             }    
 
-            logsService.defineParameters(localStorage.logId,data)
+            logsService.defineParameters(shared.getLocal('logId'),data)
             .then(response => {
                 console.log(response.data)
                 this.isLoading = false;

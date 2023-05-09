@@ -1,6 +1,6 @@
 <template>
     <div v-if="modalIsOpen">
-        <div class="overlay opaque">
+        <div class="overlay opaque loading-overlay" :style="overlayStyle">
             <div id="loading">
                 <ion-icon class="rotate" name="reload-circle"></ion-icon>
                 {{text}}
@@ -21,6 +21,19 @@ export default {
             type: String,
             default: 'Please wait...'
         },
+        startPosition: {
+            type: Number,
+            default: 0
+        },
+    },
+
+    computed:{
+        overlayStyle(){
+            return{
+                left: this.startPosition,
+                width: (window.innerWidth - this.startPosition) + "px",
+            }
+        }
     },
 
     data: function () {

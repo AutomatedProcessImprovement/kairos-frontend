@@ -36,25 +36,25 @@ cytoscape.use( dagre );
                       edgeClass: 'interventionEdge',
                       isValidNode: (recommendation,columnsDefinition) =>
                         columnsDefinition[recommendation.output.treatment[0][0].column] === 'ACTIVITY' &&
-                        recommendation.output.treatment[0][0].operator === 'EQUAL'
+                        recommendation.output.treatment[0][0].operator === 'EQUAL' && recommendation.output.cate > 0
                     }
                   }
           };
         },
 
         mounted(){
-          this.$emit('loading');      
           this.createDiagram();
         },
 
         watch: {
-          cy: function(){
-            this.displayDiagram();
+          currentCase(){
+            this.createNodes();
           }
         },
         methods: {
           displayDiagram(){
             this.cy.layout({
+              fit:false,
               name:'dagre',
               rankDir: 'LR', 
               align: 'DR',
@@ -62,12 +62,13 @@ cytoscape.use( dagre );
           },
 
           createDiagram(){
+            // this.$emit('loading');      
+
             var width = 120;
             var height = 60;
             var lineWidth = 2;
             var cy = cytoscape({
                 container: document.getElementById('cy'),
-
                 style: [
                 
                   {
@@ -178,9 +179,14 @@ cytoscape.use( dagre );
                   },
               ],
             });
+            this.cy = cy;
+            this.createNodes();
+          },
 
+          createNodes(){
             const activities = this.currentCase.activities;
             const l = activities.length;
+            
             var elems = [];
             
             elems.push({
@@ -276,12 +282,14 @@ cytoscape.use( dagre );
                 classes: 'activityEdge'
               }); 
             }
-            this.elems = elems;
-            cy.add(elems);
-            this.cy = cy;
-                            
+
+            if(this.elems.length > 0){
+              this.cy.elements().remove();
             }
-                    
+            this.cy.add(elems);
+            this.elems = elems; 
+            this.displayDiagram();
+          }      
         }
       };
     </script>

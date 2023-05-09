@@ -35,4 +35,45 @@ export default{
           return acc;
         }, {});
       },
+
+    setLocal(key, value, ttl = 1) {
+        ttl = ttl * 86400000;
+        const now = new Date()
+        
+        const item = {
+          value: value,
+          expiry: now.getTime() + ttl,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+    
+    getLocal(key){
+      const itemStr = localStorage.getItem(key);
+
+      if (!itemStr) {
+        return null;
+      }
+      var item;
+      try{
+        item = JSON.parse(itemStr);
+      }catch(SyntaxError){
+        return null;
+      }
+      const now = new Date()
+      if (now.getTime() > item.expiry) {
+
+        localStorage.removeItem(key);
+        return null;
+      }
+      return item.value;
+    },
+
+    removeLocal(key){
+      const itemStr = localStorage.getItem(key)
+
+      if (itemStr) {
+        localStorage.removeItem(key)
+      }
+      
+    }
 }

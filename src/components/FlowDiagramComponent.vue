@@ -15,32 +15,32 @@ export default{
 
     name: 'vue-cytoscape',
         props: {
-          lastActivity: Object, 
-          oldActivities: Array,
+          currentCase: Object,
           caseCompleted: Boolean,
           parameters: Object
         },
     
         data(){
             return{
-                cy: null
+              cy: null,
+              elems: [],
             }
         },
 
         mounted(){
-          this.$emit('loading');      
           this.createDiagram();
         },
     
         watch: {
-          cy: function(){
-            this.displayDiagram();
+          currentCase(){
+            this.createNodes();
           }
         },
 
     methods: {
           displayDiagram(){
             this.cy.layout({
+                fit:false,
                 name:'dagre',
                 rankDir: 'LR', 
                 align: 'DR',
@@ -49,6 +49,7 @@ export default{
           },
 
           createDiagram(){
+
             var width = 15;
             var height = 15;
             var lineWidth = 1;
@@ -105,81 +106,94 @@ export default{
                 },
               ],
             });
-            let activities = JSON.parse(JSON.stringify(this.oldActivities));
-            activities.push(this.lastActivity);
-            // activities = activities.slice(-3);
-            const l = activities.length;
-            var elems = [];
-            var lastNodeId = 'an'+(l-1)
+            
+            this.cy = cy;
+            this.createNodes();
+                            
+            },
 
-            for (let i = 0; i < l; i++) {
-              const activity = activities[i];
-              let content = activity[this.parameters.columnsDefinitionReverse['ACTIVITY']]
+            createNodes(){
+              let activities = this.currentCase.activities;
+              // activities = activities.slice(-3); // display only last 3 completed activities
+              const l = activities.length;
+              
+              var elems = [];
+              var lastNodeId = 'an'+(l-1)
 
-              elems.push({
-                group: "nodes",
-                data: {
-                  id: "an"+ i, 
-                  label: content,
-                },
-                classes: 'completedActivity'
-              });
+              for (let i = 0; i < l; i++) {
+                const activity = activities[i];
+                let content = activity[this.parameters.columnsDefinitionReverse['ACTIVITY']]
 
-              if(i > 0){
-                  elems.push({
+                elems.push({
+                  group: "nodes",
+                  data: {
+                    id: "an"+ i, 
+                    label: content,
+                  },
+                  classes: 'completedActivity'
+                });
+
+                if(i > 0){
+                    elems.push({
+                      group: "edges",
+                      data: {
+                        id: "ae" + i,
+                        source: "an" + (i-1),
+                        target: "an" + i,
+                      },
+                    });
+                }
+              }
+              let lastRecommendations = activities[l-1].prescriptions;
+              if (lastRecommendations){
+                  let nextActivityRecommendation = lastRecommendations.filter(r => r.type === 'NEXT_ACTIVITY');
+                  if (nextActivityRecommendation.length > 0){
+                    let content = nextActivityRecommendation[0].output;
+                    elems.push({
+                    group: "nodes",
+                    data: {
+                      id: "rn", 
+                      label: content,
+                    },
+                    classes: 'nextActivity'
+                  });
+    
+                    elems.push({
                     group: "edges",
                     data: {
-                      id: "ae" + i,
-                      source: "an" + (i-1),
-                      target: "an" + i,
+                        id: "re",
+                        source: "an" + (l-1),
+                        target: "rn",
                     },
+                    });
+                    lastNodeId = 'rn';
+                }
+              }
+
+              if(elems.length > 0 && !this.currentCase.case_completed){
+                  elems.push({
+                  group: "nodes",
+                  data: {
+                      id: "nn", 
+                      },
+                  });
+
+              elems.push({
+                  group: "edges",
+                  data: {
+                      id: "ne",
+                      source: lastNodeId,
+                      target: "nn",
+                      },
                   });
               }
-            }
-            let lastRecommendations = JSON.parse(JSON.stringify(this.lastActivity.prescriptions));
-            if (lastRecommendations.length > 0){
-                let content = lastRecommendations[0].output;
-                elems.push({
-                group: "nodes",
-                data: {
-                  id: "rn", 
-                  label: content,
-                },
-                classes: 'nextActivity'
-              });
 
-                elems.push({
-                group: "edges",
-                data: {
-                    id: "re",
-                    source: "an" + (l-1),
-                    target: "rn",
-                },
-                });
-                lastNodeId = 'rn';
-            }
-
-            if(elems.length > 0 && !this.caseCompleted){
-                elems.push({
-                group: "nodes",
-                data: {
-                    id: "nn", 
-                    },
-                });
-
-            elems.push({
-                group: "edges",
-                data: {
-                    id: "ne",
-                    source: lastNodeId,
-                    target: "nn",
-                    },
-                });
-            }
-
-            cy.add(elems);
-            this.cy = cy;
-                            
+              if(this.elems.length > 0){
+                this.cy.elements().remove();
+              }
+              this.cy.add(elems);
+              this.elems = elems; 
+              this.displayDiagram();
             }
                     
         }

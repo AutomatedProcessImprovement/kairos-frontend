@@ -1,6 +1,6 @@
 <template>
     <div class="column">
-        <p>Case status: {{ caseStatus }} complete</p>
+        <p class="bold" v-if="batchRecommendations.length > 0 || current">Case status: {{ caseStatus }} complete</p>
         <div class="recommendation" v-for="(r,index) in batchRecommendations" :key="index" @click="selectRecommendation(index)" :class="{selected: selectedRec.batchId === batchId && selectedRec.index === index}">
             <div class="row">
                 <small class="black">{{ r.recType }}</small>
@@ -9,7 +9,7 @@
 
             <p>{{ r.rec }}</p>
 
-            <p :class="['bold',r.recommended && current ? 'green' : 'warning']">{{ r.recommended && current ? 'Recommended now' : 'Not recommended now' }}</p>
+            <p :class="['bold',r.recommended ? 'green' : 'warning']">{{ r.recommended ? 'Recommended now' : 'Not recommended now' }}</p>
             
             <small>{{r.metric}}</small>
             <div :class="['recommendation-status','bold',r.status === 'accepted' ? 'green' : 'warning']">{{ r.status }}</div>
@@ -32,20 +32,14 @@ export default{
 
     data(){
         return{
-            batchRecommendations: [],
             caseStatus: null,
             batchId: null,
         }
     },
 
-    mounted(){
-        this.formatRecommendations();
-    },
-
-    watch:{
-        parameters: function(){
-            console.log(this.parameters);
-            this.formatRecommendations();
+    computed:{
+        batchRecommendations(){
+            return this.formatRecommendations();
         }
     },
 
@@ -55,9 +49,10 @@ export default{
         },
 
         formatRecommendations() {
+            let temp = [];
             this.caseStatus = this.batch[this.parameters.columnsDefinitionReverse['ACTIVITY']];
             this.batchId = this.batch.event_id;
-            if (!this.batch.prescriptions) return;
+            if (!this.batch.prescriptions) return [];
 
             for (let i = 0; i < this.batch.prescriptions.length; i++) {
                 let p = this.batch.prescriptions[i];
@@ -94,8 +89,9 @@ export default{
                         recommended: p.output.cate > 0 ? true : false
                     }
                 }
-                this.batchRecommendations.push(data);
+                temp.push(data);
             }
+            return temp;
         },
 
     }

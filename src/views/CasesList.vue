@@ -1,6 +1,6 @@
 <template>
   <side-bar></side-bar>
-  <loading v-if="isLoading"></loading>
+  <loading v-if="isLoading" :startPosition="200"></loading>
   <div id="cases">
     <h2>Cases</h2>
     <div class="stats">
@@ -23,6 +23,12 @@
         </div>
         <ion-icon name="albums"></ion-icon>
       </div>
+
+      <div v-if="parameters.kpi" class="stats-card column">
+          <p>KPI</p>
+          <h3 class="blue">{{ parameters.kpi.value }} {{ parameters.kpi.unit }}</h3>
+          <small>Case {{ parameters.kpi.column }}  {{ parameters.kpi.operator }}</small>
+        </div>
     </div> 
     
     <div v-if="completedCases" id="chart" class="shadow">
@@ -36,11 +42,15 @@
       :is-slot-mode="true"
       :columns="table.headers"
       :rows="table.rows"
+      :rowClasses="getRowClasses"
       :total="table.rows.length"
       :sortable="table.sortable"
       @do-search="doSort"
       @row-clicked="rowClicked"
       >
+      <template v-slot:id="data">
+        <p>{{ formatId(data.value.id) }}</p>
+      </template>
       <template v-slot:recommendations="data">
         <div class="case-recommendations" :class="[data.value.recommendations ? 'available' : 'unavailable']"> 
           {{ data.value.recommendations ? "recommendations available" : "no new recommendations" }}
@@ -64,6 +74,7 @@
   <script>
   
   import casesService from "@/services/cases.service";
+  import logsService from "@/services/logs.service";
   import SideBar from '@/components/SideBar.vue';
   import Loading from "@/components/LoadingComponent.vue";
   import TableLite from "vue3-table-lite";
@@ -82,9 +93,14 @@
   
     data() {
       return {
+        timer: null,
+        logStatus: 'NULL',
+
         isLoading: false,
         cases: [],
         casesData: [],
+
+        parameters: {},
         
         performanceColumn: undefined,
         completedCases: false,
@@ -92,7 +108,11 @@
         pieChart: {
           series: [0, 0, 1],
           chartOptions: {
+            colors: ['#17ad37','#F5222D','#a0a3a5'],
             chart: {
+              animations:{
+                enabled: false,
+              },
               width: 380,
               type: 'pie',
             },
@@ -139,38 +159,64 @@
               width: "5%",
               sortable: true,
             },
-            {
+          ],
+          outcomeHeader: {
               label: "Positive outcome",
               field: "outcome",
               sortable: true,
             },
-          ],
           rows: [],
           ongoingRows: [],
           completedRows:[],
           sortable: {
-            order: null,
-            sort: null
+            order: shared.getLocal('casesListOrder'),
+            sort:  shared.getLocal('casesListSort')
           },
+          clickedRows: [],
         },
-
 
       };
     },
   
     mounted() {
-      if (localStorage.logId !== 'null' && localStorage.logId !== undefined) {
-        this.getCases();
+      if (shared.getLocal('logId')) {
+        this.table.clickedRows = shared.getLocal(`casesListClickedRows${shared.getLocal('logId')}`) || [];
+        this.isLoading = true;
+        this.getParameters();
+        this.getProjectStatus();
       }
+    },
+
+    beforeUnmount(){
+      clearInterval(this.timer);
     },
     
     methods: {
+      getRowClasses(row){
+        let index = this.table.clickedRows.indexOf(row.id);
+        if (index < 0) return '';
+        if (index === 0) return 'last-clicked-row';
+        return 'clicked-row';
+      },
+
+      formatId(id){
+        if(!id) return null;
+        return id.slice(id.indexOf('-') + 1);
+      },
   
       rowClicked(row){
-        this.$router.push({name: 'case',params: {'caseId':row.id}})
+        let index = this.table.clickedRows.indexOf(row.id);
+        if(index > -1) {
+          this.table.clickedRows.splice(index, 1);
+        }
+        this.table.clickedRows.unshift(row.id);
+
+        shared.setLocal(`casesListClickedRows${shared.getLocal('logId')}`,this.table.clickedRows,1);
+        this.$router.push({name: 'case',params: {'caseId': row.id}})
       },
   
       doSort(offset,limit,order,sort){
+        if (order === null || sort === null) return;
         const sortOrder = sort === 'asc' ? 1 : -1;
         if (order === "performance" && this.performanceColumn === "DURATION"){
           this.table.rows = this.table.rows.sort((a, b) => 
@@ -182,6 +228,9 @@
         else{
           this.table.rows = this.table.rows.sort((a, b) => (a[order] > b[order]) ? (1 * sortOrder) : (-1 * sortOrder) );
         }
+        shared.setLocal('casesListOrder',order,5);
+        shared.setLocal('casesListSort',sort,5);
+
         this.table.sortable.order = order;
         this.table.sortable.sort = sort;
       },
@@ -195,10 +244,32 @@
           });
         }
       },
+
+      getParameters(){
+          logsService.getParameters(shared.getLocal('logId')).then(
+            (response) => {
+              this.parameters = response.data.parameters;
+              this.getCases();
+            },
+            (error) => {
+              this.isLoading = false;
+              const resMessage =
+                (error.response &&
+                  error.response.data &&
+                  error.response.data.error) ||
+                error.message ||
+                error.toString();
+                this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    }) 
+            }
+          );
+        },
       
       getCases() {
-        this.isLoading = true;
-        casesService.getCasesByLog(localStorage.logId).then(
+        casesService.getCasesByLog(shared.getLocal('logId')).then(
           (response) => {
             this.cases = response.data.cases;
             if (this.cases.length > 0) this.formatCases();
@@ -206,6 +277,7 @@
             },
           (error) => {
             this.isLoading = false;
+            if (error.response.status === 504) return;
             const resMessage =
               (error.response &&
                 error.response.data &&
@@ -222,15 +294,28 @@
       },
   
       formatCases(){
-        let data = {};
         
+        if (this.casesData.length > 0){
+          this.casesData = [];
+          this.table.ongoingRows = [];
+          this.table.completedRows = [];
+        } else{
+          Object.keys(this.cases[0].case_attributes).forEach(k => {
+          this.table.headers.push({
+            label:k,
+            field:k,
+            sortable:true
+          });
+        })
+      }
+      
+      let data = {};
         for (const el of this.cases) {
           data = this.formatCase(el);
           this.casesData.push(data);
         }  
-        
         this.table.headers[2].label = this.performanceColumn;
-
+        
         this.casesData.reduce((acc, row) => {
           if (row.completed === false) {
             acc[0].push(row);
@@ -240,18 +325,15 @@
           return acc;
         }, [this.table.ongoingRows, this.table.completedRows]);
 
-        this.table.rows = this.table.ongoingRows;
-  
-        Object.keys(this.cases[0].case_attributes).forEach(k => {
-          this.table.headers.push({
-            label:k,
-            field:k,
-            sortable:true
-          });
-        })
+        if(this.completedCases){
+          this.table.rows = this.table.completedRows;
+        } else{
+          this.table.rows = this.table.ongoingRows;
+        }
+        this.doSort(null,null,this.table.sortable.order,this.table.sortable.sort);
 
         this.createPieChart();
-        
+
         this.cases = null;
         this.isLoading = false;
       },
@@ -301,9 +383,32 @@
           return;
         }
         this.completedCases = status;
-        if(status) this.table.rows = this.table.completedRows;
-        else this.table.rows = this.table.ongoingRows;
+        if(status) {
+          this.table.rows = this.table.completedRows;
+          this.table.headers.splice(4,0,this.table.outcomeHeader);
+        }
+        else {
+          this.table.rows = this.table.ongoingRows;
+          this.table.headers.splice(4,1);
+        }
       },
+
+      getProjectStatus(){
+        logsService.getProjectStatus(shared.getLocal('logId')).then(
+            (response) => {
+                let status = response.data.status;
+
+                if(status === 'SIMULATING'){
+                  this.timer = setInterval(() => {
+                      this.getCases();
+                  }, 5000);
+                }
+            },
+            (error) => {
+                console.log(error);
+            }
+        ); 
+    },
     }
   
   }
