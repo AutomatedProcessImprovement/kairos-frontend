@@ -59,11 +59,27 @@ cytoscape.use( dagre );
         methods: {
           displayDiagram(){
             this.cy.layout({
-              fit:false,
+              fit: false,
               name:'dagre',
               rankDir: 'LR', 
               align: 'DR',
             }).run()
+            // this.panToElement('.selectedNode');
+          },
+
+          panToElement(el){
+            let selectedNodes = this.cy.nodes(el);
+            if (selectedNodes.length > 0){
+              let selectedNode = selectedNodes[0];
+              let offset = -500;
+              console.log(selectedNode);
+              this.cy.animate({
+                pan:{
+                  x: document.querySelector('.recommendation-details').offsetWidth - selectedNode.position('x') + offset ,
+                  y: document.querySelector('.recommendation-details').offsetHeight - selectedNode.position('y') + offset,
+                }
+              })
+            }
           },
 
           togglePastRecommendations(){
