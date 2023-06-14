@@ -102,6 +102,7 @@ cytoscape.use( dagre );
             var lineWidth = 2;
             var cy = cytoscape({
                 container: document.getElementById('cy'),
+                wheelSensitivity: 0.6,
                 style: [
                 
                   {
