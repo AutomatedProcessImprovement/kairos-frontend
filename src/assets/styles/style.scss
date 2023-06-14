@@ -258,3 +258,14 @@ input::placeholder{
     cursor: auto;
   }
 }
+
+.toggle-container{
+  &:focus{
+      outline: none;
+      box-shadow: none;
+  }
+  .toggle-on{
+      background: $k-blue;
+      border-color: $k-blue;
+  }
+}

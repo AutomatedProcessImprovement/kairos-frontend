@@ -17,6 +17,7 @@ cytoscape.use( dagre );
           parameters: Object,
           currentCase: Object, 
           selectedRec: Object,
+          showPastRecommendations: Boolean,
         },
 
         data: function() {
@@ -49,8 +50,12 @@ cytoscape.use( dagre );
         watch: {
           currentCase(){
             this.createNodes();
+          },
+          showPastRecommendations(){
+            this.togglePastRecommendations();
           }
         },
+
         methods: {
           displayDiagram(){
             this.cy.layout({
@@ -59,6 +64,18 @@ cytoscape.use( dagre );
               rankDir: 'LR', 
               align: 'DR',
             }).run()
+          },
+
+          togglePastRecommendations(){
+            let displayStyle = this.showPastRecommendations ? 'element' : 'none';
+            var activityNodes = this.cy.nodes('.activity');
+            activityNodes.forEach(activityNode => {
+              activityNode.outgoers().nodes().forEach(outgoingNode => {
+                if(!outgoingNode.hasClass('selectedNode') && !outgoingNode.hasClass('activity')){
+                  outgoingNode.style('display',displayStyle);
+                }
+              })
+            });
           },
 
           createDiagram(){
