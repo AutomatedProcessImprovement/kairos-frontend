@@ -38,12 +38,11 @@
     
     <div class="cases-table">
       <table-lite
-      :is-hide-paging="true"
       :is-slot-mode="true"
       :columns="table.headers"
       :rows="table.rows"
       :rowClasses="getRowClasses"
-      :total="table.rows.length"
+      :total="table.totalRecordCount"
       :sortable="table.sortable"
       @do-search="doSort"
       @row-clicked="rowClicked"
@@ -68,6 +67,8 @@
     </table-lite>
       
     </div>
+
+    <test-table/>
     </div>
   </template>
   
@@ -134,6 +135,7 @@
 
         table: {
           isLoading: false,
+          isReSearch: false,
           headers: [
             {
               label: 'Case ID',
@@ -172,6 +174,7 @@
             order: shared.getLocal('casesListOrder'),
             sort:  shared.getLocal('casesListSort')
           },
+          totalRecordCount: 0,
           clickedRows: [],
         },
 
@@ -216,7 +219,12 @@
       },
   
       doSort(offset,limit,order,sort){
+        limit = 3;
         if (order === null || sort === null) return;
+        this.offsetRows(offset,3);
+        if (order === this.table.sortable.order && sort === this.table.sortable.sort) return;
+        this.table.isReSearch = offset == undefined ? true : false;
+
         const sortOrder = sort === 'asc' ? 1 : -1;
         if (order === "performance" && this.performanceColumn === "DURATION"){
           this.table.rows = this.table.rows.sort((a, b) => 
@@ -230,9 +238,23 @@
         }
         shared.setLocal('casesListOrder',order,5);
         shared.setLocal('casesListSort',sort,5);
-
+        
         this.table.sortable.order = order;
         this.table.sortable.sort = sort;
+      },
+
+      offsetRows(offset,limit){
+        let tempRows = [];
+        let tempCount = 0;
+        if(this.completedCases){
+          tempRows = this.table.completedRows.slice(offset,offset+limit);
+          tempCount = this.table.completedRows.length;
+        } else{
+          tempRows = this.table.ongoingRows.slice(offset,offset+limit);
+          tempCount = this.table.ongoingRows.length;
+        }
+        this.table.rows = tempRows;
+        this.table.totalRecordCount = tempCount;
       },
 
       createPieChart(){
@@ -325,12 +347,7 @@
           return acc;
         }, [this.table.ongoingRows, this.table.completedRows]);
 
-        if(this.completedCases){
-          this.table.rows = this.table.completedRows;
-        } else{
-          this.table.rows = this.table.ongoingRows;
-        }
-        this.doSort(null,null,this.table.sortable.order,this.table.sortable.sort);
+        this.doSort(0,3,this.table.sortable.order,this.table.sortable.sort);
 
         this.createPieChart();
 
@@ -384,13 +401,12 @@
         }
         this.completedCases = status;
         if(status) {
-          this.table.rows = this.table.completedRows;
           this.table.headers.splice(4,0,this.table.outcomeHeader);
         }
         else {
-          this.table.rows = this.table.ongoingRows;
           this.table.headers.splice(4,1);
         }
+        this.doSort(0,3,this.table.sortable.order,this.table.sortable.sort);
       },
 
       getProjectStatus(){
