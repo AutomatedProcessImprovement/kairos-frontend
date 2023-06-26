@@ -38,14 +38,17 @@
     
     <div class="cases-table">
       <table-lite
+      :is-loading="table.isLoading"
+      :page-size="table.pageSize"
       :is-slot-mode="true"
       :columns="table.headers"
       :rows="table.rows"
       :rowClasses="getRowClasses"
       :total="table.totalRecordCount"
       :sortable="table.sortable"
-      @do-search="doSort"
+      @do-search="doSearch"
       @row-clicked="rowClicked"
+      @is-finished="table.isLoading = false"
       >
       <template v-slot:id="data">
         <p>{{ formatId(data.value.id) }}</p>
@@ -81,7 +84,7 @@
   import TableLite from "vue3-table-lite";
   import shared from '@/services/shared';
   import VueApexCharts from 'vue3-apexcharts';
-  
+
   export default {
     name: 'CasesList',
   
@@ -132,8 +135,8 @@
           },
         },
 
-
         table: {
+          pageSize: 10,
           isLoading: false,
           isReSearch: false,
           headers: [
@@ -177,7 +180,6 @@
           totalRecordCount: 0,
           clickedRows: [],
         },
-
       };
     },
   
@@ -218,43 +220,46 @@
         this.$router.push({name: 'case',params: {'caseId': row.id}})
       },
   
-      doSort(offset,limit,order,sort){
-        limit = 3;
+      doSearch(offset,limit,order,sort,doSort=false,isLoading=true){
         if (order === null || sort === null) return;
-        this.offsetRows(offset,3);
-        if (order === this.table.sortable.order && sort === this.table.sortable.sort) return;
-        this.table.isReSearch = offset == undefined ? true : false;
 
-        const sortOrder = sort === 'asc' ? 1 : -1;
-        if (order === "performance" && this.performanceColumn === "DURATION"){
-          this.table.rows = this.table.rows.sort((a, b) => 
-          (shared.parseDuration(a[order]) > shared.parseDuration(b[order])) ? (1 * sortOrder) : (-1 * sortOrder) );
-        } else if (order === "performance"){
-          this.table.rows = this.table.rows.sort((a, b) => 
-          (a[order].value > b[order].value) ? (1 * sortOrder) : (-1 * sortOrder) );
-        }
-        else{
-          this.table.rows = this.table.rows.sort((a, b) => (a[order] > b[order]) ? (1 * sortOrder) : (-1 * sortOrder) );
-        }
-        shared.setLocal('casesListOrder',order,5);
-        shared.setLocal('casesListSort',sort,5);
-        
-        this.table.sortable.order = order;
-        this.table.sortable.sort = sort;
-      },
-
-      offsetRows(offset,limit){
-        let tempRows = [];
-        let tempCount = 0;
-        if(this.completedCases){
-          tempRows = this.table.completedRows.slice(offset,offset+limit);
-          tempCount = this.table.completedRows.length;
-        } else{
-          tempRows = this.table.ongoingRows.slice(offset,offset+limit);
-          tempCount = this.table.ongoingRows.length;
-        }
-        this.table.rows = tempRows;
-        this.table.totalRecordCount = tempCount;
+        this.table.isLoading = isLoading;
+        setTimeout(() => {
+          let tempRows = [];
+          let tempCount = 0;
+          if(this.completedCases){
+            tempRows = this.table.completedRows;
+            tempCount = this.table.completedRows.length;
+          } else{
+            tempRows = this.table.ongoingRows;
+            tempCount = this.table.ongoingRows.length;
+          }
+          
+          if(order !== this.table.sortable.order || sort !== this.table.sortable.sort || doSort){
+            const sortOrder = sort === 'asc' ? 1 : -1;
+            if (order === "performance" && this.performanceColumn === "DURATION"){
+              tempRows = tempRows.sort((a, b) => 
+              (shared.parseDuration(a[order]) > shared.parseDuration(b[order])) ? (1 * sortOrder) : (-1 * sortOrder));
+            } else if (order === "performance"){
+              tempRows = tempRows.sort((a, b) => 
+              (a[order].value > b[order].value) ? (1 * sortOrder) : (-1 * sortOrder));
+            }
+            else{
+              tempRows = tempRows.sort((a, b) => (a[order] > b[order]) ? (1 * sortOrder) : (-1 * sortOrder));
+            }
+          }
+          this.table.rows = tempRows.slice(offset,offset+limit);
+          this.table.totalRecordCount = tempCount;
+          tempRows = null;
+          tempCount = null;
+          
+          shared.setLocal('casesListOrder',order,5);
+          shared.setLocal('casesListSort',sort,5);
+          
+          this.table.sortable.order = order;
+          this.table.sortable.sort = sort;
+          
+        }, 600);
       },
 
       createPieChart(){
@@ -316,8 +321,9 @@
       },
   
       formatCases(){
-        
+        let isLoading = true;
         if (this.casesData.length > 0){
+          isLoading = false;
           this.casesData = [];
           this.table.ongoingRows = [];
           this.table.completedRows = [];
@@ -347,7 +353,7 @@
           return acc;
         }, [this.table.ongoingRows, this.table.completedRows]);
 
-        this.doSort(0,3,this.table.sortable.order,this.table.sortable.sort);
+        this.doSearch(0,this.table.pageSize,this.table.sortable.order,this.table.sortable.sort,true,isLoading);
 
         this.createPieChart();
 
@@ -406,7 +412,7 @@
         else {
           this.table.headers.splice(4,1);
         }
-        this.doSort(0,3,this.table.sortable.order,this.table.sortable.sort);
+        this.doSearch(0,this.table.pageSize,this.table.sortable.order,this.table.sortable.sort,true);
       },
 
       getProjectStatus(){

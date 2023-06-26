@@ -273,3 +273,13 @@ input::placeholder{
 .vtl-paging{
   padding: 10px;
 }
+
+.vtl-loading-mask{
+  background-color: rgba($color: #ffffff, $alpha: 0.6) !important;
+  border-radius: 10px;
+  span{
+    color: $k-blue !important;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+}
