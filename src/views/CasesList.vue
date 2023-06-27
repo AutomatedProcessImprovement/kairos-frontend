@@ -4,7 +4,7 @@
   <div id="cases">
     <h2>Cases</h2>
     <div class="stats">
-      <div @click="filterCases(false)" :class="['stats-card','pointer',{'selected': completedCases === false}]">
+      <div @click="switchCases(false)" :class="['stats-card','pointer',{'selected': completedCases === false}]">
         <div class="column">
           <small>Ongoing cases</small>
           <div class="row">
@@ -14,7 +14,7 @@
         <ion-icon name="albums"></ion-icon>
       </div>
   
-      <div @click="filterCases(true)" :class="['stats-card','pointer',{'selected': completedCases}]">
+      <div @click="switchCases(true)" :class="['stats-card','pointer',{'selected': completedCases}]">
         <div class="column">
           <small> Completed cases</small>
           <div class="row">
@@ -36,6 +36,50 @@
       <apexchart type="pie" width="380" :options="pieChart.chartOptions" :series="pieChart.series"></apexchart>
     </div>
     
+    <div class="cases-filter column">
+      <div @click="filterActive = !filterActive" class="filter-toggle shadow">Filters <ion-icon :class="{'active' : filterActive}" name="chevron-up"></ion-icon></div>
+      
+      <div class="filters column shadow" :class="{'active' : filterActive}">
+        <div class="row" >
+  
+          <div class="filter-component">
+            <h4 class="blue">Recommendations</h4>
+            <select v-model="filters.recommendations">
+              <option :value=true>Available</option>
+              <option :value=false>Unavailable</option>
+            </select>
+          </div>
+          <div class="filter-component">
+            <h4 class="blue">Intervened</h4>
+            <select v-model="filters.intervened">
+              <option :value="true">Yes</option>
+              <option :value="false">No</option>
+            </select>
+          </div>
+          <div v-if="performanceColumn === 'DURATION'" class="filter-component">
+            <h4 class="blue">Duration</h4>
+            <div class="filter-duration">
+              <Slider
+                v-model="filters.duration.value"
+                :max="60"
+                showTooltip="focus"
+                tooltipPosition="bottom"
+            ></Slider>
+              <select v-model="filters.duration.unit">
+                <option>Weeks</option>
+                <option>Days</option>
+                <option>Hours</option>
+                <option>Minutes</option>
+                <option>Seconds</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <button @click="filterCases" class="btn-blue">filter</button>
+      </div>
+      
+    </div>
     <div class="cases-table">
       <table-lite
       :is-loading="table.isLoading"
@@ -70,8 +114,6 @@
     </table-lite>
       
     </div>
-
-    <test-table/>
     </div>
   </template>
   
@@ -84,6 +126,7 @@
   import TableLite from "vue3-table-lite";
   import shared from '@/services/shared';
   import VueApexCharts from 'vue3-apexcharts';
+  import Slider from '@vueform/slider'
 
   export default {
     name: 'CasesList',
@@ -93,6 +136,7 @@
           Loading,
           TableLite,
           apexchart: VueApexCharts,
+          Slider
         },
   
     data() {
@@ -108,6 +152,17 @@
         
         performanceColumn: undefined,
         completedCases: false,
+
+        filterActive: false,
+
+        filters:{
+          recommendations: null,
+          intervened: null,
+          duration: {
+            value: [0,30],
+            unit: null
+          }
+        },
 
         pieChart: {
           series: [0, 0, 1],
@@ -138,7 +193,6 @@
         table: {
           pageSize: 10,
           isLoading: false,
-          isReSearch: false,
           headers: [
             {
               label: 'Case ID',
@@ -225,41 +279,49 @@
 
         this.table.isLoading = isLoading;
         setTimeout(() => {
-          let tempRows = [];
-          let tempCount = 0;
-          if(this.completedCases){
-            tempRows = this.table.completedRows;
-            tempCount = this.table.completedRows.length;
-          } else{
-            tempRows = this.table.ongoingRows;
-            tempCount = this.table.ongoingRows.length;
-          }
+          let tempRows;
           
-          if(order !== this.table.sortable.order || sort !== this.table.sortable.sort || doSort){
-            const sortOrder = sort === 'asc' ? 1 : -1;
-            if (order === "performance" && this.performanceColumn === "DURATION"){
-              tempRows = tempRows.sort((a, b) => 
-              (shared.parseDuration(a[order]) > shared.parseDuration(b[order])) ? (1 * sortOrder) : (-1 * sortOrder));
-            } else if (order === "performance"){
-              tempRows = tempRows.sort((a, b) => 
-              (a[order].value > b[order].value) ? (1 * sortOrder) : (-1 * sortOrder));
-            }
-            else{
-              tempRows = tempRows.sort((a, b) => (a[order] > b[order]) ? (1 * sortOrder) : (-1 * sortOrder));
-            }
-          }
-          this.table.rows = tempRows.slice(offset,offset+limit);
-          this.table.totalRecordCount = tempCount;
-          tempRows = null;
-          tempCount = null;
-          
-          shared.setLocal('casesListOrder',order,5);
-          shared.setLocal('casesListSort',sort,5);
+          doSort = order !== this.table.sortable.order || sort !== this.table.sortable.sort || doSort;
           
           this.table.sortable.order = order;
           this.table.sortable.sort = sort;
+
+          if (this.completedCases) {
+            tempRows = doSort ? this.sortCases(this.table.completedRows) : this.table.completedRows;
+          } else {
+            tempRows = doSort ? this.sortCases(this.table.ongoingRows) : this.table.ongoingRows;
+          }
+
+          if (this.completedCases) this.table.completedRows = tempRows;
+          else this.table.ongoingRows = tempRows;
+
+          this.table.rows = tempRows.slice(offset,offset+limit);
+          this.table.totalRecordCount = tempRows.length;
+          tempRows = null;
+
+          shared.setLocal('casesListOrder',order,5);
+          shared.setLocal('casesListSort',sort,5);
+          shared.setLocal('casesListOffset',offset,5);
+          shared.setLocal('casesListLimit',limit,5);
           
         }, 600);
+      },
+
+      sortCases(rows){
+        let sort = this.table.sortable.sort;
+        let order = this.table.sortable.order;
+        const sortOrder = sort === 'asc' ? 1 : -1;
+        if (order === "performance" && this.performanceColumn === "DURATION"){
+          rows = rows.sort((a, b) => 
+          (shared.parseDuration(a[order]) > shared.parseDuration(b[order])) ? (1 * sortOrder) : (-1 * sortOrder));
+        } else if (order === "performance"){
+          rows = rows.sort((a, b) => 
+          (a[order].value > b[order].value) ? (1 * sortOrder) : (-1 * sortOrder));
+        }
+        else{
+          rows = rows.sort((a, b) => (a[order] > b[order]) ? (1 * sortOrder) : (-1 * sortOrder));
+        }
+        return rows;
       },
 
       createPieChart(){
@@ -401,7 +463,7 @@
           return data;
       },
   
-      filterCases(status){
+      switchCases(status){
         if (this.completedCases === status){
           return;
         }
@@ -431,6 +493,25 @@
             }
         ); 
     },
+
+      filterCases(){
+
+        let tempRows = this.completedCases ? this.table.completedRows : this.table.ongoingRows;
+
+        if(this.filters.recommendations !== null){
+          tempRows = tempRows.filter(r => r.recommendations === this.filters.recommendations);
+        }
+        if(this.filters.intervened !== null){
+          tempRows = tempRows.filter(r => r.intervened === this.filters.intervened);
+        }
+        this.table.isLoading = true;
+        tempRows = this.sortCases(tempRows);
+        this.table.rows = tempRows.slice(shared.getLocal('casesListOffset'),shared.getLocal('casesListOffset')+shared.getLocal('casesListLimit'));
+        this.table.totalRecordCount = tempRows.length;
+        tempRows = null;
+        this.table.isLoading = false;
+      }
+
     }
   
   }

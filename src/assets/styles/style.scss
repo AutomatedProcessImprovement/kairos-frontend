@@ -24,6 +24,7 @@ that contains all the variables.
 @import 'notification.scss';
 @import 'modal.scss';
 @import "@vueform/toggle/themes/default.css";
+@import "@vueform/slider/themes/default.css";
 
 
 #app{
@@ -270,6 +271,10 @@ input::placeholder{
   }
 }
 
+.vtl-table{
+  transition: 0.5s;
+}
+
 .vtl-paging{
   padding: 10px;
 }
@@ -282,4 +287,23 @@ input::placeholder{
     font-size: 1.2rem;
     font-weight: bold;
   }
+}
+
+.slider-target{
+  width: 200px;
+  padding-right: 10px;
+  z-index: 0;
+
+  .slider-connect{
+    background-color: $k-blue;
+  }
+  .slider-tooltip{
+    background-color: $k-blue;
+    border: 1px solid $k-blue;
+    
+    &::before{
+      border-bottom-color: $k-blue !important;
+    }
+  }
+
 }
