@@ -37,9 +37,9 @@
     </div>
     
     <div class="cases-filter column">
-      <div @click="filterActive = !filterActive" class="filter-toggle shadow">Filters <ion-icon :class="{'active' : filterActive}" name="chevron-up"></ion-icon></div>
+      <div @click="filterActive = !filterActive" class="filter-toggle shadow">Filters <ion-icon :class="{active : filterActive}" name="chevron-up"></ion-icon></div>
       
-      <div class="filters column shadow" :class="{'active' : filterActive}">
+      <div class="filters column shadow" :class="{active : filterActive}">
         <div class="row" >
   
           <div class="filter-component">
@@ -52,34 +52,26 @@
           <div class="filter-component">
             <h4 class="blue">Intervened</h4>
             <select v-model="filters.intervened">
-              <option :value="true">Yes</option>
-              <option :value="false">No</option>
+              <option>Yes</option>
+              <option>No</option>
             </select>
-          </div>
-          <div v-if="performanceColumn === 'DURATION'" class="filter-component">
-            <h4 class="blue">Duration</h4>
-            <div class="filter-duration">
-              <Slider
-                v-model="filters.duration.value"
-                :max="60"
-                showTooltip="focus"
-                tooltipPosition="bottom"
-            ></Slider>
-              <select v-model="filters.duration.unit">
-                <option>Weeks</option>
-                <option>Days</option>
-                <option>Hours</option>
-                <option>Minutes</option>
-                <option>Seconds</option>
-              </select>
-            </div>
           </div>
         </div>
 
-        <button @click="filterCases" class="btn-blue">filter</button>
+        <div class="row">
+          <button @click="filterCases" class="btn-blue">filter</button>
+          <button @click="clearFilters()" class="btn-blue">clear filters</button>
+        </div>
       </div>
       
     </div>
+
+    <div v-if="filterButtonPressed" class="applied-filters row">
+      <div class="applied-filter shadow" v-for="key in appliedFilters" :key="key">
+        {{ key }} <ion-icon @click="clearFilters(key)" name="close"></ion-icon>
+      </div>
+    </div>
+
     <div class="cases-table">
       <table-lite
       :is-loading="table.isLoading"
@@ -126,7 +118,6 @@
   import TableLite from "vue3-table-lite";
   import shared from '@/services/shared';
   import VueApexCharts from 'vue3-apexcharts';
-  import Slider from '@vueform/slider'
 
   export default {
     name: 'CasesList',
@@ -136,8 +127,13 @@
           Loading,
           TableLite,
           apexchart: VueApexCharts,
-          Slider
         },
+
+    computed: {
+      appliedFilters(){
+        return Object.keys(this.filters).filter(key => this.filters[key] !== null);
+      }
+    },
   
     data() {
       return {
@@ -153,15 +149,13 @@
         performanceColumn: undefined,
         completedCases: false,
 
-        filterActive: false,
+        filterActive: true,
+        filterButtonPressed: false,
 
         filters:{
           recommendations: null,
           intervened: null,
-          duration: {
-            value: [0,30],
-            unit: null
-          }
+          
         },
 
         pieChart: {
@@ -494,20 +488,49 @@
         ); 
     },
 
+    doSearchAndSort(rows){
+      let offset = shared.getLocal('casesListOffset');
+      let limit = shared.getLocal('casesListLimit');
+      rows = this.sortCases(rows);
+      this.table.rows = rows.slice(offset,offset + limit);
+      this.table.totalRecordCount = rows.length;
+    },
+
       filterCases(){
-
+        if (this.appliedFilters.length < 1) return;
+        this.table.isLoading = true;
+        
+        this.filterButtonPressed = true;
+        shared.setLocal("appliedFilters", this.filters);
+        
         let tempRows = this.completedCases ? this.table.completedRows : this.table.ongoingRows;
-
+        
         if(this.filters.recommendations !== null){
           tempRows = tempRows.filter(r => r.recommendations === this.filters.recommendations);
         }
         if(this.filters.intervened !== null){
           tempRows = tempRows.filter(r => r.intervened === this.filters.intervened);
         }
+        this.doSearchAndSort(tempRows);
+        tempRows = null;
+        this.table.isLoading = false;
+      },
+      
+      clearFilters(key = false){
+        if (this.appliedFilters.length < 1) return;
+
         this.table.isLoading = true;
-        tempRows = this.sortCases(tempRows);
-        this.table.rows = tempRows.slice(shared.getLocal('casesListOffset'),shared.getLocal('casesListOffset')+shared.getLocal('casesListLimit'));
-        this.table.totalRecordCount = tempRows.length;
+        let tempRows = this.completedCases ? this.table.completedRows : this.table.ongoingRows;
+        this.filterButtonPressed = false;
+        if (key){
+          tempRows.filter(r => r[key] !== this.filters[key])
+          this.filters[key] = null;
+          tempRows = tempRows.concat(this.table.rows);
+        } else{
+          this.filters.intervened = null;
+          this.filters.recommendations = null;
+        }
+        this.doSearchAndSort(tempRows);
         tempRows = null;
         this.table.isLoading = false;
       }

@@ -121,6 +121,7 @@
         transition: max-height 0.5s ease-out;
         align-items: flex-end;
         margin-top: 10px;
+        overflow: hidden;
         
         &.active{
           max-height: 200px;
@@ -139,12 +140,39 @@
             display: flex;
             flex-grow: 1;
           }
+
         }
         button{
           margin: 5px;
         }
       }
 
+    }
+
+    .applied-filters{
+
+      .applied-filter{
+        background-color: $k-blue;
+        border-radius: 10px;
+        padding: 5px 10px;
+        margin: 10px 10px 0px 0px;
+        color: $k-white;
+        text-transform: uppercase;
+        align-items: center;
+        display: flex;
+
+        ion-icon{
+          margin-left: 10px;
+          color: $k-white;
+          cursor: pointer;
+          border-radius: 3px;
+
+          &:hover{
+            filter: brightness(85%);
+            backdrop-filter: brightness(85%);
+          }
+        }
+      }
     }
 
   }
