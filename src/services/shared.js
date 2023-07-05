@@ -75,5 +75,45 @@ export default{
         localStorage.removeItem(key)
       }
       
-    }
+    },
+
+
+    formatCase(singleCase){
+        
+        let caseActivities = singleCase.activities;
+        let intervened = "No";
+        let performance, outcome;
+        if(singleCase.case_performance){
+          performance = {value:singleCase.case_performance.value,unit:singleCase.case_performance.unit};
+          outcome = singleCase.case_performance.outcome
+        } else{
+          performance = {value: null,unit:null};
+          outcome = null
+        }
+
+        caseActivities.forEach(activity => {
+          if(activity.prescriptions){
+            activity.prescriptions.forEach(prescription => {
+              if (prescription.status === 'accepted'){
+                intervened = "Yes";
+                return;
+              }
+            })
+          }
+        });
+        let data = {
+          id: singleCase._id, 
+          recommendations: caseActivities[caseActivities.length-1].prescriptions.length === 0 ? false : true,
+          intervened: intervened,
+          performance: performance, 
+          outcome: outcome,
+          completed: singleCase.case_completed
+        }
+        
+        Object.keys(singleCase.case_attributes).forEach(k => {
+          data[k] = singleCase.case_attributes[k];
+        })
+
+        return data;
+    },
 }

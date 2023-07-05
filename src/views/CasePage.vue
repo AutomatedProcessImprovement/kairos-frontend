@@ -3,7 +3,6 @@
   <loading v-if="isLoading" :startPosition="200"></loading>
   <div id="case" v-if="currentCase._id">
     <div class="case-top">
-      <router-link class="bold" :to="{name: 'cases'}"><ion-icon name="chevron-back"></ion-icon> Return</router-link>
       <div class="row">
         <h2>Case #{{caseId.slice(caseId.indexOf('-') + 1)}}</h2>
         <div class="case-recommendations" :class="[recommendationsAvailable ? 'available' : 'unavailable']"> 

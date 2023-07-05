@@ -1,52 +1,5 @@
 // Cases
-.stats{
-    display: flex;
-    
-    .btn-blue{
-      margin: 20px 20px 10px 0px;
-    }
-    .stats-card{
-      display: flex;
-      justify-content: center;
-      padding: 10px;
-      margin: 10px 20px 0px 0px;
-      background-color: $k-white;
-      box-shadow: 0px 10px 27px rgba(0, 0, 0, 0.05);
-      color: $k-black;
-      border-radius: 10px;
-      transition: 0.2s;
-      height: max-content;
 
-
-      &.selected{
-        background-color: $k-blue4;
-      }
-  
-      .column{
-        padding: 0px 20px 0 0;
-  
-        * {
-          padding: 0;
-          margin: 0;
-        }
-
-      }
-  
-        ion-icon{
-          color: $k-white;
-          background-color: $k-blue;
-          width: 20px;
-          height: 20px;
-          padding: 5px;
-          border-radius: 5px;
-          margin-top: 10px;
-        }
-    }
-  
-    span{
-      padding: 10px 40px 20px 5px
-    }
-  }
   
   #cases,#recommendations {
     padding: 20px 30px;
@@ -55,32 +8,9 @@
     flex: 1;
     overflow-y: hidden;
   }
-  
-  .cases-table,.recommendations-table{
-    display:flex;
-    flex: 1;
-    align-items: flex-start;
-    margin-top: 10px;
-  
-    .vtl{
-      flex:1;
-      box-shadow: 0px 10px 27px rgba(0, 0, 0, 0.05);
-
-      tr{
-        cursor: pointer;
-        
-        &.clicked-row{
-          background-color: $k-blue4;
-        }
-        &.last-clicked-row{
-          background-color: $k-gray2;
-        }
-      }
-    }
-  }
 
   #cases{
-    #chart{
+    #history-chart, #statistics-table{
       flex-grow: 0;
       padding: 10px;
       background-color: $k-white;
@@ -89,90 +19,11 @@
       width: max-content;
     }
 
-    .cases-filter{
-      align-items: flex-end;
-
-      .filter-toggle{
-        display: flex;
-        align-items: center;
-        background-color: $k-white;
-        padding: 5px 10px;
-        border-radius: 7px;
-        cursor: pointer;
-
-        ion-icon{
-          padding-left: 10px;
-          transition: 0.5s;
-          visibility: visible;
-
-          &.active{
-            rotate: 180deg;
-            transform: translateX(-10px);
-            visibility: visible;
-          }
-        }
-      }
-
-      .filters{
-        background-color: $k-white;
-        border-radius: 10px;
-        transition: 1s;
-        max-height: 0px;
-        transition: max-height 0.5s ease-out;
-        align-items: flex-end;
-        margin-top: 10px;
-        overflow: hidden;
-        
-        &.active{
-          max-height: 200px;
-          transition: max-height 0.5s ease-in;
-        }
-
-        .filter-component{
-          padding: 10px 15px;
-
-          h4{
-            padding-bottom: 10px
-          }
-
-          .filter-duration{
-            align-items: center;
-            display: flex;
-            flex-grow: 1;
-          }
-
-        }
-        button{
-          margin: 5px;
-        }
-      }
-
+    #statistics-table{
+      margin-left: 10px;
+      width: 200px;
     }
 
-    .applied-filters{
-
-      .applied-filter{
-        background-color: $k-blue;
-        border-radius: 10px;
-        padding: 5px 10px;
-        margin: 10px 10px 0px 0px;
-        color: $k-white;
-        text-transform: uppercase;
-        align-items: center;
-        display: flex;
-
-        ion-icon{
-          margin-left: 10px;
-          color: $k-white;
-          cursor: pointer;
-          border-radius: 3px;
-
-          &:hover{
-            filter: brightness(85%);
-            backdrop-filter: brightness(85%);
-          }
-        }
-      }
-    }
-
+    
   }
+    

@@ -1,0 +1,90 @@
+// Cases
+
+#cases-table-component{
+  
+  .cases-filter{
+    align-items: flex-end;
+
+    .filter-toggle{
+      display: flex;
+      align-items: center;
+      background-color: $k-white;
+      padding: 5px 10px;
+      border-radius: 7px;
+      cursor: pointer;
+
+      ion-icon{
+        padding-left: 10px;
+        transition: 0.5s;
+        visibility: visible;
+
+        &.active{
+          rotate: 180deg;
+          transform: translateX(-10px);
+          visibility: visible;
+        }
+      }
+    }
+
+    .filters{
+      background-color: $k-white;
+      border-radius: 10px;
+      transition: 1s;
+      max-height: 0px;
+      transition: 0.5s;
+      align-items: flex-end;
+      overflow: hidden;
+      
+      &.active{
+        margin-top: 10px;
+        max-height: 150px;
+      }
+
+      .filter-component{
+        padding: 10px 15px;
+
+        h4{
+          padding-bottom: 10px
+        }
+
+        .filter-duration{
+          align-items: center;
+          display: flex;
+          flex-grow: 1;
+        }
+
+      }
+      button{
+        margin: 5px;
+      }
+    }
+
+  }
+
+  .applied-filters{
+
+    .applied-filter{
+      background-color: $k-blue;
+      border-radius: 10px;
+      padding: 5px 10px;
+      margin: 10px 10px 0px 0px;
+      color: $k-white;
+      text-transform: uppercase;
+      align-items: center;
+      display: flex;
+
+      ion-icon{
+        margin-left: 10px;
+        color: $k-white;
+        cursor: pointer;
+        border-radius: 3px;
+
+        &:hover{
+          filter: brightness(85%);
+          backdrop-filter: brightness(85%);
+        }
+      }
+    }
+  }
+
+}

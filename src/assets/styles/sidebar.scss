@@ -5,8 +5,8 @@
   padding: 10px 10px;
   flex-direction: column;
   flex-grow: 1;
-  max-width: 200px;
-  min-width: 200px;
+  max-width: 220px;
+  min-width: 220px;
   height: 100vh;
 
   ion-icon{
@@ -53,6 +53,12 @@
       transition: 0.2s;
       color: $k-blue2;
       cursor: pointer;
+      margin: 2px 0px;
+
+      &.sub-item{
+        margin-left: 20px;
+        padding: 5px;
+      }
       
       &:hover{
       background-color: $k-white;
