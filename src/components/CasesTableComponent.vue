@@ -32,7 +32,7 @@
 
     <div v-if="filterButtonPressed" class="applied-filters row">
       <div class="applied-filter shadow" v-for="key in appliedFilters" :key="key">
-        {{ key }} <ion-icon @click="clearFilters(key)" name="close"></ion-icon>
+        {{ key }}: {{ this.filters[key] }} <ion-icon @click="clearFilters(key)" name="close"></ion-icon>
       </div>
     </div>
 
@@ -40,6 +40,7 @@
       <table-lite
       :is-loading="table.isLoading"
       :page-size="table.pageSize"
+      :page="pageNumber"
       :is-slot-mode="true"
       :columns="headers"
       :rows="table.rows"
@@ -85,15 +86,6 @@
           TableLite,
         },
 
-    computed: {
-      appliedFilters(){
-        return Object.keys(this.filters).filter(key => this.filters[key] !== null);
-      },
-      headers(){
-        return this.table.headers.concat(this.caseAttributes);
-      }
-    },
-
     props:{
       completed: Boolean,
       caseAttributes: Array,
@@ -101,17 +93,36 @@
       performanceColumn: String,
     },
 
-    mounted(){
-      if(this.completed){
-        this.table.headers.push(this.table.outcomeHeader);
-      }
-      let isLoading = this.cases ? true : false;
-      this.doSearch(0,this.table.pageSize,this.table.sortable.order,this.table.sortable.sort,true,isLoading);
-    },
+    // mounted(){
+    //   this.setup();
+    // },
 
     watch: {
-      cases(value){
-        this.table.rows = this.doSearchAndSort(value);
+      cases(){
+        this.setup();
+      },
+
+      performanceColumn(){
+        this.setup();
+      }
+    },
+
+    computed: {
+      headers(){
+        if(this.completed === true) return this.table.headers.concat([this.table.outcomeHeader]).concat(this.caseAttributes);
+        return this.table.headers.concat(this.caseAttributes);
+      },
+
+      pageNumber(){
+        const totalPages = Math.ceil(this.table.totalRecordCount / this.table.pageSize); 
+
+        if (totalPages === 0) return 1;
+
+        const page = Math.floor(this.table.offset / this.table.pageSize) + 1; 
+        if (page < 1) return 1; 
+        if (page > totalPages) return totalPages; 
+
+        return page; 
       }
     },
 
@@ -123,12 +134,15 @@
         filterActive: false,
         filterButtonPressed: false,
         filters: {
-          recommendations: null,
-          intervened: null,
+          recommendations: shared.getLocal('casesListFilterRecommendations'),
+          intervened: shared.getLocal('casesListFilterIntervened'),
         },
 
+        appliedFilters: [],
+
         table: {
-          pageSize: 10,
+          pageSize: shared.getLocal('casesListLimit') || 10,
+          offset: shared.getLocal('casesListOffset') || 0,
           isLoading: false,
           headers: [
             {
@@ -174,6 +188,15 @@
   
     
     methods: {
+
+      setup(){
+        this.calculateAppliedFilters();
+        if(this.appliedFilters.length > 0) {
+          this.filterCases();
+        }
+        else this.doSearchAndSort(this.cases);
+      },
+
       getRowClasses(row){
         let index = this.table.clickedRows.indexOf(row.id);
         if (index < 0) return '';
@@ -197,35 +220,37 @@
         this.$router.push({name: 'case',params: {'caseId': row.id}})
       },
 
-      doSearch(offset,limit,order,sort,doSort=false,isLoading=true){
-        if (order === null || sort === null) return;
-
+      doSearch(offset,limit,order,sort,doSort=false,isLoading=true, rowsData = null){
         this.table.isLoading = isLoading;
         setTimeout(() => {
-          let tempRows;
+          let tempRows = rowsData ? rowsData : this.cases;
           
-          doSort = order !== this.table.sortable.order || sort !== this.table.sortable.sort || doSort;
-          
-          this.table.sortable.order = order;
-          this.table.sortable.sort = sort;
-
-          tempRows = doSort ? this.sortCases(this.cases) : this.cases;
+          if(sort !== null && order !== null){
+            doSort = order !== this.table.sortable.order || sort !== this.table.sortable.sort || doSort;
+            
+            this.table.sortable.order = order;
+            this.table.sortable.sort = sort;
+            shared.setLocal('casesListOrder',order,5);
+            shared.setLocal('casesListSort',sort,5);
+            
+            tempRows = doSort ? this.sortCases(tempRows) : tempRows;
+          }
+          this.table.offset = offset;
+          this.table.pageSize = limit;
 
           this.table.rows = tempRows.slice(offset,offset+limit);
           this.table.totalRecordCount = tempRows.length;
           tempRows = null;
 
-          shared.setLocal('casesListOrder',order,5);
-          shared.setLocal('casesListSort',sort,5);
           shared.setLocal('casesListOffset',offset,5);
-          shared.setLocal('casesListLimit',limit,5);
-          
+          shared.setLocal('casesListLimit',limit,5);          
         }, 400);
       },
 
       sortCases(rows){
         let sort = this.table.sortable.sort;
         let order = this.table.sortable.order;
+        if(!sort || !order) return rows;
         const sortOrder = sort === 'asc' ? 1 : -1;
         if (order === "performance" && this.performanceColumn === "DURATION"){
           rows = rows.sort((a, b) => 
@@ -240,54 +265,57 @@
         return rows;
       },
 
-      doSearchAndSort(rows){
-        let offset = shared.getLocal('casesListOffset');
-        let limit = shared.getLocal('casesListLimit');
-        rows = this.sortCases(rows);
-        rows = rows.slice(offset,offset+limit);
-        return rows;
+      doSearchAndSort(rowsData){
+        this.table.totalRecordCount = rowsData.length;
+        let offset = this.table.offset;
+        if (offset >= this.table.pageSize * this.pageNumber) offset = 0;
+        this.doSearch(offset, this.table.pageSize, this.table.sortable.order, this.table.sortable.sort,  true, true, rowsData);        
       },
 
       filterCases(){
+        this.calculateAppliedFilters();
         if (this.appliedFilters.length < 1) return;
         this.table.isLoading = true;
         
-        this.filterButtonPressed = true;
-        shared.setLocal("appliedFilters", this.filters);
-        
+        this.filterButtonPressed = true;        
         let tempRows = this.cases;
         
-        if(this.filters.recommendations !== null){
-          tempRows = tempRows.filter(r => r.recommendations === this.filters.recommendations);
-        }
-        if(this.filters.intervened !== null){
-          tempRows = tempRows.filter(r => r.intervened === this.filters.intervened);
-        }
-        this.table.rows = this.doSearchAndSort(tempRows);
-        this.table.totalRecordCount = this.table.rows.length;
+        Object.keys(this.filters).forEach(key => {
+          if(this.filters[key] !== null){
+            tempRows = tempRows.filter(r => r[key] === this.filters[key]);
+            shared.setLocal(`casesListFilter${shared.capitalise(key)}`,this.filters[key],5)
+          }
+        });
+        this.doSearchAndSort(tempRows);
         tempRows = null;
         this.table.isLoading = false;
       },
       
       clearFilters(key = false){
+        this.calculateAppliedFilters();
         if (this.appliedFilters.length < 1) return;
-        console.log(key);
         this.table.isLoading = true;
         let tempRows = this.cases;
         if (key){
           tempRows = tempRows.filter(r => r[key] !== this.filters[key])
           this.filters[key] = null;
           tempRows = tempRows.concat(this.table.rows);
+          shared.removeLocal(`casesListFilter${shared.capitalise(key)}`)
         } else{
-          this.filters.intervened = null;
-          this.filters.recommendations = null;
+          Object.keys(this.filters).forEach(k => {
+            this.filters[k] = null;
+            shared.removeLocal(`casesListFilter${shared.capitalise(k)}`)
+          });
         }
+        this.calculateAppliedFilters();
         this.filterButtonPressed = this.appliedFilters.length > 0 ? true : false;
-        console.log(this.filters);
-        this.table.rows = this.doSearchAndSort(tempRows);
-        this.table.totalRecordCount = this.table.rows.length;
+        this.doSearchAndSort(tempRows);
         tempRows = null;
         this.table.isLoading = false;
+      },
+
+      calculateAppliedFilters(){
+        this.appliedFilters = Object.keys(this.filters).filter(key => this.filters[key] !== null)
       }
 
     }

@@ -77,6 +77,10 @@ export default{
       
     },
 
+    capitalise(str){
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    },
+
 
     formatCase(singleCase){
         

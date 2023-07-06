@@ -4,7 +4,7 @@
   <div id="cases">
     <h2>{{completionString}} Cases Overview</h2>
     <div class="stats">
-      <div class="stats-card pointer">
+      <div class="stats-card">
         <div class="column">
           <small> {{ completionString }} cases</small>
           <div class="row">
@@ -67,7 +67,7 @@
       return {
         timer: null,
         logStatus: 'NULL',
-        completion: undefined,
+        completion: this.$route.params.completion === 'completed',
 
         isLoading: false,
         cases: [],
@@ -112,6 +112,7 @@
 
     watch: {
       $route(){
+        this.completion = this.$route.params.completion === 'completed';
         this.setup();
       }
     },
@@ -123,14 +124,12 @@
     methods: {
 
       setup(){
-        this.completion = this.$route.params.completion === 'completed';
         this.isLoading = true;
         this.getCases();
         this.getProjectStatus(); 
       },
 
       createPieChart(){
-        console.log('making piechart');
         let outcomeCounts = shared.groupByAndCount(this.casesData,'outcome','intervened');
         if(Object.keys(outcomeCounts).length > 0){
           const propertiesToCheck = [true, false, null];
@@ -177,9 +176,9 @@
             });
           })
           if (!this.performanceColumn) this.performanceColumn = this.cases[0].case_performance.column;
-      }
-      
-      let data = {};
+        }
+        
+        let data = {};
         for (const el of this.cases) {
           data = shared.formatCase(el);
           this.casesData.push(data);
@@ -194,7 +193,7 @@
       },
 
       calculateModelsStatistics(){
-        console.log('models stats');
+        // console.log('models stats');
       },
   
 
