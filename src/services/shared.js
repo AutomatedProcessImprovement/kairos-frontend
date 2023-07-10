@@ -111,7 +111,8 @@ export default{
           intervened: intervened,
           performance: performance, 
           outcome: outcome,
-          completed: singleCase.case_completed
+          completed: singleCase.case_completed,
+          filters: []
         }
         
         Object.keys(singleCase.case_attributes).forEach(k => {
