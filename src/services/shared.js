@@ -24,17 +24,17 @@ export default{
         return recommendationAttr;
     },
 
-    groupByAndCount(xs, key, condition) {
-      xs = xs.filter(x => x[condition] === 'Yes');
-        return xs.reduce((acc, x) => {
-          const value = x[key]
-          if (!acc[value]) {
-            acc[value] = 0;
-          }
-          acc[value]++;
-          return acc;
-        }, {});
-      },
+    groupByAndCount(xs, key, condition = false,conditionValue = false) {
+      if(condition && conditionValue) xs = xs.filter(x => x[condition] === conditionValue);
+      return xs.reduce((acc, x) => {
+        const value = x[key]
+        if (!acc[value]) {
+          acc[value] = 0;
+        }
+        acc[value]++;
+        return acc;
+      }, {});
+    },
 
     setLocal(key, value, ttl = 1) {
         ttl = ttl * 86400000;

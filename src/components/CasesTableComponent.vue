@@ -8,14 +8,14 @@
   
           <div class="filter-component">
             <h4 class="blue">Recommendations</h4>
-            <select v-model="filters.recommendations" @change="filterCases('recommendations',400)">
+            <select v-model="filters.recommendations" @change="filterCases('recommendations')">
               <option :value=true>Available</option>
               <option :value=false>Unavailable</option>
             </select>
           </div>
           <div class="filter-component">
             <h4 class="blue">Intervened</h4>
-            <select v-model="filters.intervened" @change="filterCases('intervened',400)">
+            <select v-model="filters.intervened" @change="filterCases('intervened')">
               <option>Yes</option>
               <option>No</option>
             </select>
@@ -91,7 +91,7 @@
       cases: Array,
       performanceColumn: String,
     },
-
+    
     watch: {
       cases(){
         this.setup();
@@ -99,7 +99,7 @@
 
       performanceColumn(){
         this.setup();
-      },
+      }
     },
 
     computed: {
@@ -121,7 +121,6 @@
       },
 
       tableRows(){
-        console.log('tablerows');
         return this.table.rows.filter(r => r['filters'].length === 0).slice(this.table.offset,this.table.offset+this.table.pageSize);
       },
 
@@ -291,11 +290,16 @@
             })
           } else{
             this.table.rows.forEach(r => {
-              if(!r['filters']) r['filters'] = []
-              if(r[key] !== this.filters[key]) r['filters'].push(key)
+              if(!r['filters']) r['filters'] = [];
+              if(r[key] !== this.filters[key]) r['filters'].push(key);
+              else{
+                let filterIndex = r['filters'].indexOf(key);
+                if (filterIndex > -1) r['filters'].splice(filterIndex,1);
+              }
             });
             shared.setLocal(`casesListFilter${shared.capitalise(key)}`,this.filters[key],5)
           }        
+          this.table.isLoading = false;
         }, timeout);
       },
       
@@ -311,13 +315,14 @@
             shared.removeLocal(`casesListFilter${shared.capitalise(key)}`)
           } else{
             this.table.rows.forEach(r => {
-                r['filters'] = [];
+              r['filters'] = [];
             });
             this.appliedFilters.forEach(f => {
               this.filters[f] = null;
               shared.removeLocal(`casesListFilter${shared.capitalise(f)}`)
             })
           }
+          this.table.isLoading = false;
         }, timeout);
       },
 

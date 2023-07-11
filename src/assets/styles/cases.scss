@@ -2,7 +2,7 @@
 
   
   #cases,#recommendations {
-    padding: 20px 30px;
+    padding: 20px 20px;
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -10,19 +10,69 @@
   }
 
   #cases{
-    #history-chart, #statistics-table{
-      flex-grow: 0;
-      padding: 10px;
-      background-color: $k-white;
-      margin-top: 10px;
-      border-radius: 10px;
+
+    .link-btn{
+      background-color: $k-gray2;
+      margin: 10px 0px;
+      padding: 5px 10px;
+      border-radius: 5px;
+      border: none;
       width: max-content;
+      transition: 0.1s;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+
+      &:hover{
+        filter: brightness(95%);
+      }
+
+      ion-icon{
+        height: 20px;
+        width: 20px;
+        padding: 5px;
+      }
+    }
+    .completed-cases-charts{
+      flex-grow: 1;
+      
+      .completed-cases-chart{
+        flex-grow: 0;
+        padding: 5px;
+        background-color: $k-white;
+        margin-top: 10px;
+        border-radius: 10px;
+        flex-grow: 1;
+
+        .apexcharts-legend{
+          padding: 0px;
+        }
+
+        *{
+          margin: 0px;
+        }
+
+        &.margin{
+          margin-left: 10px;
+        }
+
+        h3{
+          padding: 5px;
+        }
+
+        .vtl-table{
+          th{
+            *{
+              text-transform: none;
+              color: $k-black;
+              font-weight: normal;
+            }
+          }
+        }
+      }
     }
 
-    #statistics-table{
-      margin-left: 10px;
-      width: 200px;
-    }
 
     
   }

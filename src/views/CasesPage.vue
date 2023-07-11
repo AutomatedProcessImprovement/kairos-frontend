@@ -15,24 +15,26 @@
       </div>
     </div>
 
-    <div v-if="completion" class="row">
-      <div id="history-chart" class="shadow">
-        <h3>Recommendations history</h3>
-        <apexchart type="pie" width="380" :options="pieChart.chartOptions" :series="pieChart.series"></apexchart>
-      </div>
-  
-      <div id="statistics-table" class="shadow">
-        <h3>Models statistics</h3>
-      </div>
+    <div class="column"  v-show="!showTable">
+      <charts-component
+      :cases="cases"
+      :casesData="casesData"
+      ></charts-component>
+      
+      <button @click="showTable = !showTable" class="link-btn">Show cases table <ion-icon name="open-outline"></ion-icon></button>
     </div>
     
+    
+    <div class="column" v-show="showTable">
+      <button @click="showTable = !showTable" class="link-btn"><ion-icon name="chevron-back"></ion-icon> Return to overview</button>
 
-    <cases-table-component
-    :completed="completion"
-    :performanceColumn="performanceColumn"
-    :caseAttributes="caseAttributes"
-    :cases="casesData"
-    ></cases-table-component>
+      <cases-table-component 
+      :completed="completion"
+      :performanceColumn="performanceColumn"
+      :caseAttributes="caseAttributes"
+      :cases="casesData"
+      ></cases-table-component>
+    </div>
       
     </div>
   </template>
@@ -44,8 +46,8 @@
   import SideBar from '@/components/SideBar.vue';
   import Loading from "@/components/LoadingComponent.vue";
   import shared from '@/services/shared';
-  import VueApexCharts from 'vue3-apexcharts';
   import CasesTableComponent from "@/components/CasesTableComponent.vue";
+  import ChartsComponent from "@/components/ChartsComponent.vue";
 
   export default {
     name: 'CasesList',
@@ -53,8 +55,8 @@
     components: {
           SideBar,
           Loading,
-          apexchart: VueApexCharts,
-          CasesTableComponent
+          CasesTableComponent,
+          ChartsComponent
         },
 
     computed: {
@@ -68,6 +70,7 @@
         timer: null,
         logStatus: 'NULL',
         completion: this.$route.params.completion === 'completed',
+        showTable: false,
 
         isLoading: false,
         cases: [],
@@ -75,32 +78,6 @@
         caseAttributes: [],
         
         performanceColumn: undefined,
-
-        pieChart: {
-          series: [0, 0, 1],
-          chartOptions: {
-            colors: ['#17ad37','#F5222D','#a0a3a5'],
-            chart: {
-              animations:{
-                enabled: false,
-              },
-              width: 380,
-              type: 'pie',
-            },
-            labels: ['Was successful', 'Was unsuccessful', 'No data'],
-            responsive: [{
-              breakpoint: 480,
-              options: {
-                chart: {
-                  width: 200
-                },
-                legend: {
-                  position: 'right'
-                }
-              }
-            }]
-          },
-        },
       };
     },
   
@@ -129,16 +106,6 @@
         this.getProjectStatus(); 
       },
 
-      createPieChart(){
-        let outcomeCounts = shared.groupByAndCount(this.casesData,'outcome','intervened');
-        if(Object.keys(outcomeCounts).length > 0){
-          const propertiesToCheck = [true, false, null];
-          this.pieChart.series = propertiesToCheck.map(property => {
-            return outcomeCounts[property] || 0;
-          });
-        }
-      },
-      
       getCases() {
         casesService.getCasesByLogAndCompletion(shared.getLocal('logId'),this.completionString.toLowerCase()).then(
           (response) => {
@@ -182,18 +149,9 @@
         for (const el of this.cases) {
           data = shared.formatCase(el);
           this.casesData.push(data);
-        }  
-        if(this.completion){
-          this.createPieChart();
-          this.calculateModelsStatistics();
         }
 
-        this.cases = null;
         this.isLoading = false;
-      },
-
-      calculateModelsStatistics(){
-        // console.log('models stats');
       },
   
 
