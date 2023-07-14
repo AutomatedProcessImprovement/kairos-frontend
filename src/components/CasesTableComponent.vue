@@ -233,7 +233,7 @@
       doSearch(offset,limit,order,sort,doSort=false,isLoading=true, rowsData = null){
         this.table.isLoading = isLoading;
         setTimeout(() => {
-          let tempRows = rowsData ? rowsData : this.table.rows;
+          let tempRows = rowsData ?? this.table.rows;
           
           if(sort !== null && order !== null){
             doSort = order !== this.table.sortable.order || sort !== this.table.sortable.sort || doSort;
