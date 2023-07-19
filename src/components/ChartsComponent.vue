@@ -8,15 +8,15 @@
       <div class="completed-cases-chart shadow">
         <div class="row content-start">
           <h3>Models statistics</h3>
-            <tooltip-component :iconSize="25" icon="information-circle" color="grey" :tooltipSize="400">           
-              <template v-slot:title>
-                  <h3>What do model statistics describe?</h3>
-              </template>
-              <template v-slot:content>
-                <p>Each number represents the percentage of a type of prescription (alarm, next activity, intervention) 
-                  prescribed and accepted in cases with different outcomes (successful, unsuccessful).</p>
-              </template>
-            </tooltip-component>
+          <tooltip-component :iconSize="25" icon="information-circle" color="grey" :tooltipSize="400">           
+            <template v-slot:title>
+                <h3>What do model statistics describe?</h3>
+            </template>
+            <template v-slot:content>
+              <p>Each number represents the percentage of a type of prescription (alarm, next activity, intervention) 
+                prescribed and accepted in cases with different outcomes (successful, unsuccessful).</p>
+            </template>
+          </tooltip-component>
         </div>
 
         <table>
@@ -90,7 +90,7 @@ export default {
               'NEXT_ACTIVITY' : {total: 0, accepted: 0},
               'TREATMENT_EFFECT' : {total: 0, accepted: 0}
             }
-        }
+          }
         },
 
         recommendationsHistory: {
@@ -177,10 +177,10 @@ export default {
 
     watch:{
         cases(){
-            this.createRecommendationsHistory();
-            this.createRecommendationsAcceptance();
-            this.createModelsStatistics();
-        }
+          this.createModelsStatistics();
+          this.createRecommendationsHistory();
+          this.createRecommendationsAcceptance();
+        },
     },
 
     methods:{
@@ -195,21 +195,14 @@ export default {
       },
 
       createRecommendationsAcceptance(){
-        const propertiesToCheck = ['ALARM', 'NEXT_ACTIVITY', 'TREATMENT_EFFECT'];
-        let prescriptions = this.cases.flatMap(({activities}) => activities.flatMap(a => a.prescriptions));
-        let prescriptionCounts = shared.groupByAndCount(prescriptions,'type');
-        let acceptedPrescriptionCounts = shared.groupByAndCount(prescriptions,'type','status','accepted');
-        let acceptedPrescriptionPercentages = propertiesToCheck.reduce((o,p) => ({...o,[p] : Math.round(100*acceptedPrescriptionCounts[p]/prescriptionCounts[p])}),{});
-        let discardedPrescriptionPercentages = propertiesToCheck.reduce((o,p) => ({...o,[p] : 100 - acceptedPrescriptionPercentages[p]}),{});
-   
-        this.recommendationsAcceptance.series[0].data = propertiesToCheck.map(property => {
-          return acceptedPrescriptionPercentages[property] || 0;
-        });
-        this.recommendationsAcceptance.series[1].data = propertiesToCheck.map(property => {
-          return discardedPrescriptionPercentages[property] || 0;
-        });
+        let a = this.modelsStatistics.rows['true'];
+        for (let i = 0; i < Object.keys(a).length; i++) {
+          const t = Object.values(a)[i];
+          this.recommendationsAcceptance.series[0].data[i] = Math.round(100 * t.accepted/t.total) || 0;
+          this.recommendationsAcceptance.series[1].data[i] = Math.round(100 * (t.total - t.accepted)/t.total) || 0;
+        }
       },
-      
+
       createModelsStatistics(){
         this.cases.forEach(({case_performance,activities}) => {
           const outcome = case_performance.outcome;
@@ -220,7 +213,6 @@ export default {
             this.modelsStatistics.rows[outcome][p.type].total += 1
           });
         });
-        console.log(this.modelsStatistics.rows);
       },
     }
 }
