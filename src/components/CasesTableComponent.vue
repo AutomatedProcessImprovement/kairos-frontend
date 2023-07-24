@@ -8,14 +8,14 @@
   
           <div class="filter-component">
             <h4 class="blue">Recommendations</h4>
-            <select v-model="filters.recommendations" @change="filterCases('recommendations')">
+            <select v-model="filters.recommendations.value" @change="applyFilters('recommendations')">
               <option :value=true>Available</option>
               <option :value=false>Unavailable</option>
             </select>
           </div>
           <div class="filter-component">
             <h4 class="blue">Intervened</h4>
-            <select v-model="filters.intervened" @change="filterCases('intervened')">
+            <select v-model="filters.intervened.value" @change="applyFilters('intervened')">
               <option>Yes</option>
               <option>No</option>
             </select>
@@ -31,7 +31,7 @@
 
     <div class="applied-filters row">
       <div class="applied-filter shadow" v-for="key in appliedFilters" :key="key">
-        {{ key }}: {{ this.filters[key] }} <ion-icon @click="clearFilters(key)" name="close"></ion-icon>
+        {{ key }}: {{ formatFilter(key) }} <ion-icon @click="clearFilters(key)" name="close"></ion-icon>
       </div>
     </div>
 
@@ -129,7 +129,7 @@
       },
 
       appliedFilters(){
-        return Object.keys(this.filters).filter(key => this.filters[key] !== null);
+        return Object.keys(this.filters).filter(key => this.filters[key].value !== null);
       }
     },
 
@@ -140,9 +140,20 @@
 
         filterActive: false,
         filterButtonPressed: false,
+
         filters: {
-          recommendations: shared.getLocal('casesListFilterRecommendations'),
-          intervened: shared.getLocal('casesListFilterIntervened'),
+          recommendations: {
+            value: shared.getLocal('casesListFilterRecommendations'),
+            label: (value) => value ? 'Available' : 'Unavailable',
+            isFiltered: (row,filterValue) =>
+            filterValue ? row.recommendations > 0 : row.recommendations < 1
+          },
+          intervened: {
+            value: shared.getLocal('casesListFilterIntervened'),
+            label: (value) => value,
+            isFiltered: (row,filterValue) =>
+              row.intervened === filterValue
+          }
         },
 
         table: {
@@ -198,13 +209,17 @@
         if(this.appliedFilters.length > 0) {
           this.table.isLoading = true;
           this.table.rows = this.sortCases(this.cases);
-          this.filterCases(false,0);
+          this.applyFilters(false,0);
           this.table.isLoading = false;
         }
         else {
           if (this.table.offset >= this.table.pageSize * this.pageNumber) this.table.offset = 0;
           this.doSearch(this.table.offset, this.table.pageSize, this.table.sortable.order, this.table.sortable.sort, true, true, this.cases);        
         }
+      },
+
+      formatFilter(key){
+        return this.filters[key].label(this.filters[key].value);
       },
 
       getRowClasses(row){
@@ -275,32 +290,27 @@
         return rows;
       },
 
-      filterCases(key = false,timeout = 400){
+      applyFilters(key = false,timeout = 400){
         if (this.appliedFilters.length < 1) return;
         this.table.isLoading = true;
 
         setTimeout(() => {
-          if(!key){
-            this.appliedFilters.forEach(f => {
-              this.table.rows.forEach(r => {
-                if(!r['filters']) r['filters'] = []
-                if(r[f] !== this.filters[f]) r['filters'].push(f)
-              });
-              shared.setLocal(`casesListFilter${shared.capitalise(f)}`,this.filters[f],5)
-            })
-          } else{
-            this.table.rows.forEach(r => {
-              if(!r['filters']) r['filters'] = [];
-              if(r[key] !== this.filters[key]) r['filters'].push(key);
-              else{
-                let filterIndex = r['filters'].indexOf(key);
-                if (filterIndex > -1) r['filters'].splice(filterIndex,1);
-              }
-            });
-            shared.setLocal(`casesListFilter${shared.capitalise(key)}`,this.filters[key],5)
-          }        
+          if (!key) this.appliedFilters.forEach(k => this.applyFiltersHelper(k));
+          else this.applyFiltersHelper(key);
           this.table.isLoading = false;
         }, timeout);
+      },
+
+      applyFiltersHelper(key){
+        this.table.rows.forEach(r => {
+          let filter = this.filters[key].isFiltered(r,this.filters[key].value);
+          if(!filter) r['filters'].push(key)
+          else{
+            let filterIndex = r['filters'].indexOf(key);
+            if (filterIndex > -1) r['filters'].splice(filterIndex,1);
+          }
+        });
+        shared.setLocal(`casesListFilter${shared.capitalise(key)}`,this.filters[key].value,5)
       },
       
       clearFilters(key = false,timeout = 400){
@@ -311,14 +321,14 @@
             this.table.rows.forEach(r => {
                 r['filters'] = r['filters'].filter(f => f !== key);
             });
-            this.filters[key] = null;
+            this.filters[key].value = null;
             shared.removeLocal(`casesListFilter${shared.capitalise(key)}`)
           } else{
             this.table.rows.forEach(r => {
               r['filters'] = [];
             });
             this.appliedFilters.forEach(f => {
-              this.filters[f] = null;
+              this.filters[f].value = null;
               shared.removeLocal(`casesListFilter${shared.capitalise(f)}`)
             })
           }
