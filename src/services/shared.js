@@ -1,3 +1,4 @@
+
 export default{
     typeGuide: {
         'TEXT': {'EQUAL':'Text equals','NOT_EQUAL':'Text does not equal','CONTAINS':'Text contains','NOT_CONTAINS':'Text does not contain'},
@@ -107,7 +108,7 @@ export default{
         });
         let data = {
           id: singleCase._id, 
-          recommendations: caseActivities[caseActivities.length-1].prescriptions.length === 0 ? false : true,
+          recommendations: caseActivities[caseActivities.length-1].prescriptions.length,
           intervened: intervened,
           performance: performance, 
           outcome: outcome,

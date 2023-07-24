@@ -54,8 +54,8 @@
         <p>{{ formatId(data.value.id) }}</p>
       </template>
       <template v-slot:recommendations="data">
-        <div class="case-recommendations" :class="[data.value.recommendations ? 'available' : 'unavailable']"> 
-          {{ data.value.recommendations ? "recommendations available" : "no new recommendations" }}
+        <div class="case-recommendations" :class="[data.value.recommendations > 0 ? 'available' : 'unavailable']"> 
+          {{ data.value.recommendations }}
         </div>
       </template>
 
@@ -160,7 +160,7 @@
               label: "Recommendations",
               field: "recommendations",
               width: "5%",
-              sortable: false,
+              sortable: true,
             },
             {
               label: "Performance",

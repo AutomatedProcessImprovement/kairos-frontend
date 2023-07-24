@@ -113,11 +113,11 @@ td, th {
 .case-recommendations{
   border-radius: 5px;
   color: $k-white;
+  padding: 0px 10px;
+  width: fit-content;
   text-transform: uppercase;
-  padding: 0px 5px;
-  display: inline-block;
-  width: 130px;
-  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
   
   &.available{
     background: linear-gradient(135deg, $k-green1 5%, $k-green2 100%);
@@ -284,6 +284,7 @@ input::placeholder{
 
     tr{
       cursor: pointer;
+      padding: 10px 0px;
       
       &.clicked-row{
         background-color: $k-blue4;
@@ -332,6 +333,13 @@ input::placeholder{
 
 }
 
+@media (max-width: 800px) {
+      
+  .stats{
+    flex-wrap: wrap;
+  }
+}
+
 .stats{
   display: flex;
   
@@ -349,6 +357,27 @@ input::placeholder{
     border-radius: 10px;
     transition: 0.2s;
     height: max-content;
+
+    &.wrap-text{
+      small{
+        min-width: 100px;
+        max-width: 120px;
+      }
+    }
+
+    .large-number{
+      padding: 4px 12px;
+      border-radius: 8px;
+      margin-left: 5px;
+      box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.1);
+
+      &.bg-green{
+        background-color: $k-green2;
+      }
+      &.bg-gray{
+        background-color: $k-gray2;
+      }
+    }
 
 
     &.selected{

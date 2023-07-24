@@ -1,11 +1,11 @@
 <template>
-    <div class="completed-cases-charts">
-      <div class="completed-cases-chart shadow">
+    <div class="cases-charts">
+      <div class="cases-chart shadow">
         <h3>Recommendations history</h3>
         <apexchart type="pie" :options="recommendationsHistory.chartOptions" :series="recommendationsHistory.series"></apexchart>
       </div>
   
-      <div class="completed-cases-chart shadow">
+      <div class="cases-chart shadow">
         <div class="row content-start">
           <h3>Models statistics</h3>
           <tooltip-component :iconSize="25" icon="information-circle" color="grey" :tooltipSize="400">           
@@ -30,7 +30,7 @@
         </table>
       </div>
 
-      <div class="completed-cases-chart shadow">
+      <div class="cases-chart shadow">
         <h3>Recommendations Acceptance</h3>
         <apexchart type="bar" :options="recommendationsAcceptance.chartOptions" :series="recommendationsAcceptance.series"></apexchart>
       </div>
@@ -92,7 +92,7 @@ export default {
             }
           }
         },
-
+        
         recommendationsHistory: {
           series: [0, 0, 1],
           chartOptions: {
@@ -129,11 +129,14 @@ export default {
           }
         ],
           chartOptions: {
-            colors: ['#17ad37','#F5222D','#a0a3a5'],
+            colors: ['#17ad37','#7e7e7e'],
             chart: {
               type: 'bar',
               stacked: true,
-              stackType: '100%'
+              stackType: '100%',
+              animations:{
+                enabled: false,
+              }
             },
             plotOptions: {
               bar: {
@@ -177,14 +180,17 @@ export default {
 
     watch:{
         cases(){
+
           this.createModelsStatistics();
-          this.createRecommendationsHistory();
           this.createRecommendationsAcceptance();
+          this.createRecommendationsHistory();
         },
-    },
+      },
 
     methods:{
-        createRecommendationsHistory(){
+      
+
+      createRecommendationsHistory(){
         let outcomeCounts = shared.groupByAndCount(this.casesData,'outcome','intervened','Yes');
         if(Object.keys(outcomeCounts).length > 0){
           const propertiesToCheck = [true, false, null];

@@ -13,13 +13,28 @@
         </div>
         <ion-icon name="albums"></ion-icon>
       </div>
+
+      <div v-if="!this.completion" class="stats-card wrap-text">
+        <small>Cases with recommendations</small>
+        <h3 class="large-number bg-green">{{ casesWithRecommendations }}</h3>
+      </div>
+      
+      <div v-if="!this.completion" class="stats-card wrap-text">
+        <small>Cases without recommendations</small>
+        <h3 class="large-number bg-gray">{{ casesData.length - casesWithRecommendations }}</h3>
+      </div>
     </div>
 
     <div class="column"  v-show="!showTable">
-      <charts-component
+      <completed-charts-component v-if="completion"
       :cases="cases"
       :casesData="casesData"
-      ></charts-component>
+      ></completed-charts-component>
+      
+      <ongoing-charts-component v-if="!completion"
+      :cases="cases"
+      :casesData="casesData"
+      ></ongoing-charts-component>
       
       <button @click="showTable = !showTable" class="link-btn">Show cases table <ion-icon name="open-outline"></ion-icon></button>
     </div>
@@ -47,7 +62,8 @@
   import Loading from "@/components/LoadingComponent.vue";
   import shared from '@/services/shared';
   import CasesTableComponent from "@/components/CasesTableComponent.vue";
-  import ChartsComponent from "@/components/ChartsComponent.vue";
+  import CompletedChartsComponent from "@/components/CompletedChartsComponent.vue";
+  import OngoingChartsComponent from "@/components/OngoingChartsComponent.vue";
 
   export default {
     name: 'CasesList',
@@ -56,12 +72,16 @@
           SideBar,
           Loading,
           CasesTableComponent,
-          ChartsComponent
+          CompletedChartsComponent,
+          OngoingChartsComponent
         },
 
     computed: {
       completionString(){
         return this.completion ? 'Completed' : 'Ongoing';
+      },
+      casesWithRecommendations(){
+        return this.casesData.filter(c => c.recommendations > 0).length;
       }
     },
   
@@ -155,7 +175,6 @@
 
         this.isLoading = false;
       },
-  
 
       getProjectStatus(){
         logsService.getProjectStatus(shared.getLocal('logId')).then(
