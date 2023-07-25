@@ -10,30 +10,6 @@
   }
 
   #cases{
-
-    .link-btn{
-      background-color: $k-gray2;
-      margin: 10px 0px;
-      padding: 5px 10px;
-      border-radius: 5px;
-      border: none;
-      width: max-content;
-      transition: 0.1s;
-      cursor: pointer;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-
-      &:hover{
-        filter: brightness(95%);
-      }
-
-      ion-icon{
-        height: 20px;
-        width: 20px;
-        padding: 5px;
-      }
-    }
     @media (max-width: 800px) {
       
       .cases-charts{
@@ -85,7 +61,44 @@
       }
     }
 
+    .link-btn{
+      background-color: $k-gray2;
+      padding: 3px 10px;
+      border-radius: 5px;
+      border: none;
+      width: max-content;
+      transition: 0.1s;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+      box-shadow: 0px 2px 7px rgba(0, 0, 0, 0.05);
 
-    
+      &:hover{
+        filter: brightness(95%);
+      }
+
+      ion-icon{
+        height: 20px;
+        width: 20px;
+        padding: 5px;
+      }
+    }
+
+    .cases-table-preview-heading{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      background-color: $k-white;
+      border-radius: 10px;
+      margin-top: 10px;  
+      padding: 10px;
+
+      .link-btn{
+        margin: 0;
+      }
+    } 
   }
     

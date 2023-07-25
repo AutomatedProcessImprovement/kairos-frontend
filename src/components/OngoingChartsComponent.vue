@@ -1,7 +1,7 @@
 <template>
     <div class="cases-charts">
       <div class="cases-chart shadow">
-        <h3>Recommendation types</h3>
+        <h3>Recommendation Types</h3>
         <apexchart type="pie" :options="recommendationTypes.chartOptions" :series="recommendationTypes.series"></apexchart>
       </div>
 

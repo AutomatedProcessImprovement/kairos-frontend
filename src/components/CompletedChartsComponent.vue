@@ -1,7 +1,7 @@
 <template>
     <div class="cases-charts">
       <div class="cases-chart shadow">
-        <h3>Recommendations history</h3>
+        <h3>Recommendations History</h3>
         <apexchart type="pie" :options="recommendationsHistory.chartOptions" :series="recommendationsHistory.series"></apexchart>
       </div>
   

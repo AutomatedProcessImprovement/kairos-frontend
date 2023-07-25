@@ -278,6 +278,12 @@ input::placeholder{
   align-items: flex-start;
   margin-top: 10px;
 
+  &.hide-paging{
+    .vtl-paging{
+      display:none;
+    }
+  }
+
   .vtl{
     flex:1;
     box-shadow: 0px 10px 27px rgba(0, 0, 0, 0.05);
@@ -301,11 +307,12 @@ input::placeholder{
 }
 
 .vtl-paging{
-  padding: 10px;
+  padding: 0px 10px 10px 10px;
+  align-items: center;
 }
 
 .vtl-loading-mask{
-  background-color: rgba($color: #ffffff, $alpha: 0.6) !important;
+  background-color: rgba($color: $k-white, $alpha: 0.6) !important;
   border-radius: 10px;
   span{
     color: $k-blue !important;

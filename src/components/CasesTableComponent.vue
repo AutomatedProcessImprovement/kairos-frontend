@@ -1,9 +1,9 @@
 <template>
   <div id="cases-table-component">
     <div class="cases-filter column">
-      <div @click="filterActive = !filterActive" class="filter-toggle shadow">Filters <ion-icon :class="{active : filterActive}" name="chevron-up"></ion-icon></div>
+      <div v-if="isFullView" @click="filterActive = !filterActive" class="filter-toggle shadow">Filters <ion-icon :class="{active : filterActive}" name="chevron-up"></ion-icon></div>
       
-      <div class="filters column shadow" :class="{active : filterActive}">
+      <div v-if="isFullView" class="filters column shadow" :class="{active : filterActive}">
         <div class="row">
   
           <div class="filter-component">
@@ -29,13 +29,13 @@
       
     </div>
 
-    <div class="applied-filters row">
+    <div v-if="isFullView" class="applied-filters row">
       <div class="applied-filter shadow" v-for="key in appliedFilters" :key="key">
         {{ key }}: {{ formatFilter(key) }} <ion-icon @click="clearFilters(key)" name="close"></ion-icon>
       </div>
     </div>
 
-    <div class="cases-table">
+    <div class="cases-table" :class="{'hide-paging': !isFullView}">
       <table-lite
       :is-loading="table.isLoading"
       :page-size="table.pageSize"
@@ -90,19 +90,21 @@
       caseAttributes: Array,
       cases: Array,
       performanceColumn: String,
+      isFullView: Boolean,
     },
     
     watch: {
       cases(){
         this.setup();
       },
-
+      
       performanceColumn(){
         this.setup();
       }
     },
 
     computed: {
+
       headers(){
         if(this.completed === true) return this.table.headers.concat([this.table.outcomeHeader]).concat(this.caseAttributes);
         return this.table.headers.concat(this.caseAttributes);
@@ -330,13 +332,11 @@
             this.appliedFilters.forEach(f => {
               this.filters[f].value = null;
               shared.removeLocal(`casesListFilter${shared.capitalise(f)}`)
-            })
+            });
           }
           this.table.isLoading = false;
         }, timeout);
       },
-
     }
-  
   }
-  </script>
+</script>
