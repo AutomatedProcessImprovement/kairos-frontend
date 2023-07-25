@@ -98,7 +98,8 @@
         this.setup();
       },
       
-      performanceColumn(){
+      performanceColumn(value){
+        this.table.headers[2].label = value;
         this.setup();
       }
     },
