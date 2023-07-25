@@ -1,8 +1,9 @@
 <template>
-  <div class="sidebar">
+  <div class="sidebar" :class="{'collapsed': isCollapsed}">
+    <ion-icon class="sidebar-collapse-icon pointer" :class="{active: isCollapsed}" @click="isCollapsed = !isCollapsed" name="chevron-back-outline"></ion-icon>
 
     <div class="sidebar-heading pointer" @click="goToHome">
-      <ion-icon name="laptop-outline"></ion-icon>
+      <img src="../assets/img/laptop2.svg" class="kairos-logo" alt="Kairos logo"/>
       <h3 class="bold">Kairos</h3>
     </div>
 
@@ -39,6 +40,7 @@ export default {
         {name: 'Tactical manager',value:'tactical',icon:'people'}
       ],
       selectedView: null,
+      isCollapsed: false,
     }
   },
 
