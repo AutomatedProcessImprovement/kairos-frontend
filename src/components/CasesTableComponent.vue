@@ -8,21 +8,48 @@
   
           <div class="filter-component">
             <h4 class="blue">Recommendations</h4>
-            <select v-model="filters.recommendations.value" @change="applyFilters('recommendations')">
+            <select v-model="filters.recommendations.value">
               <option :value=true>Available</option>
               <option :value=false>Unavailable</option>
             </select>
           </div>
           <div class="filter-component">
             <h4 class="blue">Intervened</h4>
-            <select v-model="filters.intervened.value" @change="applyFilters('intervened')">
+            <select v-model="filters.intervened.value">
               <option>Yes</option>
               <option>No</option>
             </select>
           </div>
+
+          <div class="filter-component">
+            <h4 class="blue">{{performanceColumn}}</h4>
+
+            <div class="input-group">
+              <select v-model="filters.performance.value.operator">
+                <option v-for="evaluationMethod in getPerformanceEvaluationMethods()" :key="evaluationMethod">{{ evaluationMethod }}</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+
+              <span v-if="performanceColumnType === 'BOOLEAN'"></span>
+              <div class="double-input" v-else-if="performanceColumnType === 'DURATION'">
+                <input type="number" min="0" v-model="filters.performance.value.value"/>
+                <select v-model="filters.performance.value.unit">
+                  <option>weeks</option>
+                  <option>days</option>
+                  <option>hours</option>
+                  <option>minutes</option>
+                  <option>seconds</option>
+                </select>
+              </div>
+              <input v-else :type="getPerformanceInputType()" v-model="filters.performance.value.value"/>
+            </div>
+          </div>
         </div>
 
         <div class="row">
+          <button @click="applyFilters()" class="btn-blue">Filter</button>
           <button @click="clearFilters()" class="btn-blue">clear filters</button>
         </div>
       </div>
@@ -30,8 +57,8 @@
     </div>
 
     <div v-if="isFullView" class="applied-filters row">
-      <div class="applied-filter shadow" v-for="key in appliedFilters" :key="key">
-        {{ key }}: {{ formatFilter(key) }} <ion-icon @click="clearFilters(key)" name="close"></ion-icon>
+      <div class="applied-filter shadow" v-for="(value,key) in appliedFilters" :key="key">
+        {{ key }}: {{ value.value }} <ion-icon @click="clearFilters(key)" name="close"></ion-icon>
       </div>
     </div>
 
@@ -90,6 +117,7 @@
       caseAttributes: Array,
       cases: Array,
       performanceColumn: String,
+      performanceColumnType: String,
       isFullView: Boolean,
     },
     
@@ -131,9 +159,6 @@
         return this.table.rows.filter(r => r['filters'].length === 0).length;
       },
 
-      appliedFilters(){
-        return Object.keys(this.filters).filter(key => this.filters[key].value !== null);
-      }
     },
 
     data() {
@@ -156,8 +181,16 @@
             label: (value) => value,
             isFiltered: (row,filterValue) =>
               row.intervened === filterValue
+          },
+          performance: {
+            value: shared.getLocal('casesListFilterPerformance') || {operator: null, value: null, unit: null},
+            label: (value) => value.operator  + " " + value.value + " " + value.unit,
+            isFiltered: (row,filterValue) =>
+              this.isFilteredPerformance(row,filterValue)
           }
         },
+
+        appliedFilters: [],
 
         table: {
           pageSize: shared.getLocal('casesListLimit') || 10,
@@ -209,10 +242,11 @@
     methods: {
 
       setup(){
+        this.computeAppliedFilters();
         if(this.appliedFilters.length > 0) {
           this.table.isLoading = true;
           this.table.rows = this.sortCases(this.cases);
-          this.applyFilters(false,0);
+          this.applyFilters(0);
           this.table.isLoading = false;
         }
         else {
@@ -222,6 +256,7 @@
       },
 
       formatFilter(key){
+        console.log(key)
         return this.filters[key].label(this.filters[key].value);
       },
 
@@ -293,13 +328,13 @@
         return rows;
       },
 
-      applyFilters(key = false,timeout = 400){
+      applyFilters(timeout = 400){
+        this.computeAppliedFilters();
         if (this.appliedFilters.length < 1) return;
         this.table.isLoading = true;
 
         setTimeout(() => {
-          if (!key) this.appliedFilters.forEach(k => this.applyFiltersHelper(k));
-          else this.applyFiltersHelper(key);
+          Object.keys(this.appliedFilters).forEach(k => this.applyFiltersHelper(k));
           this.table.isLoading = false;
         }, timeout);
       },
@@ -317,27 +352,67 @@
       },
       
       clearFilters(key = false,timeout = 400){
-        if (this.appliedFilters.length < 1) return;
+        this.computeAppliedFilters();
+        if (Object.keys(this.appliedFilters).length < 1) return;
         this.table.isLoading = true;
         setTimeout(() => {          
           if (key){
             this.table.rows.forEach(r => {
                 r['filters'] = r['filters'].filter(f => f !== key);
             });
-            this.filters[key].value = null;
+            let filterValue = this.appliedFilters[key].value;
+              if(key === 'performance') {
+                Object.keys(filterValue).forEach(k => filterValue[k] = null);
+              }
+              else {
+                this.filters[key].value = null;
+              }
             shared.removeLocal(`casesListFilter${shared.capitalise(key)}`)
           } else{
             this.table.rows.forEach(r => {
               r['filters'] = [];
             });
-            this.appliedFilters.forEach(f => {
-              this.filters[f].value = null;
+            Object.keys(this.appliedFilters).forEach(f => {
+              let filterValue = this.filters[f].value
+              if(f === 'performance') {
+                Object.keys(filterValue).forEach(k => filterValue[k] = null);
+              }
+              else {
+                this.filters[f].value = null;
+              }
               shared.removeLocal(`casesListFilter${shared.capitalise(f)}`)
             });
           }
+          this.computeAppliedFilters();
           this.table.isLoading = false;
         }, timeout);
       },
+
+      getPerformanceEvaluationMethods(){
+        let method = shared.evaluationMethods[this.performanceColumnType];
+        return Object.keys(method.operators);
+      },
+
+      getPerformanceInputType(){
+        return shared.evaluationMethods[this.performanceColumnType].inputType;
+      },
+
+      isFilteredPerformance(row,filterValue){
+        if (this.performanceColumn === "DURATION")
+          return shared.operatorEvaluationMethods[filterValue.operator](shared.parseDuration(row.performance),shared.parseDuration(filterValue));
+        return shared.operatorEvaluationMethods[filterValue.operator](row.performance.value, filterValue.value);
+      },
+
+      computeAppliedFilters(){
+        this.appliedFilters = Object.keys(this.filters)
+          .filter(k => {
+            const element = this.filters[k].value;
+            if (k === 'performance' && this.performanceColumn === 'DURATION') return element.value !== null && element.operator !== null && element.unit !== null;
+            else if(k == 'performance') return element.value !== null && element.operator !== null;
+            else return element !== null;
+          })
+          .reduce((res,k) => (res[k] = this.filters[k],res),{});
+      }
     }
   }
 </script>

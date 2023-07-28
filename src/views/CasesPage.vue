@@ -47,6 +47,7 @@
       <cases-table-component 
       :completed="completion"
       :performanceColumn="performanceColumn"
+      :performanceColumnType="performanceColumnType"
       :caseAttributes="caseAttributes"
       :cases="casesDataToShow"
       :isFullView="showTable"
@@ -103,6 +104,7 @@
         caseAttributes: [],
         
         performanceColumn: undefined,
+        performanceColumnType: undefined,
       };
     },
   
@@ -169,7 +171,10 @@
               sortable:true
             });
           })
-          if (!this.performanceColumn) this.performanceColumn = this.cases[0].case_performance.column;
+          if (!this.performanceColumn) {
+            this.performanceColumn = this.cases[0].case_performance.column;
+            this.getPerformanceColumnType();
+          }
         }
         
         let data = {};
@@ -196,7 +201,34 @@
                 console.log(error);
             }
         ); 
-      }
+      },
+
+      getPerformanceColumnType(){
+          logsService.getParameters(shared.getLocal('logId')).then(
+            (response) => {
+              const columnsDefinition = response.data.parameters.columnsDefinition;
+              this.performanceColumnType = columnsDefinition[this.performanceColumn];
+              if (!this.performanceColumnType){
+                this.performanceColumnType = this.performanceColumn;
+              }
+            },
+            (error) => {
+              this.isLoading = false;
+              const resMessage =
+                (error.response &&
+                  error.response.data &&
+                  error.response.data.error) ||
+                error.message ||
+                error.toString();
+                this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    }) 
+            }
+          );
+        },
+  
     }
   
   }

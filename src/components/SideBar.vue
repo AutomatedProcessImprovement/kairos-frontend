@@ -1,6 +1,6 @@
 <template>
   <div class="sidebar" :class="{'collapsed': isCollapsed}">
-    <ion-icon class="sidebar-collapse-icon pointer" :class="{active: isCollapsed}" @click="isCollapsed = !isCollapsed" name="chevron-back-outline"></ion-icon>
+    <ion-icon class="sidebar-collapse-icon pointer" :class="{active: isCollapsed}" @click="toggleSidebar" name="chevron-back-outline"></ion-icon>
 
     <div class="sidebar-heading pointer" @click="goToHome">
       <img src="../assets/img/laptop2.svg" class="kairos-logo" alt="Kairos logo"/>
@@ -40,7 +40,7 @@ export default {
         {name: 'Tactical manager',value:'tactical',icon:'people'}
       ],
       selectedView: null,
-      isCollapsed: false,
+      isCollapsed: shared.getLocal('isCollapsed') || false,
     }
   },
 
@@ -70,6 +70,10 @@ export default {
     },
     goToHome(){
       this.$router.push({name: 'home'});
+    },
+    toggleSidebar(){
+      this.isCollapsed = !this.isCollapsed;
+      shared.setLocal('isCollapsed',this.isCollapsed,5);
     }
   }
 
