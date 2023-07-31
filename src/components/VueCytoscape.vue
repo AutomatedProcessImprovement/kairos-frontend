@@ -64,20 +64,25 @@ cytoscape.use( dagre );
               rankDir: 'LR', 
               align: 'DR',
             }).run()
-            // this.panToElement('.selectedNode');
+            this.panToElement('.selectedNode');
           },
 
           panToElement(el){
             let selectedNodes = this.cy.nodes(el);
             if (selectedNodes.length > 0){
-              let selectedNode = selectedNodes[0];
-              let offset = -500;
-              console.log(selectedNode);
+              const selectedNode = selectedNodes[0];
+              let bb = selectedNode.boundingBox(); 
+              let w = this.cy.width()
+              let h = this.cy.height();
+              let zoom = 1;
+              var pan = {
+                x: ((w - zoom * ( bb.x1 + bb.x2 )) / 2)+w,
+                y: ((h - zoom * ( bb.y1 + bb.y2 )) / 2)+h
+              };
+
               this.cy.animate({
-                pan:{
-                  x: document.querySelector('.recommendation-details').offsetWidth - selectedNode.position('x') + offset ,
-                  y: document.querySelector('.recommendation-details').offsetHeight - selectedNode.position('y') + offset,
-                }
+                zoom: 1.1, 
+                pan: pan
               })
             }
           },
