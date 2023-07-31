@@ -53,6 +53,9 @@ cytoscape.use( dagre );
           },
           showPastRecommendations(){
             this.togglePastRecommendations();
+          },
+          selectedRec(value){
+            this.panToElement('#rn' + value.batchId + '-' + value.index);
           }
         },
 
@@ -63,7 +66,7 @@ cytoscape.use( dagre );
               name:'dagre',
               rankDir: 'LR', 
               align: 'DR',
-            }).run()
+            }).run();
             this.panToElement('.selectedNode');
           },
 
@@ -71,18 +74,19 @@ cytoscape.use( dagre );
             let selectedNodes = this.cy.nodes(el);
             if (selectedNodes.length > 0){
               const selectedNode = selectedNodes[0];
-              let bb = selectedNode.boundingBox(); 
-              let w = this.cy.width()
-              let h = this.cy.height();
-              let zoom = 1;
-              var pan = {
-                x: ((w - zoom * ( bb.x1 + bb.x2 )) / 2)+w,
-                y: ((h - zoom * ( bb.y1 + bb.y2 )) / 2)+h
-              };
-
+              if(!this.selectedRec.batchId){
+                let bb = selectedNode.boundingBox(); 
+                let w = this.cy.width()
+                let h = this.cy.height();
+                var pan = {
+                  x: (w - ( bb.x1 + bb.x2 ))/2,
+                  y: (h - ( bb.y1 + bb.y2 ))/2
+                };
+              } else var eles = {eles: selectedNode};
               this.cy.animate({
-                zoom: 1.1, 
-                pan: pan
+                zoom: 1.1,
+                center: eles,
+                pan: pan,
               })
             }
           },
