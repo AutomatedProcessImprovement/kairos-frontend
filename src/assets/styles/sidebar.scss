@@ -1,5 +1,3 @@
-// sidebar container
-
 .sidebar {
   display: flex;
   padding: 10px 10px;
@@ -22,10 +20,10 @@
   }
 
   &.collapsed{
-    visibility:collapse;
+    visibility: collapse;
     max-width: 5px;
     min-width: 5px;
-    overflow:hidden;
+    overflow: hidden;
   }
 
   .sidebar-collapse-icon{

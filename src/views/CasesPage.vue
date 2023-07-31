@@ -39,10 +39,10 @@
     
     <div v-if="!showTable" class="cases-table-preview-heading shadow">
       <h3>Cases Overview Table</h3>
-      <button v-if="!showTable" @click="showTable = !showTable" class="link-btn">Show full <ion-icon name="open-outline"></ion-icon></button>
+      <button v-if="!showTable" @click="toggleShowTable" class="link-btn">Show full <ion-icon name="open-outline"></ion-icon></button>
     </div>
     <div class="column">
-      <button v-if="showTable" @click="showTable = !showTable" class="link-btn"><ion-icon name="chevron-back"></ion-icon> Return to overview</button>
+      <button v-if="showTable" @click="toggleShowTable" class="link-btn"><ion-icon name="chevron-back"></ion-icon> Return to overview</button>
 
       <cases-table-component 
       :completed="completion"
@@ -96,7 +96,7 @@
         timer: null,
         logStatus: 'NULL',
         completion: this.$route.params.completion === 'completed',
-        showTable: false,
+        showTable: shared.getLocal('casesListShowTable') || false,
 
         isLoading: false,
         cases: [],
@@ -131,6 +131,11 @@
         this.isLoading = true;
         this.getCases();
         this.getProjectStatus(); 
+      },
+
+      toggleShowTable(){
+        this.showTable = !this.showTable;
+        shared.setLocal('casesListShowTable',this.showTable,5);
       },
 
       getCases() {

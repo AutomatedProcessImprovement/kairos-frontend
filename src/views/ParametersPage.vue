@@ -271,14 +271,14 @@ export  default {
             
             let positiveOutcome = {
                 "column": this.positiveOutcome.column,
-                "operator": this.format(this.positiveOutcome.operator),
+                "operator": shared.format(this.positiveOutcome.operator),
                 "value": this.positiveOutcome.value,
                 "unit": this.positiveOutcome.unit
             }
 
             let intervention = {
                 "column": this.intervention.column,
-                "operator": this.format(this.intervention.operator),
+                "operator": shared.format(this.intervention.operator),
                 "value": this.intervention.value,
             }
             let data = {
@@ -322,14 +322,6 @@ export  default {
         getInputType(method){
             return shared.evaluationMethods[method].inputType;
         },
-
-        format(s){
-            return s.replace(/\s+/g, '_').toUpperCase();
-        },
-
-        deformat(s){
-            return s.replace(/_+/g, ' ').toLowerCase();
-        }
 
     },
 }

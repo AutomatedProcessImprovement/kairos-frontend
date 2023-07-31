@@ -97,6 +97,14 @@ export default{
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
 
+    format(s){
+      return s.replace(/\s+/g, '_').toUpperCase();
+    },
+
+    deformat(s){
+      return s.replace(/_+/g, ' ').toLowerCase();
+    },
+
 
     formatCase(singleCase){
         

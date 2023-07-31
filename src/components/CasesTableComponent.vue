@@ -4,47 +4,50 @@
       <div v-if="isFullView" @click="filterActive = !filterActive" class="filter-toggle shadow">Filters <ion-icon :class="{active : filterActive}" name="chevron-up"></ion-icon></div>
       
       <div v-if="isFullView" class="filters column shadow" :class="{active : filterActive}">
-        <div class="row">
+        <div class="row wrap-on-media">
   
           <div class="filter-component">
-            <h4 class="blue">Recommendations</h4>
+            <h4 class="blue">RECOMMENDATIONS</h4>
             <select v-model="filters.recommendations.value">
               <option :value=true>Available</option>
               <option :value=false>Unavailable</option>
             </select>
           </div>
           <div class="filter-component">
-            <h4 class="blue">Intervened</h4>
+            <h4 class="blue">INTERVENED</h4>
             <select v-model="filters.intervened.value">
               <option>Yes</option>
               <option>No</option>
             </select>
           </div>
 
-          <div class="filter-component">
+          <div class="filter-component" v-if="performanceColumnType">
             <h4 class="blue">{{performanceColumn}}</h4>
 
-            <div class="input-group">
-              <select v-model="filters.performance.value.operator">
-                <option v-for="evaluationMethod in getPerformanceEvaluationMethods()" :key="evaluationMethod">{{ evaluationMethod }}</option>
-              </select>
-            </div>
+            <div class="column">
 
-            <div class="input-group">
-
-              <span v-if="performanceColumnType === 'BOOLEAN'"></span>
-              <div class="double-input" v-else-if="performanceColumnType === 'DURATION'">
-                <input type="number" min="0" v-model="filters.performance.value.value"/>
-                <select v-model="filters.performance.value.unit">
-                  <option>weeks</option>
-                  <option>days</option>
-                  <option>hours</option>
-                  <option>minutes</option>
-                  <option>seconds</option>
+                <select v-model="filters.performance.value.operator">
+                  <option v-for="evaluationMethod in getPerformanceEvaluationMethods()" :key="evaluationMethod" :value="evaluationMethod">{{ formatEvaluationMethod(evaluationMethod) }}</option>
                 </select>
-              </div>
-              <input v-else :type="getPerformanceInputType()" v-model="filters.performance.value.value"/>
+
+    
+                <span v-if="performanceColumnType === 'BOOLEAN'"></span>
+
+                <div class="row" v-else-if="performanceColumnType === 'DURATION'">
+                  <input type="number" min="0" v-model="filters.performance.value.value"/>
+
+                  <select v-model="filters.performance.value.unit">
+                    <option>weeks</option>
+                    <option>days</option>
+                    <option>hours</option>
+                    <option>minutes</option>
+                    <option>seconds</option>
+                  </select>
+                </div>
+
+                <input v-else :type="getPerformanceInputType()" v-model="filters.performance.value.value"/>
             </div>
+
           </div>
         </div>
 
@@ -58,7 +61,7 @@
 
     <div v-if="isFullView" class="applied-filters row">
       <div class="applied-filter shadow" v-for="(value,key) in appliedFilters" :key="key">
-        {{ key }}: {{ value.value }} <ion-icon @click="clearFilters(key)" name="close"></ion-icon>
+        {{ key === "performance" ? performanceColumn : key }}: {{ value.value ? (formatEvaluationMethod(value.operator) + " " + value.value + " " + value.unit) : value }} <ion-icon @click="clearFilters(key)" name="close"></ion-icon>
       </div>
     </div>
 
@@ -158,7 +161,6 @@
       tableRowsCount(){
         return this.table.rows.filter(r => r['filters'].length === 0).length;
       },
-
     },
 
     data() {
@@ -190,7 +192,7 @@
           }
         },
 
-        appliedFilters: [],
+        appliedFilters: {},
 
         table: {
           pageSize: shared.getLocal('casesListLimit') || 10,
@@ -243,7 +245,7 @@
 
       setup(){
         this.computeAppliedFilters();
-        if(this.appliedFilters.length > 0) {
+        if(Object.keys(this.appliedFilters).length > 0) {
           this.table.isLoading = true;
           this.table.rows = this.sortCases(this.cases);
           this.applyFilters(0);
@@ -256,8 +258,11 @@
       },
 
       formatFilter(key){
-        console.log(key)
         return this.filters[key].label(this.filters[key].value);
+      },
+
+      formatEvaluationMethod(evaluationMethod){
+        return shared.deformat(evaluationMethod);
       },
 
       getRowClasses(row){
@@ -360,7 +365,7 @@
             this.table.rows.forEach(r => {
                 r['filters'] = r['filters'].filter(f => f !== key);
             });
-            let filterValue = this.appliedFilters[key].value;
+            let filterValue = this.filters[key].value;
               if(key === 'performance') {
                 Object.keys(filterValue).forEach(k => filterValue[k] = null);
               }
@@ -411,7 +416,7 @@
             else if(k == 'performance') return element.value !== null && element.operator !== null;
             else return element !== null;
           })
-          .reduce((res,k) => (res[k] = this.filters[k],res),{});
+          .reduce((res,k) => (res[k] = this.filters[k].value,res),{});
       }
     }
   }
