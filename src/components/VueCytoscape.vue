@@ -1,6 +1,10 @@
 <template>
     <div class="diagram">
-      <div id='cy'></div>
+      <div id="cy"></div>
+      <div class="zooming-buttons">
+        <ion-icon @click="diagramZoom(1)" name="add-outline"></ion-icon>
+        <ion-icon @click="diagramZoom(-1)" name="remove-outline"></ion-icon>
+      </div>
     </div>
   </template>
 
@@ -115,6 +119,15 @@ cytoscape.use( dagre );
                   outgoingNode.style('display',displayStyle);
                 }
               })
+            });
+          },
+
+          diagramZoom(scale){
+            const w = this.cy.width()
+            const h = this.cy.height();
+            this.cy.zoom({
+              level: this.cy.zoom() + scale/10,
+              renderedPosition: { x: w/2, y: h/2 }
             });
           },
 
