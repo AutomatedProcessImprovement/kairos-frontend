@@ -141,7 +141,7 @@
       getCases() {
         casesService.getCasesByLogAndCompletion(shared.getLocal('logId'),this.completionString.toLowerCase()).then(
           (response) => {
-            if (this.cases !== response.data.cases){
+            if (this.cases !== response.data.cases && response.data.cases.length > 0){
               this.cases = response.data.cases;
               this.formatCases();
             }

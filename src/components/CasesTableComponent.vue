@@ -22,7 +22,7 @@
           </div>
 
           <div class="filter-component" v-if="performanceColumnType">
-            <h4 class="blue">{{performanceColumn}}</h4>
+            <h4 class="blue">{{performanceColumn.toUpperCase()}}</h4>
 
             <div class="column">
 
@@ -61,7 +61,7 @@
 
     <div v-if="isFullView" class="applied-filters row">
       <div class="applied-filter shadow" v-for="(value,key) in appliedFilters" :key="key">
-        {{ key === "performance" ? performanceColumn : key }}: {{ value.value ? (formatEvaluationMethod(value.operator) + " " + value.value + " " + value.unit) : value }} <ion-icon @click="clearFilters(key)" name="close"></ion-icon>
+        {{ key === "performance" ? performanceColumn : key }}: {{ value.value ? (formatEvaluationMethod(value.operator) + " " + value.value + " " + (value.unit ?? "")) : value }} <ion-icon @click="clearFilters(key)" name="close"></ion-icon>
       </div>
     </div>
 

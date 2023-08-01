@@ -38,7 +38,7 @@ export default {
         },
         
         recommendationTypes: {
-          series: [0, 0, 1],
+          series: [0, 0, 0],
           chartOptions: {
             colors: ['#56CCF2','#F2994A','#BB6BD9'],
             chart: {

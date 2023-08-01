@@ -94,7 +94,7 @@ export default {
         },
         
         recommendationsHistory: {
-          series: [0, 0, 1],
+          series: [0, 0, 0],
           chartOptions: {
             colors: ['#17ad37','#F5222D','#a0a3a5'],
             chart: {
