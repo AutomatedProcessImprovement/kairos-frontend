@@ -55,8 +55,8 @@ cytoscape.use( dagre );
             this.togglePastRecommendations();
           },
           selectedRec(newValue, oldValue){
-            console.log(oldValue);
-            this.panToElement('#rn' + newValue.batchId + '-' + newValue.index);
+            let oldRec = oldValue ? '#rn' + oldValue.batchId + '-' + oldValue.index : null;
+            this.panToElement('#rn' + newValue.batchId + '-' + newValue.index, oldRec, true);
           }
         },
 
@@ -71,12 +71,23 @@ cytoscape.use( dagre );
             this.panToElement('.selectedNode');
           },
 
-          panToElement(el){
+          panToElement(el, oldEl, isRecommendation=false){
+
+            if(oldEl){
+              let oldSelectedNodes = this.cy.nodes(oldEl);
+              if (oldSelectedNodes.length > 0)
+                oldSelectedNodes.removeClass('active');
+            }
+
             let selectedNodes = this.cy.nodes(el);
             if (selectedNodes.length > 0){
               const selectedNode = selectedNodes[0];
-              if(selectedNode.style('display') === 'element'){
-                if(!this.selectedRec.batchId){
+              
+              if(selectedNode.visible()){
+                if(isRecommendation){
+                  selectedNode.addClass('active')
+                  var eles = {eles: selectedNode};
+                } else {
                   let bb = selectedNode.boundingBox(); 
                   let w = this.cy.width()
                   let h = this.cy.height();
@@ -84,10 +95,8 @@ cytoscape.use( dagre );
                     x: (w - ( bb.x1 + bb.x2 ))/2,
                     y: (h - ( bb.y1 + bb.y2 ))/2
                   };
-                } else {
-                  // selectedNode.style('border-color','#F5222D');
-                  var eles = {eles: selectedNode};
                 }
+                
                 this.cy.animate({
                   zoom: 1.1,
                   center: eles,
@@ -119,7 +128,6 @@ cytoscape.use( dagre );
                 container: document.getElementById('cy'),
                 wheelSensitivity: 0.6,
                 style: [
-                
                   {
                     selector: '.nextActivity',
                     style : {
@@ -179,6 +187,7 @@ cytoscape.use( dagre );
                       'target-arrow-color': '#579aff',
                     }
                   },
+                  
                 {
                   selector: 'node',
                   style: {
@@ -224,6 +233,14 @@ cytoscape.use( dagre );
                       'border-color' : '#d7d7d7',
                       'border-width': 4,
 
+                    }
+                  },
+                  {
+                    selector: '.active',
+                    style : {
+                      'border-color' : '#074EE8',
+                      'border-width' : lineWidth + 1,
+                      'background-color': '#EBF0FF',
                     }
                   },
               ],

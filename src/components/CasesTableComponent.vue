@@ -52,7 +52,7 @@
         </div>
 
         <div class="row">
-          <button @click="applyFilters()" class="btn-blue">Filter</button>
+          <button @click="applyFilters()" class="btn-blue">Apply filters</button>
           <button @click="clearFilters()" class="btn-blue">clear filters</button>
         </div>
       </div>
