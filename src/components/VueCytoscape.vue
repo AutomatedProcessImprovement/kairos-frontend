@@ -54,8 +54,9 @@ cytoscape.use( dagre );
           showPastRecommendations(){
             this.togglePastRecommendations();
           },
-          selectedRec(value){
-            this.panToElement('#rn' + value.batchId + '-' + value.index);
+          selectedRec(newValue, oldValue){
+            console.log(oldValue);
+            this.panToElement('#rn' + newValue.batchId + '-' + newValue.index);
           }
         },
 
@@ -74,20 +75,25 @@ cytoscape.use( dagre );
             let selectedNodes = this.cy.nodes(el);
             if (selectedNodes.length > 0){
               const selectedNode = selectedNodes[0];
-              if(!this.selectedRec.batchId){
-                let bb = selectedNode.boundingBox(); 
-                let w = this.cy.width()
-                let h = this.cy.height();
-                var pan = {
-                  x: (w - ( bb.x1 + bb.x2 ))/2,
-                  y: (h - ( bb.y1 + bb.y2 ))/2
-                };
-              } else var eles = {eles: selectedNode};
-              this.cy.animate({
-                zoom: 1.1,
-                center: eles,
-                pan: pan,
-              })
+              if(selectedNode.style('display') === 'element'){
+                if(!this.selectedRec.batchId){
+                  let bb = selectedNode.boundingBox(); 
+                  let w = this.cy.width()
+                  let h = this.cy.height();
+                  var pan = {
+                    x: (w - ( bb.x1 + bb.x2 ))/2,
+                    y: (h - ( bb.y1 + bb.y2 ))/2
+                  };
+                } else {
+                  // selectedNode.style('border-color','#F5222D');
+                  var eles = {eles: selectedNode};
+                }
+                this.cy.animate({
+                  zoom: 1.1,
+                  center: eles,
+                  pan: pan,
+                });
+              }
             }
           },
 
