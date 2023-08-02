@@ -123,10 +123,12 @@ cytoscape.use( dagre );
           },
 
           diagramZoom(scale){
+            let level = this.cy.zoom() + scale/10;
+            if(level < 0) return;
             const w = this.cy.width()
             const h = this.cy.height();
             this.cy.zoom({
-              level: this.cy.zoom() + scale/10,
+              level: level,
               renderedPosition: { x: w/2, y: h/2 }
             });
           },
