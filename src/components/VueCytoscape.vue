@@ -91,21 +91,24 @@ cytoscape.use( dagre );
                 if(isRecommendation){
                   selectedNode.addClass('active')
                   var eles = {eles: selectedNode};
+                  this.cy.animate({
+                    zoom: 1.1,
+                    center: eles,
+                  });
+
                 } else {
                   let bb = selectedNode.boundingBox(); 
                   let w = this.cy.width()
                   let h = this.cy.height();
                   var pan = {
-                    x: (w - ( bb.x1 + bb.x2 ))/2,
-                    y: (h - ( bb.y1 + bb.y2 ))/2
+                    x: (w - ( bb.x1 + bb.x2 ))/2 + 200,
+                    y: (h - ( bb.y1 + bb.y2 ))/2 + 100
                   };
+                  this.cy.animate({
+                    zoom: 1.1,
+                    pan: pan,
+                  });
                 }
-                
-                this.cy.animate({
-                  zoom: 1.1,
-                  center: eles,
-                  pan: pan,
-                });
               }
             }
           },
