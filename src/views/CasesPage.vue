@@ -169,17 +169,18 @@
         if (this.casesData.length > 0){
           this.casesData = [];
         }else{
+          if (!this.performanceColumn) {
+            this.performanceColumn = this.cases[0].case_performance.column;
+            this.getPerformanceColumnType();
+          }
           Object.keys(this.cases[0].case_attributes).forEach(k => {
+            if(this.performanceColumn === k) return;
             this.caseAttributes.push({
               label:k,
               field:k,
               sortable:true
             });
           })
-          if (!this.performanceColumn) {
-            this.performanceColumn = this.cases[0].case_performance.column;
-            this.getPerformanceColumnType();
-          }
         }
         
         let data = {};

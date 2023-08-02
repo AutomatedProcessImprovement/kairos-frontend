@@ -203,7 +203,7 @@
             {
               label: 'Case ID',
               field: 'id',
-              width: "10%",
+              width: "5%",
               sortable: true,
             },
             {
@@ -215,7 +215,7 @@
             {
               label: "Performance",
               field: "performance",
-              width: "5%",
+              width: "15%",
               sortable: true,
             },
             {
