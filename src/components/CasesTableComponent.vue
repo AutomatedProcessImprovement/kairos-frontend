@@ -176,19 +176,20 @@
             value: shared.getLocal('casesListFilterRecommendations'),
             label: (value) => value ? 'Available' : 'Unavailable',
             isFiltered: (row,filterValue) =>
-            filterValue ? row.recommendations > 0 : row.recommendations < 1
+            filterValue ? row.recommendations > 0 : row.recommendations < 1,
+            applied: shared.getLocal('casesListFilterRecommendations') !== null,
           },
           intervened: {
             value: shared.getLocal('casesListFilterIntervened'),
             label: (value) => value,
-            isFiltered: (row,filterValue) =>
-              row.intervened === filterValue
+            isFiltered: (row,filterValue) => row.intervened === filterValue,
+            applied: shared.getLocal('casesListFilterIntervened') !== null,
           },
           performance: {
             value: shared.getLocal('casesListFilterPerformance') || {operator: null, value: null, unit: null},
             label: (value) => value.operator  + " " + value.value + " " + value.unit,
-            isFiltered: (row,filterValue) =>
-              this.isFilteredPerformance(row,filterValue)
+            isFiltered: (row,filterValue) => this.isFilteredPerformance(row,filterValue),
+            applied: shared.getLocal('casesListFilterPerformance') !== null,
           }
         },
 
@@ -334,17 +335,17 @@
       },
 
       applyFilters(timeout = 400){
-        this.computeAppliedFilters();
+        this.computeAppliedFilters(true);
         if (this.appliedFilters.length < 1) return;
         this.table.isLoading = true;
 
         setTimeout(() => {
-          Object.keys(this.appliedFilters).forEach(k => this.applyFiltersHelper(k));
+          Object.keys(this.appliedFilters).forEach(k => this.applyFilterByKey(k));
           this.table.isLoading = false;
         }, timeout);
       },
 
-      applyFiltersHelper(key){
+      applyFilterByKey(key){
         this.table.rows.forEach(r => {
           let filter = this.filters[key].isFiltered(r,this.filters[key].value);
           if(!filter) r['filters'].push(key)
@@ -353,44 +354,52 @@
             if (filterIndex > -1) r['filters'].splice(filterIndex,1);
           }
         });
-        shared.setLocal(`casesListFilter${shared.capitalise(key)}`,this.filters[key].value,5)
+        shared.setLocal(`casesListFilter${shared.capitalise(key)}`,this.filters[key].value,5);
+        this.filters[key].applied = true;
       },
       
       clearFilters(key = false,timeout = 400){
         this.computeAppliedFilters();
         if (Object.keys(this.appliedFilters).length < 1) return;
+
         this.table.isLoading = true;
+
         setTimeout(() => {          
-          if (key){
-            this.table.rows.forEach(r => {
-                r['filters'] = r['filters'].filter(f => f !== key);
-            });
-            let filterValue = this.filters[key].value;
-              if(key === 'performance') {
-                Object.keys(filterValue).forEach(k => filterValue[k] = null);
-              }
-              else {
-                this.filters[key].value = null;
-              }
-            shared.removeLocal(`casesListFilter${shared.capitalise(key)}`)
-          } else{
-            this.table.rows.forEach(r => {
-              r['filters'] = [];
-            });
-            Object.keys(this.appliedFilters).forEach(f => {
-              let filterValue = this.filters[f].value
-              if(f === 'performance') {
-                Object.keys(filterValue).forEach(k => filterValue[k] = null);
-              }
-              else {
-                this.filters[f].value = null;
-              }
-              shared.removeLocal(`casesListFilter${shared.capitalise(f)}`)
-            });
-          }
+          if (key) this.clearFilterByKey(key);
+          else this.clearAllFilters();
+
           this.computeAppliedFilters();
           this.table.isLoading = false;
         }, timeout);
+      },
+
+      clearFilterByKey(key){
+        this.table.rows.forEach(r => {
+            r['filters'] = r['filters'].filter(f => f !== key);
+        });
+        this.removeFilterFromMemory(key);
+      },
+
+      clearAllFilters(){
+        this.table.rows.forEach(r => {
+          r['filters'] = [];
+        });
+
+        Object.keys(this.appliedFilters).forEach(f => {
+          this.removeFilterFromMemory(f);
+        });
+      },
+
+      removeFilterFromMemory(key){
+        if(!this.filters[key]) return;
+
+        let filterValue = this.filters[key].value;
+
+        if (key === 'performance') Object.keys(filterValue).forEach(k => filterValue[k] = null);
+        else this.filters[key].value = null;
+
+        this.filters[key].applied = false;
+        shared.removeLocal(`casesListFilter${shared.capitalise(key)}`);
       },
 
       getPerformanceEvaluationMethods(){
@@ -408,15 +417,21 @@
         return shared.operatorEvaluationMethods[filterValue.operator](row.performance.value, filterValue.value);
       },
 
-      computeAppliedFilters(){
+      computeAppliedFilters(filterByValue = false){
         this.appliedFilters = Object.keys(this.filters)
           .filter(k => {
-            const element = this.filters[k].value;
-            if (k === 'performance' && this.performanceColumn === 'DURATION') return element.value !== null && element.operator !== null && element.unit !== null;
-            else if(k == 'performance') return element.value !== null && element.operator !== null;
-            else return element !== null;
+            let flag = false;
+            if (filterByValue){
+              const element = this.filters[k].value;
+              if (k === 'performance' && this.performanceColumn === 'DURATION') flag = element.value !== null && element.operator !== null && element.unit !== null;
+              else if(k == 'performance') flag = element.value !== null && element.operator !== null;
+              else flag = element !== null;
+            } else{
+              flag = this.filters[k].applied === true;
+            }
+            return flag;
           })
-          .reduce((res,k) => (res[k] = this.filters[k].value,res),{});
+          .reduce((res,k) => (res[k] = JSON.parse(JSON.stringify(this.filters[k].value)),res),{});
       }
     }
   }
