@@ -1,15 +1,18 @@
 <template>
-  <div class="sidebar">
+  <div class="sidebar" :class="{'collapsed': isCollapsed}">
+    <ion-icon class="sidebar-collapse-icon pointer" :class="{active: isCollapsed}" @click="toggleSidebar" name="chevron-back-outline"></ion-icon>
 
     <div class="sidebar-heading pointer" @click="goToHome">
-      <ion-icon name="laptop-outline"></ion-icon>
+      <img src="../assets/img/laptop2.svg" class="kairos-logo" alt="Kairos logo"/>
       <h3 class="bold">Kairos</h3>
     </div>
 
     <div class="sidebar-content">
       <div class="sidebar-items">
         <router-link class = "sidebar-item"  :to="{ name: 'dashboard'}"><ion-icon name="home"></ion-icon>Dashboard</router-link>
-        <router-link class = "sidebar-item"  :to="{ name: 'cases'}"><ion-icon name="stats-chart"></ion-icon>Cases</router-link>
+        <router-link :class="['sidebar-item', {'active': isCasesActive}]"  :to="{ name: 'cases',params: {completion: 'completed'}}"><ion-icon name="list"></ion-icon>Cases</router-link>
+        <router-link class = "sidebar-item sub-item"  :to="{ name: 'cases',params: {completion: 'completed'}}"><ion-icon name="stats-chart"></ion-icon>Completed Cases</router-link>
+        <router-link class = "sidebar-item sub-item"  :to="{ name: 'cases',params: {completion: 'ongoing'}}"><ion-icon name="stats-chart"></ion-icon>Ongoing Cases</router-link>
         <router-link class = "sidebar-item"  :to="{ name: 'recommendations'}"><ion-icon name="document-text"></ion-icon>Recommendations</router-link>
       </div>
   
@@ -37,6 +40,13 @@ export default {
         {name: 'Tactical manager',value:'tactical',icon:'people'}
       ],
       selectedView: null,
+      isCollapsed: shared.getLocal('isCollapsed') || false,
+    }
+  },
+
+  computed:{
+    isCasesActive(){
+      return this.$route.path.startsWith('/cases');
     }
   },
 
@@ -60,6 +70,10 @@ export default {
     },
     goToHome(){
       this.$router.push({name: 'home'});
+    },
+    toggleSidebar(){
+      this.isCollapsed = !this.isCollapsed;
+      shared.setLocal('isCollapsed',this.isCollapsed,5);
     }
   }
 

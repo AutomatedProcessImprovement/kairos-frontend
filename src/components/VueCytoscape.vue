@@ -1,6 +1,10 @@
 <template>
     <div class="diagram">
-      <div id='cy'></div>
+      <div id="cy"></div>
+      <div class="zooming-buttons">
+        <ion-icon @click="diagramZoom(1)" name="add-outline"></ion-icon>
+        <ion-icon @click="diagramZoom(-1)" name="remove-outline"></ion-icon>
+      </div>
     </div>
   </template>
 
@@ -17,6 +21,7 @@ cytoscape.use( dagre );
           parameters: Object,
           currentCase: Object, 
           selectedRec: Object,
+          showPastRecommendations: Boolean,
         },
 
         data: function() {
@@ -49,16 +54,83 @@ cytoscape.use( dagre );
         watch: {
           currentCase(){
             this.createNodes();
+          },
+          showPastRecommendations(){
+            this.togglePastRecommendations();
+          },
+          selectedRec(newValue, oldValue){
+            let oldRec = oldValue ? '#rn' + oldValue.batchId + '-' + oldValue.index : null;
+            this.panToElement('#rn' + newValue.batchId + '-' + newValue.index, oldRec, true);
           }
         },
+
         methods: {
           displayDiagram(){
             this.cy.layout({
-              fit:false,
+              fit: false,
               name:'dagre',
               rankDir: 'LR', 
               align: 'DR',
-            }).run()
+            }).run();
+            this.panToElement('.selectedNode');
+          },
+
+          panToElement(el, oldEl, isRecommendation=false){
+
+            if(oldEl){
+              let oldSelectedNodes = this.cy.nodes(oldEl);
+              if (oldSelectedNodes.length > 0)
+                oldSelectedNodes.removeClass('active');
+            }
+
+            let selectedNodes = this.cy.nodes(el);
+            if (selectedNodes.length > 0){
+              const selectedNode = selectedNodes[0];
+              
+              if(selectedNode.visible()){
+                if(isRecommendation){
+                  selectedNode.addClass('active')
+                  var eles = {eles: selectedNode};
+                } else {
+                  let bb = selectedNode.boundingBox(); 
+                  let w = this.cy.width()
+                  let h = this.cy.height();
+                  var pan = {
+                    x: (w - ( bb.x1 + bb.x2 ))/2,
+                    y: (h - ( bb.y1 + bb.y2 ))/2
+                  };
+                }
+                
+                this.cy.animate({
+                  zoom: 1.1,
+                  center: eles,
+                  pan: pan,
+                });
+              }
+            }
+          },
+
+          togglePastRecommendations(){
+            let displayStyle = this.showPastRecommendations ? 'element' : 'none';
+            var activityNodes = this.cy.nodes('.activity');
+            activityNodes.forEach(activityNode => {
+              activityNode.outgoers().nodes().forEach(outgoingNode => {
+                if(!outgoingNode.hasClass('selectedNode') && !outgoingNode.hasClass('activity')){
+                  outgoingNode.style('display',displayStyle);
+                }
+              })
+            });
+          },
+
+          diagramZoom(scale){
+            let level = this.cy.zoom() + scale/10;
+            if(level < 0) return;
+            const w = this.cy.width()
+            const h = this.cy.height();
+            this.cy.zoom({
+              level: level,
+              renderedPosition: { x: w/2, y: h/2 }
+            });
           },
 
           createDiagram(){
@@ -69,8 +141,8 @@ cytoscape.use( dagre );
             var lineWidth = 2;
             var cy = cytoscape({
                 container: document.getElementById('cy'),
+                wheelSensitivity: 0.6,
                 style: [
-                
                   {
                     selector: '.nextActivity',
                     style : {
@@ -130,6 +202,7 @@ cytoscape.use( dagre );
                       'target-arrow-color': '#579aff',
                     }
                   },
+                  
                 {
                   selector: 'node',
                   style: {
@@ -175,6 +248,14 @@ cytoscape.use( dagre );
                       'border-color' : '#d7d7d7',
                       'border-width': 4,
 
+                    }
+                  },
+                  {
+                    selector: '.active',
+                    style : {
+                      'border-color' : '#074EE8',
+                      'border-width' : lineWidth + 1,
+                      'background-color': '#EBF0FF',
                     }
                   },
               ],

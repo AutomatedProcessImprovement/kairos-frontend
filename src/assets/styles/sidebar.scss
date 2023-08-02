@@ -1,13 +1,62 @@
-// sidebar container
-
 .sidebar {
   display: flex;
   padding: 10px 10px;
   flex-direction: column;
   flex-grow: 1;
-  max-width: 200px;
-  min-width: 200px;
+  max-width: 220px;
+  min-width: 220px;
   height: 100vh;
+  overflow: auto;
+  transition: 0.5s;
+  border-right: 1px solid $k-gray1;
+
+  &:hover{
+    border-right: 1px solid $k-gray2;
+    box-shadow: -14px 3px 10px -12px rgba(0,0,0,0.08) inset;
+
+    .sidebar-collapse-icon{
+      display: block;
+    }
+  }
+
+  &.collapsed{
+    visibility: collapse;
+    max-width: 5px;
+    min-width: 5px;
+    overflow: hidden;
+  }
+
+  .sidebar-collapse-icon{
+    background-color: $k-white;
+    padding: 5px;
+    border-radius: 15px;
+    position: absolute;
+    left: 200px;
+    top: 20px;
+    display: none;
+    visibility: visible;
+    transition: 0.5s;
+    box-shadow: 0px 3px 5px rgba(0,0,0,0.06);
+
+    &.active{
+      rotate: 180deg;
+      box-shadow: 0px 0px 5px rgba(0, 72, 255, 0.3);
+      visibility: visible;
+      display: block;
+      left: 5px;
+    }
+    
+    &:hover{
+      filter: brightness(90%);
+      box-shadow: 0px 0px 5px rgba(0, 72, 255, 0.3);
+
+    }
+}
+
+.kairos-logo{
+  width: 35px;
+  margin-right: 10px;
+}
 
   ion-icon{
     width: 20px;
@@ -53,6 +102,12 @@
       transition: 0.2s;
       color: $k-blue2;
       cursor: pointer;
+      margin: 2px 0px;
+
+      &.sub-item{
+        margin-left: 20px;
+        padding: 5px;
+      }
       
       &:hover{
       background-color: $k-white;

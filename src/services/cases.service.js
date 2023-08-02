@@ -13,6 +13,10 @@ class CasesService {
     getCasesByLog(logId) {
         return http.get(`/event_logs/${logId}/cases`);
     }
+
+    getCasesByLogAndCompletion(logId,caseCompletion) {
+        return http.get(`/event_logs/${logId}/cases/${caseCompletion}`);
+    }
 }
 
 export default new CasesService();

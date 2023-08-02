@@ -191,20 +191,6 @@ export  default {
             intervention: {},
             
             alarmThreshold: null,
-
-            evaluationMethods: {
-                'TEXT': {operators:['equal','not equal','contains','not contains'],inputType:'text'},
-                'NUMBER': {operators:['equal','not equal','greater than','less than','greater than or equal','less than or equal'],inputType:'number'},
-                'BOOLEAN': {operators:['is true','is false'],inputType:'boolean'},
-                'DATETIME': {operators:['equal','not equal','later than','earlier than','later than or equal','earlier than or equal'],inputType:'datetime-local'},
-                'ACTIVITY': {operators:['equal','not equal','contains','not contains'],inputType:'activity'},
-                'RESOURCE': {operators:['equal','not equal','contains','not contains'],inputType:'text'},
-                'TIMESTAMP': {operators:['equal','not equal','later than','earlier than','later than or equal','earlier than or equal'],inputType:'datetime-local'},
-                'START_TIMESTAMP': {operators:['equal','not equal','later than','earlier than','later than or equal','earlier than or equal'],inputType:'datetime-local'},
-                'END_TIMESTAMP': {operators:['equal','not equal','later than','earlier than','later than or equal','earlier than or equal'],inputType:'datetime-local'},
-                'DURATION': {operators:['equal','not equal','greater than','less than','greater than or equal','less than or equal'],inputType:'number'},
-                'COST': {operators:['equal','not equal','greater than','less than','greater than or equal','less than or equal'],inputType:'number'},
-            },
             parametersDescription: null
 
         }
@@ -248,9 +234,9 @@ export  default {
             this.caseCompletion = this.log.case_completion;
             this.alarmThreshold = this.log.alarm_threshold;
             this.positiveOutcome = this.log.positive_outcome;
-            this.positiveOutcome.operator = this.deformat(this.positiveOutcome.operator);
+            // this.positiveOutcome.operator = this.deformat(this.positiveOutcome.operator);
             this.intervention = this.log.treatment;
-            this.intervention.operator = this.deformat(this.intervention.operator);
+            // this.intervention.operator = this.deformat(this.intervention.operator);
         },
 
         closeModal(){
@@ -285,14 +271,14 @@ export  default {
             
             let positiveOutcome = {
                 "column": this.positiveOutcome.column,
-                "operator": this.format(this.positiveOutcome.operator),
+                "operator": shared.format(this.positiveOutcome.operator),
                 "value": this.positiveOutcome.value,
                 "unit": this.positiveOutcome.unit
             }
 
             let intervention = {
                 "column": this.intervention.column,
-                "operator": this.format(this.intervention.operator),
+                "operator": shared.format(this.intervention.operator),
                 "value": this.intervention.value,
             }
             let data = {
@@ -329,21 +315,13 @@ export  default {
             }
             if(parameter === 'outcome') this.positiveOutcome.columnDefinition = definition;
             else this.intervention.columnDefinition = definition;
-            let method = this.evaluationMethods[definition];
-            return method.operators;
+            let method = shared.evaluationMethods[definition];
+            return Object.keys(method.operators);
         },
 
         getInputType(method){
-            return this.evaluationMethods[method].inputType;
+            return shared.evaluationMethods[method].inputType;
         },
-
-        format(s){
-            return s.replace(/\s+/g, '_').toUpperCase();
-        },
-
-        deformat(s){
-            return s.replace(/_+/g, ' ').toLowerCase();
-        }
 
     },
 }

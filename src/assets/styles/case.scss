@@ -6,6 +6,12 @@
   padding: 20px 30px;
   flex-grow: 1;
   overflow-y: hidden;
+
+  .btn-return{
+    display: flex;
+    align-items: center;
+    width: max-content;
+  }
 }
 
 .case-small-text{

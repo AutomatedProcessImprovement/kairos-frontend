@@ -8,23 +8,28 @@
     .log-table{
         display: flex;
         flex-direction: column;
-        background-color: $k-white;
         max-width: 90vw;
-        border-radius: 10px;
-
-        tr .btn-blue{
-            filter: opacity(50%);
-
-            &.selected{
-                filter: none;
+        
+        table{
+            border-radius: 10px;
+            border-collapse: separate;
+            box-shadow: 0px 10px 27px rgba(0, 0, 0, 0.05); 
+            
+            tr .btn-blue{
+                filter: opacity(50%);
+    
+                &.selected{
+                    filter: none;
+                }
             }
+
         }
+
 
     }
     .buttons{
         display: flex;
         justify-content: flex-start;
-        background-color: $k-gray1;
 
         .btn-blue{
             margin: 10px !important;

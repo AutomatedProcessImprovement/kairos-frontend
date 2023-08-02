@@ -1,7 +1,7 @@
 import {createRouter, createWebHistory, RouterView} from "vue-router";
 import {h} from 'vue';
 import CasePage from "./views/CasePage.vue"
-import CasesList from "./views/CasesList.vue"
+import CasesPage from "./views/CasesPage.vue"
 import HomePage from "./views/HomePage"
 import DashBoard from './views/DashBoard'
 import ParametersPage from './views/ParametersPage'
@@ -34,16 +34,28 @@ const routes = [
         component: { render: () => h(RouterView)},
         children: [
             {
-                path: '',
-                name: 'cases',
-                component: CasesList
+                path: ':completion',
+                component: { render: () => h(RouterView)},
+                params: {
+                    completion: ['completed','ongoing']
+                },
+                children: [
+                    {
+                        path: '',
+                        name: 'cases',
+                        component: CasesPage,
+                    },
+                    {
+                        path: ":caseId",
+                        name: "case",
+                        component: CasePage,
+                        params: {
+                            caseId: []
+                        }
+                    },
+                ]
             },
-            {
-                path: ":caseId",
-                name: "case",
-                component: CasePage,
-                params: true
-            },
+            
         ]
     },
     {

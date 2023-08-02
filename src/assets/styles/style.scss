@@ -23,7 +23,9 @@ that contains all the variables.
 @import 'tooltip.scss';
 @import 'notification.scss';
 @import 'modal.scss';
+@import 'casesTable.scss';
 @import "@vueform/toggle/themes/default.css";
+@import "@vueform/slider/themes/default.css";
 
 
 #app{
@@ -111,11 +113,11 @@ td, th {
 .case-recommendations{
   border-radius: 5px;
   color: $k-white;
+  padding: 0px 10px;
+  width: fit-content;
   text-transform: uppercase;
-  padding: 0px 5px;
-  display: inline-block;
-  width: 130px;
-  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
   
   &.available{
     background: linear-gradient(135deg, $k-green1 5%, $k-green2 100%);
@@ -256,5 +258,161 @@ input::placeholder{
   &:disabled{
     filter: opacity(50%);
     cursor: auto;
+  }
+}
+
+.toggle-container{
+  &:focus{
+      outline: none;
+      box-shadow: none;
+  }
+  .toggle-on{
+      background: $k-blue;
+      border-color: $k-blue;
+  }
+}
+
+.cases-table,.recommendations-table{
+  display:flex;
+  flex: 1;
+  align-items: flex-start;
+  margin-top: 10px;
+
+  &.hide-paging{
+    .vtl-paging{
+      display:none;
+    }
+  }
+
+  .vtl{
+    flex:1;
+    box-shadow: 0px 10px 27px rgba(0, 0, 0, 0.05);
+
+    tr{
+      cursor: pointer;
+      padding: 10px 0px;
+      
+      &.clicked-row{
+        background-color: $k-blue4;
+      }
+      &.last-clicked-row{
+        background-color: $k-gray2;
+      }
+    }
+  }
+}
+
+.vtl-table{
+  transition: 0.5s;
+}
+
+.vtl-paging{
+  padding: 0px 10px 10px 10px;
+  align-items: center;
+}
+
+.vtl-loading-mask{
+  background-color: rgba($color: $k-white, $alpha: 0.6) !important;
+  border-radius: 10px;
+  span{
+    color: $k-blue !important;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+}
+
+.slider-target{
+  width: 200px;
+  padding-right: 10px;
+  z-index: 0;
+
+  .slider-connect{
+    background-color: $k-blue;
+  }
+  .slider-tooltip{
+    background-color: $k-blue;
+    border: 1px solid $k-blue;
+    
+    &::before{
+      border-bottom-color: $k-blue !important;
+    }
+  }
+
+}
+
+@media (max-width: 800px) {
+      
+  .stats{
+    flex-wrap: wrap;
+  }
+}
+
+.stats{
+  display: flex;
+  
+  .btn-blue{
+    margin: 20px 20px 10px 0px;
+  }
+  .stats-card{
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    margin: 10px 20px 0px 0px;
+    background-color: $k-white;
+    box-shadow: 0px 10px 27px rgba(0, 0, 0, 0.05);
+    color: $k-black;
+    border-radius: 10px;
+    transition: 0.2s;
+    height: max-content;
+
+    &.wrap-text{
+      small{
+        min-width: 100px;
+        max-width: 120px;
+      }
+    }
+
+    .large-number{
+      padding: 4px 12px;
+      border-radius: 8px;
+      margin-left: 5px;
+      box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.1);
+
+      &.bg-green{
+        background-color: $k-green2;
+      }
+      &.bg-gray{
+        background-color: $k-gray2;
+      }
+    }
+
+
+    &.selected{
+      background-color: $k-blue4;
+    }
+
+    .column{
+      padding: 0px 20px 0 0;
+
+      * {
+        padding: 0;
+        margin: 0;
+      }
+
+    }
+
+      ion-icon{
+        color: $k-white;
+        background-color: $k-blue;
+        width: 20px;
+        height: 20px;
+        padding: 5px;
+        border-radius: 5px;
+        margin-top: 10px;
+      }
+  }
+
+  span{
+    padding: 10px 40px 20px 5px
   }
 }

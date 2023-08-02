@@ -63,10 +63,12 @@
       display: flex;
       flex-direction: column;
       flex-grow: 1;
+      overflow: hidden;
       
       .tabs-component{  
-        position: relative;    
-      
+        position: relative;
+        overflow: inherit;
+
         .legend {
           display:flex;
           flex-direction: column;

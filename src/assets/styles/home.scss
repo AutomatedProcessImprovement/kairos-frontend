@@ -4,17 +4,6 @@
     flex-direction: column;
     flex: 1;
 
-    .toggle-container{
-        &:focus{
-            outline: none;
-            box-shadow: none;
-        }
-        .toggle-on{
-            background: $k-blue;
-            border-color: $k-blue;
-        }
-    }
-
     
     h1{
         font-weight: bold;

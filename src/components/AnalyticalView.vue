@@ -45,7 +45,10 @@
       </div>
 
       <div class="recommendation-details shadow">
-        <h4 bold>Recommendation details</h4>
+        <div class="row space-between">
+          <h4 bold>Recommendation details</h4>
+          <p>Show past recommendations <toggle v-model="showPastRecommendations"/></p>
+        </div>
         <tabs :options="tabOptions.recommendationDetails">
           <tab name="Process model" id="tab-diagram">
             <legend-component></legend-component>
@@ -53,6 +56,7 @@
               :parameters="parameters"
               :currentCase="currentCase"
               :selectedRec="selectedRec"
+              :showPastRecommendations="showPastRecommendations"
               @loading="handleLoading"
               ></vue-cytoscape>
           </tab>
@@ -88,6 +92,7 @@
   import LegendComponent from './LegendComponent.vue';
   import TooltipComponent from './TooltipComponent.vue';
   import RecommendationComponent from './RecommendationComponent.vue';
+  import Toggle from '@vueform/toggle'
   
     export default {
       name: 'CasePage',
@@ -95,7 +100,8 @@
         VueCytoscape,
         LegendComponent,
         TooltipComponent,
-        RecommendationComponent
+        RecommendationComponent,
+        Toggle
       },
   
       props: {
@@ -111,6 +117,7 @@
             recommendations: { defaultTabHash: 'tab-current', useUrlFragment: false},
             recommendationDetails: { defaultTabHash: 'tab-diagram', useUrlFragment: false}
         },
+        showPastRecommendations: true,
         }
       },
       computed: {
