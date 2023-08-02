@@ -312,7 +312,8 @@
           this.table.pageSize = limit;
 
           shared.setLocal('casesListOffset',offset,5);
-          shared.setLocal('casesListLimit',limit,5);          
+          shared.setLocal('casesListLimit',limit,5);      
+          this.table.isLoading = false;    
         }, 400);
       },
 
