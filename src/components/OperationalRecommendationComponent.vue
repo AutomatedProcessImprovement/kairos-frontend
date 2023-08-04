@@ -71,7 +71,7 @@ export default{
 
                 if(p.type === 'NEXT_ACTIVITY'){
                     recommendationAttr = 'Perform ' + p.output;
-                    recommendedAttr = 'It is likely that the application will comply with the KPI if you perform this recommendation now.';
+                    recommendedAttr = 'It is likely that the application will comply with the target if you perform this recommendation now.';
                     recommendationMetrics = [
                         {name: 'Accuracy', metric: Math.round(p.plugin.accuracy * 100) + '%'},
                         {name: 'Recall', metric: Math.round(p.plugin.recall * 100) + '%'},
@@ -84,7 +84,7 @@ export default{
                         continue;
                     }
                     recommendationStatus = '';
-                    recommendedAttr = 'Probability of not meeting the KPI is high. It is recommended to check on the application.' ;
+                    recommendedAttr = 'Probability of not meeting the target is high. It is recommended to check on the application.' ;
                     recommendationMetrics = [
                         {name: 'Accuracy', metric: Math.round(p.plugin.accuracy * 100) + '%'},
                         {name: 'Recall', metric: Math.round(p.plugin.recall * 100) + '%'},

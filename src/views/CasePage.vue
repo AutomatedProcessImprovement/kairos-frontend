@@ -13,7 +13,7 @@
   
       <div class="stats">
         <div v-if="parameters.kpi" class="stats-card column">
-          <p>KPI</p>
+          <p>Target</p>
           <h3 class="blue">{{ parameters.kpi.value }} {{ parameters.kpi.unit }}</h3>
           <small>Case {{ parameters.kpi.column }}  {{ parameters.kpi.operator }}</small>
         </div>

@@ -46,7 +46,7 @@
                                 <h3 class="bold">What is positive case outcome?</h3>
                             </template>
                             <template v-slot:content>
-                            <p>The positive case outcome parameter marks when the case is considered to have a positive outcome. This is the key performance indicator (KPI) for the log.</p>
+                            <p>The positive case outcome parameter marks when the case is considered to have a positive outcome. This is the key performance indicator (KPI) or target for the log.</p>
                             <p>For example, if positive case outcome is 'Duration less than or equal 12 days', then all cases that last for 12 days or less are considered to have a positive outcome, and those that do not - negative.</p>
                             </template>
                         </tooltip-component>
