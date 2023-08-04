@@ -61,7 +61,7 @@
 
     <div v-if="isFullView" class="applied-filters row">
       <div class="applied-filter shadow" v-for="(value,key) in appliedFilters" :key="key">
-        {{ key === "performance" ? performanceColumn : key }}: {{ value.value ? (formatEvaluationMethod(value.operator) + " " + value.value + " " + (value.unit ?? "")) : value }} <ion-icon @click="clearFilters(key)" name="close"></ion-icon>
+        {{ key === "performance" ? performanceColumn : key }}: {{ this.filters[key].label(value) }} <ion-icon @click="clearFilters(key)" name="close"></ion-icon>
       </div>
     </div>
 
@@ -187,7 +187,7 @@
           },
           performance: {
             value: shared.getLocal('casesListFilterPerformance') || {operator: null, value: null, unit: null},
-            label: (value) => value.operator  + " " + value.value + " " + value.unit,
+            label: (value) => value.operator  + " " + value.value + " " + (value.unit ?? ""),
             isFiltered: (row,filterValue) => this.isFilteredPerformance(row,filterValue),
             applied: shared.getLocal('casesListFilterPerformance') !== null,
           }
@@ -256,10 +256,6 @@
           if (this.table.offset >= this.table.pageSize * this.pageNumber) this.table.offset = 0;
           this.doSearch(this.table.offset, this.table.pageSize, this.table.sortable.order, this.table.sortable.sort, true, true, this.cases);        
         }
-      },
-
-      formatFilter(key){
-        return this.filters[key].label(this.filters[key].value);
       },
 
       formatEvaluationMethod(evaluationMethod){
