@@ -138,7 +138,7 @@
     computed: {
 
       headers(){
-        if(this.completed === true) return this.table.headers.concat([this.table.outcomeHeader]).concat(this.caseAttributes);
+        if(this.completed === true) return [...this.table.headers.slice(0,1), ...this.table.headers.slice(2)].concat([this.table.outcomeHeader]).concat(this.caseAttributes);
         return this.table.headers.concat(this.caseAttributes);
       },
 
@@ -209,7 +209,6 @@
             {
               label: "Recommendations",
               field: "recommendations",
-              width: "5%",
               sortable: true,
             },
             {
