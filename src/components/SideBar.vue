@@ -9,7 +9,7 @@
 
     <div class="sidebar-content">
       <div class="sidebar-items">
-        <router-link class = "sidebar-item"  :to="{ name: 'dashboard'}"><ion-icon name="home"></ion-icon>Dashboard</router-link>
+        <router-link class = "sidebar-item"  :to="{ name: 'home'}"><ion-icon name="home"></ion-icon>Dashboard</router-link>
         <router-link :class="['sidebar-item', {'active': isCasesActive}]"  :to="{ name: 'cases',params: {completion: 'completed'}}"><ion-icon name="list"></ion-icon>Cases</router-link>
         <router-link class = "sidebar-item sub-item"  :to="{ name: 'cases',params: {completion: 'completed'}}"><ion-icon name="stats-chart"></ion-icon>Completed Cases</router-link>
         <router-link class = "sidebar-item sub-item"  :to="{ name: 'cases',params: {completion: 'ongoing'}}"><ion-icon name="stats-chart"></ion-icon>Ongoing Cases</router-link>
