@@ -122,6 +122,7 @@ export default {
                 let log = response.data.event_log;
                 this.headers = log.columns_header;
                 this.types = log.columns_definition;
+                this.costUnits = log.cost_units ?? {};
                 for (const r of log.columns_data) {
                     this.values.push(r)
                 }

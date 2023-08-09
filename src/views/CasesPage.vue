@@ -102,6 +102,7 @@
         cases: [],
         casesData: [],
         caseAttributes: [],
+        costUnits: {},
         
         performanceColumn: undefined,
         performanceColumnType: undefined,
@@ -213,6 +214,8 @@
           logsService.getParameters(shared.getLocal('logId')).then(
             (response) => {
               const columnsDefinition = response.data.parameters.columnsDefinition;
+              this.costUnits = response.data.parameters.costUnits ?? {};
+              console.log(this.costUnits);
               this.performanceColumnType = columnsDefinition[this.performanceColumn];
               if (!this.performanceColumnType){
                 this.performanceColumnType = this.performanceColumn;

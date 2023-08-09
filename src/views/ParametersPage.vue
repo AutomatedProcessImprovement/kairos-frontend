@@ -293,7 +293,7 @@ export  default {
             .then(response => {
                 console.log(response.data)
                 this.isLoading = false;
-                this.$router.push({name: 'dashboard'})
+                this.$router.push({name: 'home'})
             })
             .catch(error => {
                 this.isLoading = false;
