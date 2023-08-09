@@ -45,7 +45,7 @@
       </div>
 
       <div class="recommendation-details shadow">
-        <div class="row space-between">
+        <div class="row content-space-between">
           <h4 bold>Recommendation details</h4>
           <p>Show past recommendations <toggle v-model="showPastRecommendations"/></p>
         </div>

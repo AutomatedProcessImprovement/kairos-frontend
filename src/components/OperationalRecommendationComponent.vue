@@ -5,7 +5,7 @@
                 <h4>{{ r.rec }}</h4>
                 <p>{{ r.recommended }}</p>            
             </div>
-            <div class="column flex-end space-between">
+            <div class="column align-end content-space-between">
                 <tooltip-component 
                 :iconSize="15" 
                 :tooltipSize="300">

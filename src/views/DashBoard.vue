@@ -4,7 +4,7 @@
       <div id="dashboard">
           <h2>Dashboard</h2>
           <div class="column">
-            <div class="row center">
+            <div class="row align-center">
                 <h3 class="bold blue">Event logs</h3>
                 <button class="btn-blue margin" @click="goToUpload">Upload log</button>
             </div>
@@ -12,7 +12,7 @@
                 <ion-icon class="input-icon" name="search"></ion-icon>
                 <input type="text" id="find-log" @keyup="findLog" placeholder="Find log...">
             </div>
-            <div v-if="eventlogs.length > 0" class='wrap center row'>
+            <div v-if="eventlogs.length > 0" class='wrap align-center row'>
                 <div class='log-card' :class="{'selected': log._id === selectedLog._id}" v-for="log in eventlogs" :key='log' @click="selectLog(log._id)">
                     <p>{{ log.filename }}</p>
                     <p v-if="log.test_filename">Test set: {{ log.test_filename }}</p>
@@ -26,7 +26,7 @@
             <div v-if="selectedLog" class="column">
                 <h3 class="bold blue">Event log details</h3>
                 <steps-progress-bar :options="progressBarOptions" ref="progress"/>
-                <div class="row center">
+                <div class="row align-center">
                     <ion-icon v-if="selectedLogStatus.status !== 'TRAINED' && selectedLogStatus.status !== 'NULL'" class="rotate status-icon" name="reload-circle-outline"></ion-icon>
                     <p>{{ selectedLogStatus.status }} </p>
                 </div>

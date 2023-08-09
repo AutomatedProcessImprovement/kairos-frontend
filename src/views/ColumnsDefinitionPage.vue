@@ -30,9 +30,14 @@
                         </tr>
                         <tr>
                             <th v-for="head in headers" :key="head">
-                                <select class="dropdown" v-model="types[head]" required>
-                                    <option v-for="myType in typeList" :key="myType" :selected="types[head] == myType.type" :value="myType.type"> {{myType.text}} </option>
-                                </select>
+                                <div class="column">
+                                    <select class="dropdown" v-model="types[head]" required>
+                                        <option v-for="myType in typeList" :key="myType" :selected="types[head] == myType.type" :value="myType.type"> {{myType.text}} </option>
+                                    </select>
+                                    <select class="dropdown cost-unit" :class="{active: types[head] === 'COST'}" v-model="costUnits[head]" required>
+                                        <option v-for="currency in currencies" :key="currency" > {{currency}} </option>
+                                    </select>
+                                </div>
                             </th>
                         </tr>
                         <tr>
@@ -78,6 +83,7 @@ export default {
             isLoading: false,
             loadingText: "Please wait...",
 
+            currencies: ['AED','AFN','ALL','AMD','ANG','AOA','ARS','AUD','AWG','AZN','BAM','BBD','BDT','BGN','BIF','BMD','BND','BOB','BRL','BSD','BWP','BZD','CAD','CDF','CHF','CLP','CNY','COP','CRC','CVE','CZK','DJF','DKK','DOP','DZD','EGP','ETB','EUR','FJD','FKP','GBP','GEL','GIP','GMD','GNF','GTQ','GYD','HKD','HNL','HRK','HTG','HUF','IDR','ILS','INR','ISK','JMD','JPY','KES','KGS','KHR','KMF','KRW','KYD','KZT','LAK','LBP','LKR','LRD','LSL','MAD','MDL','MGA','MKD','MNT','MOP','MRO','MUR','MVR','MWK','MXN','MYR','MZN','NAD','NGN','NIO','NOK','NPR','NZD','PAB','PEN','PGK','PHP','PKR','PLN','PYG','QAR','RON','RSD','RUB','RWF','SAR','SBD','SCR','SEK','SGD','SHP','SLL','SOS','SRD','STD','SVC','SZL','THB','TJS','TOP','TRY','TTD','TWD','TZS','UAH','UGX','USD','UYU','UZS','VND','VUV','WST','XAF','XCD','XOF','XPF','YER','ZAR','ZMW'],
             typeList: [
                 {type: 'CASE_ID', text: 'Case id',definition:'Identifier associated with each trace. At least one column with given type should be defined.'},
                 {type: 'TEXT', text: 'Text',definition:'Textual information.'},
@@ -95,6 +101,7 @@ export default {
             ],
             headers: [],
             types: {},
+            costUnits: {},
             values: [],
             caseAttributes: [],
         }
@@ -144,11 +151,13 @@ export default {
                     return;
                 }
             })
+
             this.loadingText = "Getting supported parameters...";
             this.isLoading = true;
 
             var data = {
                 "columns_definition": this.types,
+                "cost_units": this.costUnits,
                 "case_attributes": this.caseAttributes
             }
 
@@ -169,7 +178,6 @@ export default {
                         type: 'error'
                     })
             });
-
         },
 
         toggleCaseAttribute(head){

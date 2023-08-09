@@ -21,7 +21,7 @@
           <small>The case performance {{ caseKpi.outcome ? 'does not violate' : 'violates'}} the positive outcome condition.</small>
         </div>
         <div class="recommendations-list shadow">
-          <div class="row center">
+          <div class="row align-center">
             <h4>Recommendations</h4>
             <tooltip-component :iconSize="25" icon="information-circle" color="blue" :tooltipSize="600">           
               <template v-slot:title>

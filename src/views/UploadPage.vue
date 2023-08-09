@@ -1,6 +1,6 @@
 <template>
   <div id="home">
-      <h1>Kairos</h1>
+      <h1 class="pointer" @click="goToHome">Kairos</h1>
       <small>Kairos is a tool that visualises prescriptive process monitoring output.</small>
       <div class="upload-file">
         <loading v-if="isLoading" text="Preprocessing data..."></loading>
@@ -27,7 +27,7 @@
 
         <div v-if="extension == 'csv'">
             <span>Separator for .csv: </span>
-            <span  class="center">
+            <span  class="align-center">
                 <input class="input-text" type="text" v-model="delimiter" ref="delimiter" minlength="1" maxlength="1" size="1" v-on:change="handleSeparator()" required />
             </span>
         </div>
@@ -146,6 +146,10 @@ export default {
                     })
             });
             
+        },
+
+        goToHome(){
+            this.$router.push({name: 'home'});
         }
     }
 }

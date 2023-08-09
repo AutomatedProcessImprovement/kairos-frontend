@@ -54,17 +54,12 @@ small{
   color: $k-blue2;
 }
 
-// h1,h2,h3,h4,h5,h6{
-//   font-weight: normal;
-// }
-
 p,th,a,div {
   font-size: 14px;
 }
 
 .pointer{
   cursor: pointer;
-
 }
 
 a{
@@ -80,6 +75,7 @@ th {
   color: $k-blue2;
   background-color: $k-white !important;
   border: none !important;
+  border-radius: 5px;
 }
 
 table {
@@ -89,7 +85,19 @@ table {
 }
 .vtl{
   border-radius: 10px;
+
+  @media (max-width: 900px) {
+      
+    .vtl-paging{
+      flex-direction: column;
+    }
+  }
+
   .vtl-paging{
+
+    &>*{
+      float: none;
+    }
     select{
       border-radius: 5px !important;
       margin: 0px 5px;
@@ -128,6 +136,14 @@ td, th {
   }
 }
 
+.relative{
+  position: relative;
+}
+
+.absolute{
+  position: absolute;
+}
+
 .shadow{
   box-shadow: 0px 20px 27px rgba(0, 0, 0, 0.05);
 }
@@ -145,16 +161,24 @@ td, th {
   flex-direction: row;
 }
 
-.flex-end{
+.flex-grow{
+  display: flex;
+  flex-grow: 1;
+}
+
+.align-end{
   align-items: flex-end;
 }
-
-.space-between{
-  justify-content: space-between;
+.align-start{
+  align-items: flex-start;
 }
 
-center{
+.align-center{
   align-items: center;
+}
+
+.content-space-between{
+  justify-content: space-between;
 }
 
 .content-center{
