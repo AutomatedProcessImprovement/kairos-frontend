@@ -28,7 +28,7 @@
             <div class="row">
               <div class="column" v-for="(value,name) in caseDetails" :key='name'>
                 <p class="bold">{{ value }}</p>
-                <small>{{ name }}</small>
+                <small>{{ name + (parameters.costUnits[name] ? ' (' + parameters.costUnits[name] + ')' : '') }}</small>
               </div>
             </div>
           </div>

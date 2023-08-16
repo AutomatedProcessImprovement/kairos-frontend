@@ -111,16 +111,10 @@
   
     mounted() {
       if (shared.getLocal('logId')) {
-        this.setup();       
+        this.setup();  
       }
     },
 
-    watch: {
-      $route(){
-        this.completion = this.$route.params.completion === 'completed';
-        this.setup();
-      }
-    },
 
     beforeUnmount(){
       clearInterval(this.timer);
@@ -165,19 +159,70 @@
           }
         );
       },
-  
-      formatCases(){
+
+      // getPerformanceColumnType(){
+      //     logsService.getParameters(shared.getLocal('logId')).then(
+      //       (response) => {
+      //         const columnsDefinition = response.data.parameters.columnsDefinition;
+      //         this.costUnits = response.data.parameters.costUnits ?? {};
+      //         this.performanceColumnType = columnsDefinition[this.performanceColumn];
+      //         if (!this.performanceColumnType){
+      //           this.performanceColumnType = this.performanceColumn;
+      //         }
+      //       },
+      //       (error) => {
+      //         this.isLoading = false;
+      //         const resMessage =
+      //           (error.response &&
+      //             error.response.data &&
+      //             error.response.data.error) ||
+      //           error.message ||
+      //           error.toString();
+      //           this.$notify({
+      //                   title: 'An error occured',
+      //                   text: resMessage,
+      //                   type: 'error'
+      //               }) 
+      //       }
+      //     );
+      //   },
+
+      async getPerformanceColumnType() {
+        try {
+          const response = await logsService.getParameters(shared.getLocal('logId'));
+          const columnsDefinition = response.data.parameters.columnsDefinition;
+          this.costUnits = response.data.parameters.costUnits ?? {};
+          this.performanceColumnType = columnsDefinition[this.performanceColumn];
+          if (!this.performanceColumnType) {
+            this.performanceColumnType = this.performanceColumn;
+          }
+        } catch (error) {
+          this.isLoading = false;
+          const resMessage = (error.response &&
+            error.response.data &&
+            error.response.data.error) ||
+            error.message ||
+            error.toString();
+          this.$notify({
+            title: 'An error occurred',
+            text: resMessage,
+            type: 'error'
+          });
+        }
+      },
+
+      async formatCases(){
         if (this.casesData.length > 0){
           this.casesData = [];
         }else{
           if (!this.performanceColumn) {
             this.performanceColumn = this.cases[0].case_performance.column;
-            this.getPerformanceColumnType();
+            await this.getPerformanceColumnType();
           }
           Object.keys(this.cases[0].case_attributes).forEach(k => {
             if(this.performanceColumn === k) return;
             this.caseAttributes.push({
-              label:k,
+              label:k + (this.costUnits[k] ? ' (' + this.costUnits[k] + ')' : ''),
               field:k,
               sortable:true
             });
@@ -209,36 +254,6 @@
             }
         ); 
       },
-
-      getPerformanceColumnType(){
-          logsService.getParameters(shared.getLocal('logId')).then(
-            (response) => {
-              const columnsDefinition = response.data.parameters.columnsDefinition;
-              this.costUnits = response.data.parameters.costUnits ?? {};
-              console.log(this.costUnits);
-              this.performanceColumnType = columnsDefinition[this.performanceColumn];
-              if (!this.performanceColumnType){
-                this.performanceColumnType = this.performanceColumn;
-              }
-            },
-            (error) => {
-              this.isLoading = false;
-              const resMessage =
-                (error.response &&
-                  error.response.data &&
-                  error.response.data.error) ||
-                error.message ||
-                error.toString();
-                this.$notify({
-                        title: 'An error occured',
-                        text: resMessage,
-                        type: 'error'
-                    }) 
-            }
-          );
-        },
-  
     }
-  
   }
   </script>

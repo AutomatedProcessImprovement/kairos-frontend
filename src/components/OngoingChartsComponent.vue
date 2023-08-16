@@ -86,7 +86,7 @@ export default {
               bar: {
                 horizontal: false,
                 columnWidth: '50%',
-                borderRadius: 5
+                borderRadius: 0
               },
             },
             dataLabels: {

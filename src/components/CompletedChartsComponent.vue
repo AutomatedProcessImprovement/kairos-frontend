@@ -2,7 +2,7 @@
     <div class="cases-charts">
       <div class="cases-chart shadow">
         <h3>Recommendations History</h3>
-        <apexchart type="pie" :options="recommendationsHistory.chartOptions" :series="recommendationsHistory.series"></apexchart>
+        <apexchart type="pie" :options="recommendationsHistory.chartOptions" :series="recommendationsHistorySeries"></apexchart>
       </div>
   
       <div class="cases-chart shadow">
@@ -50,7 +50,7 @@ export default {
     components: {
         apexchart: VueApexCharts,
         TooltipComponent
-        },
+    },
 
     props: {
         cases: Array,
@@ -94,7 +94,6 @@ export default {
         },
         
         recommendationsHistory: {
-          series: [0, 0, 0],
           chartOptions: {
             colors: ['#17ad37','#F5222D','#a0a3a5'],
             chart: {
@@ -142,7 +141,7 @@ export default {
               bar: {
                 horizontal: false,
                 columnWidth: '50%',
-                borderRadius: 5
+                borderRadius: 0
               },
             },
             dataLabels: {
@@ -178,27 +177,28 @@ export default {
       };
     },
 
+    computed:{
+      recommendationsHistorySeries(){
+        let series = [];
+        let outcomeCounts = shared.groupByAndCount(this.casesData,'outcome','intervened','Yes');
+        if(Object.keys(outcomeCounts).length > 0){
+          const propertiesToCheck = [true, false, null];
+          series = propertiesToCheck.map(property => {
+            return outcomeCounts[property] || 0;
+          });
+        }
+        return series;
+      }
+    },
+
     watch:{
         cases(){
-
           this.createModelsStatistics();
           this.createRecommendationsAcceptance();
-          this.createRecommendationsHistory();
         },
       },
 
     methods:{
-      
-
-      createRecommendationsHistory(){
-        let outcomeCounts = shared.groupByAndCount(this.casesData,'outcome','intervened','Yes');
-        if(Object.keys(outcomeCounts).length > 0){
-          const propertiesToCheck = [true, false, null];
-          this.recommendationsHistory.series = propertiesToCheck.map(property => {
-            return outcomeCounts[property] || 0;
-          });
-        }
-      },
 
       createRecommendationsAcceptance(){
         let a = this.modelsStatistics.rows['true'];
