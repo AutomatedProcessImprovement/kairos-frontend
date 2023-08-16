@@ -52,43 +52,22 @@ export default{
             let temp = [];
             this.caseStatus = this.batch[this.parameters.columnsDefinitionReverse['ACTIVITY']];
             this.batchId = this.batch.event_id;
-            if (!this.batch.prescriptions) return [];
 
+            if (!this.batch.prescriptions) return [];
+            
             for (let i = 0; i < this.batch.prescriptions.length; i++) {
                 let p = this.batch.prescriptions[i];
-                let data = {};
-                if(p.type === 'NEXT_ACTIVITY'){
-                    data = {
-                        recType: 'Next activity',
-                        color: 'background-orange2',
-                        rec: 'Perform ' + p.output,
-                        metric: '',
-                        status: p.status,
-                        recommended: true
-                    }
-                }
-                else if(p.type === 'ALARM') {
-                    let recommendedAttr = p.output < this.parameters.alarmThreshold ? false : true
-                    data = {
-                        recType: 'Alarm',
-                        color: 'background-blue5',
-                        rec: 'Action required',
-                        metric: 'Probability ' + p.output + ' (' + (recommendedAttr ? '> ' : '< ') + 'defined threshold)',
-                        status: '',
-                        recommended: recommendedAttr
-                    }
-                }
-                else{
-                    let recommendationAttr = shared.formatIntervention(p.output,this.parameters.columnsDefinition);
-                    data = {
-                        recType: 'Intervention',
-                        color: 'background-purple',
-                        rec: recommendationAttr,
-                        metric: 'Causal effect: ' + p.output.cate + ' ' + (p.output.cate > 0 ? '(positive)': '(negative)'),
-                        status: p.status,
-                        recommended: p.output.cate > 0 ? true : false
-                    }
-                }
+                let prescriptionObject = shared.prescriptionAttributes[p.type];
+
+                let data = {
+                    recType: prescriptionObject.pType,
+                    color: prescriptionObject.pColor,
+                    rec: prescriptionObject.pText(p,this.parameters.columnsDefinition),
+                    metric: prescriptionObject.pMetric(p,this.parameters.alarmThreshold),
+                    status: prescriptionObject.pStatus(p),
+                    recommended: prescriptionObject.pIsRecommended(p,this.parameters.alarmThreshold)
+                };
+
                 temp.push(data);
             }
             return temp;

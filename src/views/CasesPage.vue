@@ -160,39 +160,13 @@
         );
       },
 
-      // getPerformanceColumnType(){
-      //     logsService.getParameters(shared.getLocal('logId')).then(
-      //       (response) => {
-      //         const columnsDefinition = response.data.parameters.columnsDefinition;
-      //         this.costUnits = response.data.parameters.costUnits ?? {};
-      //         this.performanceColumnType = columnsDefinition[this.performanceColumn];
-      //         if (!this.performanceColumnType){
-      //           this.performanceColumnType = this.performanceColumn;
-      //         }
-      //       },
-      //       (error) => {
-      //         this.isLoading = false;
-      //         const resMessage =
-      //           (error.response &&
-      //             error.response.data &&
-      //             error.response.data.error) ||
-      //           error.message ||
-      //           error.toString();
-      //           this.$notify({
-      //                   title: 'An error occured',
-      //                   text: resMessage,
-      //                   type: 'error'
-      //               }) 
-      //       }
-      //     );
-      //   },
-
       async getPerformanceColumnType() {
         try {
           const response = await logsService.getParameters(shared.getLocal('logId'));
-          const columnsDefinition = response.data.parameters.columnsDefinition;
-          this.costUnits = response.data.parameters.costUnits ?? {};
-          this.performanceColumnType = columnsDefinition[this.performanceColumn];
+          this.alarmThreshold = response.data.parameters.alarmThreshold || 1.0;
+          this.costUnits = response.data.parameters.costUnits || {};
+
+          this.performanceColumnType = response.data.parameters.columnsDefinition[this.performanceColumn];
           if (!this.performanceColumnType) {
             this.performanceColumnType = this.performanceColumn;
           }
@@ -231,7 +205,7 @@
         
         let data = {};
         for (const el of this.cases) {
-          data = shared.formatCase(el);
+          data = shared.formatCase(el,this.alarmThreshold);
           this.casesData.push(data);
         }
 
