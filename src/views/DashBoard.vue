@@ -6,7 +6,7 @@
           <div class="column">
             <div class="row align-center">
                 <h3 class="bold blue">Event logs</h3>
-                <button class="btn-blue margin" @click="goToUpload">Upload log</button>
+                <button class="btn-blue margin" @click="goToHome">Upload log</button>
             </div>
             <div class="row">
                 <ion-icon class="input-icon" name="search"></ion-icon>
@@ -134,8 +134,8 @@
         },
     
         methods: {
-            goToUpload(){
-                this.$router.push({name: 'upload'});
+            goToHome(){
+                this.$router.push({name: 'home'});
             },
     
             clearTimer(){

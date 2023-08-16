@@ -57,7 +57,7 @@
                 
                 <div class="buttons">
                     <button class="btn-blue" v-on:click="submit">Upload log</button>
-                    <button class="btn-blue" v-on:click="goToUpload">Cancel</button>
+                    <button class="btn-blue" v-on:click="goToHome">Cancel</button>
                 </div>
             </div>
         </div>
@@ -190,8 +190,8 @@ export default {
             this.caseAttributes.splice(ind,1);
         },
 
-        goToUpload(){
-            this.$router.push({name: 'upload'});
+        goToHome(){
+            this.$router.push({name: 'home'});
         }
     },
 }

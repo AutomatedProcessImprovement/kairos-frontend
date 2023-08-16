@@ -10,13 +10,13 @@ import RecommendationsPage from './views/RecommendationsPage'
 
 const routes = [
     {
-        path: "/upload",
-        name: "upload",
+        path: "/",
+        name: "home",
         component: UploadPage,
     },
     {
-        path: "/",
-        name: "home",
+        path: "/dashboard",
+        name: "dashboard",
         component: DashBoard,
     },
     {
