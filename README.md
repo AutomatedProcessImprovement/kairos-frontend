@@ -1,7 +1,7 @@
 # Kairos client
 
-![build](https://github.com/VisualPM/frontend/actions/workflows/node.js.yml/badge.svg) 
-![production_build](https://github.com/VisualPM/frontend/actions/workflows/docker-image.yml/badge.svg)
+![build](https://github.com/AutomatedProcessImprovement/kairos-frontend/actions/workflows/node.js.yml/badge.svg) 
+![production_build](https://github.com/AutomatedProcessImprovement/kairos-frontend/actions/workflows/docker-image.yml/badge.svg)
 
 This is the frontend of Kairos - a tool for visualising prescriptive process monitoring output. It produces visual overview of prescriptions produced by a presvriptive monitoring tool - [PrCore](https://prcore.gitlab.io/) - for each case in an event log. The tool accepts an event log, column definition and parameter definition as an input. This data is sent to and processed by PrCore to then produce prescriptions for each case, which are used to construct visualisations in Kairos.
 
