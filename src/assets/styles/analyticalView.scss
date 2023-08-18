@@ -106,6 +106,17 @@
       
         }
       }
+
+      .tab-details{
+        height: calc(100vh - 100px - $case-top);
+        overflow-y: auto;
+
+        ion-icon{
+          height:25px;
+          width:25px;
+          padding: 10px;
+        }
+      }
     }
   }
 

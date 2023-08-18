@@ -62,6 +62,10 @@ p,th,a,div {
   cursor: pointer;
 }
 
+.line-breaks{
+  white-space: pre-line;
+}
+
 a{
   text-decoration: none;
   color: $k-black;
