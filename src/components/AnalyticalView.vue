@@ -65,6 +65,9 @@
             <div v-if="selectedRecObject" class="details">
                 
               <h4> Model description</h4>
+              <div>
+                {{ selectedRecObject.description }}
+              </div>
                 <div v-if="selectedRecObject.type === 'TREATMENT_EFFECT'">
                     <p>CATE score: {{ selectedRecObject.output.cate }}</p>
                     <p>Probability if treated: {{ Math.round(selectedRecObject.output.proba_if_treated * 100) }} %</p>
