@@ -130,6 +130,7 @@
           logsService.getParameters(shared.getLocal('logId')).then(
             (response) => {
               this.parameters = response.data.parameters;
+              if (!this.parameters.costUnits) this.parameters.costUnits = {};
               this.getCase();
             },
             (error) => {
