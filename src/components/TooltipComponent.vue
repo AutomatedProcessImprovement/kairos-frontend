@@ -1,11 +1,12 @@
 <template>
     <div id="tooltip">
-      <div :class="['row',{'icon-selected': showTooltip}]" @click="toggleTooltip">
-        <ion-icon :style="iconStyle" :name="icon"></ion-icon>
+      <div class="row" @click="toggleTooltip">
+        <ion-icon :class="['info-icon',{'icon-selected': showTooltip}]" :style="iconStyle" :name="icon"></ion-icon>
       </div>
       <div v-if="showTooltip" class="tooltip" :style="tooltipStyle">
         <slot name="title"/>
         <slot name="content"/>
+        <ion-icon @click="toggleTooltip" class="close-icon" name="close-outline"></ion-icon>
       </div>
     </div>
   </template>

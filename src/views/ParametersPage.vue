@@ -3,13 +3,13 @@
         <loading v-if="isLoading" :text="loadingText"></loading>
         <div v-else class="column">
             <a @click="$router.go(-1)"><ion-icon name="chevron-back-outline"></ion-icon> Return</a>
-            <h2 class="bold blue">Recommendation Parameters</h2>
+            <h2 class="bold blue">Parameters</h2>
             <div v-if="!log">
                 <h3 class="warning">No log has been selected.</h3>
             </div>
             <div class="column" v-else>
                 <div class="parameter">
-                    <p>Uploaded log</p>
+                    <p>Uploaded Log</p>
                     <div class='log-card'>
                         <p>{{ log.filename }}</p>
                         <p v-if="log.test_filename">Test set: {{ log.test_filename }}</p>
@@ -19,7 +19,7 @@
 
                 <div class="parameter">
                     <div class="row">
-                        <p>Case completion</p>
+                        <p>Case Completion</p>
                         <tooltip-component :iconSize="15" :tooltipSize="400">  
                             <template v-slot:title>
                                 <h3 class="bold">What is case completion?</h3>
@@ -37,11 +37,8 @@
 
                 <div class="parameter">
                     <div class="row">
-                        <p>Positive case outcome</p>
-                        <tooltip-component :iconSize="15" :tooltipSize="400">
-                            <template v-slot:icon>
-                                <ion-icon class="small" name="information-circle-outline"></ion-icon>
-                            </template>            
+                        <p>Positive Case Outcome</p>
+                        <tooltip-component :iconSize="15" :tooltipSize="400">          
                             <template v-slot:title>
                                 <h3 class="bold">What is positive case outcome?</h3>
                             </template>
@@ -54,14 +51,14 @@
                     <small>Please specify what is considered as the positive outcome of the case.</small>
 
                     <div class="input-group">
-                        <small>Outcome type</small>
+                        <small>Outcome Type</small>
                         <select v-model="positiveOutcome.column">
                             <option v-for="outcomeType in positiveOutcomeTypes" :key="outcomeType" :value="outcomeType">{{ outcomeType }}</option>
                         </select>
                     </div>
 
                     <div class="input-group">
-                        <small>Outcome evaluation method</small>
+                        <small>Outcome Evaluation Method</small>
                         <select v-if="positiveOutcome.column" v-model="positiveOutcome.operator">
                             <option v-for="evaluationMethod in getEvaluationMethods(positiveOutcome.column,'outcome')" :key="evaluationMethod">{{ evaluationMethod }}</option>
                         </select>
@@ -69,7 +66,7 @@
                     </div>
 
                     <div class="input-group">
-                        <small>Outcome value</small>
+                        <small>Outcome Value</small>
                         <select v-if="positiveOutcome.columnDefinition === 'ACTIVITY'" v-model="positiveOutcome.value">
                             <option v-for="activity in activities" :key="activity">{{ activity }}</option>
                         </select>
@@ -89,33 +86,31 @@
                         <select v-else disabled></select>
                     </div>
                 </div>
-
+                <h3>Recommendation Parameters</h3>
+                <small>Kairos provides prescriptions based on different algorithms. Please specify the parameters for them.</small>
                 <div class="parameter">
                     <div class="row">
                         <p>Intervention</p>
-                        <tooltip-component :iconSize="15" :tooltipSize="400">
-                            <template v-slot:icon>
-                                <ion-icon class="small" name="information-circle-outline"></ion-icon>
-                            </template>            
+                        <tooltip-component :iconSize="15" :tooltipSize="500">           
                             <template v-slot:title>
                                 <h3 class="bold">What is intervention?</h3>
                             </template>
                             <template v-slot:content>
-                            <p>The intervention parameter indicates the best possible course of action for achieveing a positive outcome as perceived by the user.</p>
-                            <p>For example, if intervention is 'Activity equals offer-sent', then an algorithm estimates the causal effect of performing this activity at a given point in time. Causal effect may be positive or negative.</p>
+                            <p>An intervention is a type of a recommendation that can be of different kinds, for example, an activity to carry out, a resource to use, a parameter to change, etc. It is prescribed by an algorithm that can estimate its potential effect on the case outcome. The estimation is expressed as a causal effect, which may be positive (performing an intervention increases the probability of the case finishing with a positive outcome) or negative (decreases the probability). The intervention is recommended when the algorithm estimates the effect of it to be positive.</p>
+                            <em>Please specify the intervention that the algorithm should estimate.</em>
                             </template>
                         </tooltip-component>
                     </div>
                     <small>Please specify what is considered as intervention in the ongoing case.</small>
                     <div class="input-group">
-                        <small>Intervention type</small>
+                        <small>Intervention Kind</small>
                         <select v-model="intervention.column">
                             <option v-for="outcomeType in interventionTypes" :key="outcomeType" :value="outcomeType">{{ outcomeType }}</option>
                         </select>
                     </div>
 
                     <div class="input-group">
-                        <small>Intervention evaluation method</small>
+                        <small>Intervention Operator</small>
                         <select v-if="intervention.column" v-model="intervention.operator">
                             <option v-for="evaluationMethod in getEvaluationMethods(intervention.column,'intervention')" :key="evaluationMethod">{{ evaluationMethod }}</option>
                         </select>
@@ -123,7 +118,7 @@
                     </div>
 
                     <div class="input-group">
-                        <small>Intervention value</small>
+                        <small>Intervention Value</small>
                         <select v-if="intervention.columnDefinition === 'ACTIVITY'" v-model="intervention.value">
                             <option v-for="activity in activities" :key="activity">{{ activity }}</option>
                         </select>
@@ -135,7 +130,18 @@
                 
 
                 <div class="parameter">
-                    <p>Alarm Threshold</p>
+                    <div class="row">
+                        <p>Alarm Threshold</p>
+                        <tooltip-component :iconSize="15" :tooltipSize="500">           
+                            <template v-slot:title>
+                                <h3 class="bold">What is alarm threshold?</h3>
+                            </template>
+                            <template v-slot:content>
+                            <p>An alarm is a type of a recommendation that does not specify an exact action to perform in the given moment, but rather notifies that the user should pay attention to the case. The exact action is left to be decided by the user. It is prescribed by an algorithm that estimates the probability of the case to end in a negative outcome. When the specified probability threshold is reached, an alarm is triggered.</p>
+                            <em>Please specify the probability threshold for the alarm.</em>
+                            </template>
+                        </tooltip-component>
+                    </div>
                     <small>Please specify when an alarm should be triggered. Enter a value between 0.1 and 0.9.</small>
                     <input type="number" min="0.1" max="0.9" step="0.1" v-model="alarmThreshold"/>
                 </div>

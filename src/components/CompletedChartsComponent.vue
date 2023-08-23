@@ -1,12 +1,22 @@
 <template>
     <div class="cases-charts">
       <div class="cases-chart shadow">
-        <h3>Recommendations History</h3>
+        <div class="row">
+          <h3>Recommendations History</h3>
+          <tooltip-component :iconSize="25" icon="information-circle" color="grey" :tooltipSize="400">           
+            <template v-slot:title>
+                <h3>What does recommendations history describe?</h3>
+            </template>
+            <template v-slot:content>
+              <p>The graph shows the percentage of cases where a recommendation was performed and the case ended in a positive or a negative outcome.</p>
+            </template>
+          </tooltip-component>
+        </div>
         <apexchart type="pie" :options="recommendationsHistory.chartOptions" :series="recommendationsHistorySeries"></apexchart>
       </div>
   
       <div class="cases-chart shadow">
-        <div class="row content-start">
+        <div class="row justify-start">
           <h3>Models statistics</h3>
           <tooltip-component :iconSize="25" icon="information-circle" color="grey" :tooltipSize="400">           
             <template v-slot:title>
@@ -24,7 +34,7 @@
             {{ header.label }}
           </th>
           <tr v-for="(row,key) in modelsStatistics.rows" :key="key">
-            <td>{{ key === "true" ? 'Successful' : 'Unsuccessful' }}</td>
+            <td>{{ key === "true" ? 'Positive' : 'Negative' }}</td>
             <td v-for="count in row" :key="count"> {{ Math.round(100 * count.accepted/count.total) || 0 }}</td>
           </tr>
         </table>
@@ -102,7 +112,7 @@ export default {
               },
               type: 'pie',
             },
-            labels: ['Was successful', 'Was unsuccessful', 'No data'],
+            labels: ['Was positive', 'Was negative', 'No data'],
             responsive: [{
               breakpoint: 480,
               options: {

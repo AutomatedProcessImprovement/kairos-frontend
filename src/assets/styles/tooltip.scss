@@ -4,20 +4,29 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    // position: absolute;
     
-    ion-icon{
-        // width: 25px;
-        // height: 25px;
+    .info-icon{
         cursor: pointer;
-        padding: 0px 5px;
+        margin: 0px 5px;
         z-index: 0;
-
+        visibility: visible;
+        
+        &.icon-selected{
+            border-radius: 5px;
+            background-color: $k-gray2;
+            transition: 0.2s;
+            visibility: visible;
+        }
     }
-    .icon-selected{
-        border-radius: 5px;
-        background-color: $k-gray2;
-        transition: 0.2s
+
+    .close-icon{
+        height: 20px;
+        width: 20px;
+        cursor: pointer;
+        position: absolute;
+        right: 0;
+        top: 0;
+        padding: 10px;
     }
     
 
