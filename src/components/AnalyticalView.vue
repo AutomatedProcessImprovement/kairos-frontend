@@ -1,23 +1,22 @@
 <template>    
     <div class="analytical-view">
       <div class="recommendations-list shadow">
-        <div class="row content-start">
+        <div class="row justify-start">
           <h4>Recommendations</h4>
           <tooltip-component :iconSize="25" icon="information-circle" color="blue" :tooltipSize="600">           
             <template v-slot:title>
-                <h3 class="bold">Recommendation info</h3>
+                <h3 class="bold">How are recommendations calculated?</h3>
             </template>
             <template v-slot:content>
-              <p>How are recommendations calculated?</p>
               <p>There are three different algorithms that prescribe recommendations.</p>
-              <p class="bold">Intervention</p>
-              <p>An algorithm estimates the causal effect of performing the intervention at a given point in time. It is shown as ”recommended” when an estimated effect is positive (above 0).</p>
-
-              <p class="bold">Alarm</p>
-              <p>A threshold is defined in the settings for when an alarm should be triggered. When an alarm is triggered, it means that the case is likely to lead to an undesired outcome. This means that the worker should look closer into the case..</p>
-
               <p class="bold">Next activity</p>
-              <p>Another algorithm predicts the next best activity in the case and displays it.</p>
+              <p>A next activity is a type of a recommendation that is prescribed by an algorithm that predicts what the next best activity in the case is and prescribes it.</p>
+              
+              <p class="bold">Alarm</p>
+              <p>An alarm is a type of a recommendation that does not specify an exact action to perform in the given moment, but rather notifies that the user should pay attention to the case. The exact action is left to be decided by the user. It is prescribed by an algorithm that estimates the probability of the case to end in a negative outcome. When the specified probability threshold is reached, an alarm is triggered. The threshold is specified upon event log upload.</p>
+
+              <p class="bold">Intervention</p>
+              <p>An intervention is a type of a recommendation that can be of different kinds, for example, an activity to carry out, a resource to use, a parameter to change, etc. It is prescribed by an algorithm that can estimate its potential effect on the case outcome. The estimation is expressed as a causal effect, which may be positive (performing an intervention increases the probability of the case finishing with a positive outcome) or negative (decreases the probability). The intervention is recommended when the algorithm estimates the effect of it to be positive. The exact kind of an intervention is specified upon event log upload.</p>
             </template>
           </tooltip-component>
         </div>
@@ -45,7 +44,7 @@
       </div>
 
       <div class="recommendation-details shadow">
-        <div class="row space-between">
+        <div class="row content-space-between">
           <h4 bold>Recommendation details</h4>
           <p>Show past recommendations <toggle v-model="showPastRecommendations"/></p>
         </div>

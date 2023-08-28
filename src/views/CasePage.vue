@@ -13,7 +13,7 @@
   
       <div class="stats">
         <div v-if="parameters.kpi" class="stats-card column">
-          <p>KPI</p>
+          <p>Target</p>
           <h3 class="blue">{{ parameters.kpi.value }} {{ parameters.kpi.unit }}</h3>
           <small>Case {{ parameters.kpi.column }}  {{ parameters.kpi.operator }}</small>
         </div>
@@ -28,7 +28,7 @@
             <div class="row">
               <div class="column" v-for="(value,name) in caseDetails" :key='name'>
                 <p class="bold">{{ value }}</p>
-                <small>{{ name }}</small>
+                <small>{{ name + (parameters.costUnits[name] ? ' (' + parameters.costUnits[name] + ')' : '') }}</small>
               </div>
             </div>
           </div>
@@ -130,6 +130,7 @@
           logsService.getParameters(shared.getLocal('logId')).then(
             (response) => {
               this.parameters = response.data.parameters;
+              if (!this.parameters.costUnits) this.parameters.costUnits = {};
               this.getCase();
             },
             (error) => {

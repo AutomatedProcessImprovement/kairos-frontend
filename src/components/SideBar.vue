@@ -2,7 +2,7 @@
   <div class="sidebar" :class="{'collapsed': isCollapsed}">
     <ion-icon class="sidebar-collapse-icon pointer" :class="{active: isCollapsed}" @click="toggleSidebar" name="chevron-back-outline"></ion-icon>
 
-    <div class="sidebar-heading pointer" @click="goToHome">
+    <div class="sidebar-heading pointer" @click="gotToDashboard">
       <img src="../assets/img/laptop2.svg" class="kairos-logo" alt="Kairos logo"/>
       <h3 class="bold">Kairos</h3>
     </div>
@@ -68,8 +68,8 @@ export default {
         }
       }));
     },
-    goToHome(){
-      this.$router.push({name: 'home'});
+    gotToDashboard(){
+      this.$router.push({name: 'dashboard'});
     },
     toggleSidebar(){
       this.isCollapsed = !this.isCollapsed;

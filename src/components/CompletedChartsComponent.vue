@@ -1,12 +1,22 @@
 <template>
     <div class="cases-charts">
       <div class="cases-chart shadow">
-        <h3>Recommendations History</h3>
-        <apexchart type="pie" :options="recommendationsHistory.chartOptions" :series="recommendationsHistory.series"></apexchart>
+        <div class="row">
+          <h3>Recommendations History</h3>
+          <tooltip-component :iconSize="25" icon="information-circle" color="grey" :tooltipSize="400">           
+            <template v-slot:title>
+                <h3>What does recommendations history describe?</h3>
+            </template>
+            <template v-slot:content>
+              <p>The graph shows the percentage of cases where a recommendation was performed and the case ended in a positive or a negative outcome.</p>
+            </template>
+          </tooltip-component>
+        </div>
+        <apexchart type="pie" :options="recommendationsHistory.chartOptions" :series="recommendationsHistorySeries"></apexchart>
       </div>
   
       <div class="cases-chart shadow">
-        <div class="row content-start">
+        <div class="row justify-start">
           <h3>Models statistics</h3>
           <tooltip-component :iconSize="25" icon="information-circle" color="grey" :tooltipSize="400">           
             <template v-slot:title>
@@ -24,7 +34,7 @@
             {{ header.label }}
           </th>
           <tr v-for="(row,key) in modelsStatistics.rows" :key="key">
-            <td>{{ key === "true" ? 'Successful' : 'Unsuccessful' }}</td>
+            <td>{{ key === "true" ? 'Positive' : 'Negative' }}</td>
             <td v-for="count in row" :key="count"> {{ Math.round(100 * count.accepted/count.total) || 0 }}</td>
           </tr>
         </table>
@@ -50,7 +60,7 @@ export default {
     components: {
         apexchart: VueApexCharts,
         TooltipComponent
-        },
+    },
 
     props: {
         cases: Array,
@@ -94,7 +104,6 @@ export default {
         },
         
         recommendationsHistory: {
-          series: [0, 0, 0],
           chartOptions: {
             colors: ['#17ad37','#F5222D','#a0a3a5'],
             chart: {
@@ -103,7 +112,7 @@ export default {
               },
               type: 'pie',
             },
-            labels: ['Was successful', 'Was unsuccessful', 'No data'],
+            labels: ['Was positive', 'Was negative', 'No data'],
             responsive: [{
               breakpoint: 480,
               options: {
@@ -142,7 +151,7 @@ export default {
               bar: {
                 horizontal: false,
                 columnWidth: '50%',
-                borderRadius: 5
+                borderRadius: 0
               },
             },
             dataLabels: {
@@ -178,27 +187,28 @@ export default {
       };
     },
 
+    computed:{
+      recommendationsHistorySeries(){
+        let series = [];
+        let outcomeCounts = shared.groupByAndCount(this.casesData,'outcome','intervened','Yes');
+        if(Object.keys(outcomeCounts).length > 0){
+          const propertiesToCheck = [true, false, null];
+          series = propertiesToCheck.map(property => {
+            return outcomeCounts[property] || 0;
+          });
+        }
+        return series;
+      }
+    },
+
     watch:{
         cases(){
-
           this.createModelsStatistics();
           this.createRecommendationsAcceptance();
-          this.createRecommendationsHistory();
         },
       },
 
     methods:{
-      
-
-      createRecommendationsHistory(){
-        let outcomeCounts = shared.groupByAndCount(this.casesData,'outcome','intervened','Yes');
-        if(Object.keys(outcomeCounts).length > 0){
-          const propertiesToCheck = [true, false, null];
-          this.recommendationsHistory.series = propertiesToCheck.map(property => {
-            return outcomeCounts[property] || 0;
-          });
-        }
-      },
 
       createRecommendationsAcceptance(){
         let a = this.modelsStatistics.rows['true'];

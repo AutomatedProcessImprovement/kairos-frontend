@@ -242,7 +242,7 @@
             else if(p.type === 'ALARM') {
                 recommendationAttr = 'Action required';
                 if (p.output < this.parameters.alarmThreshold) return null;
-                recommendedAttr = 'Predicted probability of violating KPI is high.' ;
+                recommendedAttr = 'Predicted probability of not meeting the target is high.' ;
             }
             else if(p.type==='TREATMENT_EFFECT'){
                 recommendationAttr = shared.formatIntervention(p.output,this.parameters.columnsDefinition);

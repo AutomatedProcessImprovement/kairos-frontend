@@ -1,20 +1,22 @@
 <template>
   <div id="home">
-      <h1>Kairos</h1>
+      <h1 class="pointer" @click="goToHome">Kairos</h1>
       <small>Kairos is a tool that visualises prescriptive process monitoring output.</small>
+      <button class="btn-blue margin-top" @click="gotToDashboard">Go to dashboard</button>
       <div class="upload-file">
         <loading v-if="isLoading" text="Preprocessing data..."></loading>
         <h2>Upload</h2>
-        <div class="row">
-            <p>Upload an eventlog to start: </p>
-                <tooltip-component :iconSize="15" :tooltipSize="400">  
+        <div class="row align-center">
+            <p>Upload an event log to start </p>
+                <tooltip-component :iconSize="15" :tooltipSize="500">  
                     <template v-slot:title>
-                        <h3 class="bold">Uploading info</h3>
+                        <h3 class="bold">Upload Info</h3>
                     </template>
                     <template v-slot:content>
-                        <p>The user may upload two event logs.</p>
-                        <p>If the test set is not uploaded then the first event log is split into train (80%) and test sets (20%). The sets are used for training and streaming the prescription results respectively.</p>
-                        <p>If the test set is uploaded, then the first event log is used for training and the test set is used for producing all prescriptions at once. Please note that in this case streaming is not enabled.</p>
+                        <p>Please choose if you want to upload an event log with a test set or without a test set. </p>
+                        <p>In the first option, please upload two event logs: one that will be used as a train set, and the other that will be used as a test set. In this case, the streaming is not enabled and all prescriptions are produced at once.</p>
+
+                        <p>In the second option, the single event log you upload will be split into train (80%) and test sets (20%). The sets will be used for training and streaming the prescription results, respectively.</p>
                     </template>
                 </tooltip-component>
             </div>
@@ -27,7 +29,7 @@
 
         <div v-if="extension == 'csv'">
             <span>Separator for .csv: </span>
-            <span  class="center">
+            <span  class="align-center">
                 <input class="input-text" type="text" v-model="delimiter" ref="delimiter" minlength="1" maxlength="1" size="1" v-on:change="handleSeparator()" required />
             </span>
         </div>
@@ -146,7 +148,15 @@ export default {
                     })
             });
             
-        }
+        },
+
+        goToHome(){
+            this.$router.push({name: 'home'});
+        },
+
+        gotToDashboard(){
+            this.$router.push({name: 'dashboard'});
+        },
     }
 }
 </script>

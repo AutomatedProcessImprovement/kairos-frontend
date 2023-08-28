@@ -4,15 +4,15 @@
       <div id="dashboard">
           <h2>Dashboard</h2>
           <div class="column">
-            <div class="row center">
+            <div class="row align-center">
                 <h3 class="bold blue">Event logs</h3>
-                <button class="btn-blue margin" @click="goToHome">Upload log</button>
+                <button class="btn-blue margin-left" @click="goToHome">Upload log</button>
             </div>
-            <div class="row">
+            <div v-if="eventlogs.length > 0" class="row">
                 <ion-icon class="input-icon" name="search"></ion-icon>
                 <input type="text" id="find-log" @keyup="findLog" placeholder="Find log...">
             </div>
-            <div v-if="eventlogs.length > 0" class='wrap center row'>
+            <div v-if="eventlogs.length > 0" class='wrap align-center row'>
                 <div class='log-card' :class="{'selected': log._id === selectedLog._id}" v-for="log in eventlogs" :key='log' @click="selectLog(log._id)">
                     <p>{{ log.filename }}</p>
                     <p v-if="log.test_filename">Test set: {{ log.test_filename }}</p>
@@ -26,7 +26,7 @@
             <div v-if="selectedLog" class="column">
                 <h3 class="bold blue">Event log details</h3>
                 <steps-progress-bar :options="progressBarOptions" ref="progress"/>
-                <div class="row center">
+                <div class="row align-center">
                     <ion-icon v-if="selectedLogStatus.status !== 'TRAINED' && selectedLogStatus.status !== 'NULL'" class="rotate status-icon" name="reload-circle-outline"></ion-icon>
                     <p>{{ selectedLogStatus.status }} </p>
                 </div>
@@ -35,13 +35,13 @@
                 <small>Event log status</small>
                 <div v-if="selectedLog.result_key" class="row">
                     <button :disabled="selectedLogStatus.status !== 'TRAINED' || selectedLog.got_results" class="btn-blue" @click="getStaticResults">Get results</button>
-                    <button class="btn-blue margin" @click="openModal=true">Delete event log</button>
+                    <button class="btn-blue margin-left" @click="openModal=true">Delete event log</button>
                 </div>
                 <div v-else class="row">
                     <button :disabled="selectedLogStatus.status !== 'TRAINED'" class="btn-blue" @click="startSimulation">Start simulation</button>
-                    <button :disabled="selectedLogStatus.status !== 'SIMULATING'" class="btn-blue margin" @click="stopSimulation">Stop simulation</button>
-                    <button :disabled="selectedLogStatus.status !== 'TRAINED'" class="btn-blue margin" @click="clearSimulation">Clear stream data</button>
-                    <button class="btn-blue margin" @click="openModal=true">Delete event log</button>
+                    <button :disabled="selectedLogStatus.status !== 'SIMULATING'" class="btn-blue margin-left" @click="stopSimulation">Stop simulation</button>
+                    <button :disabled="selectedLogStatus.status !== 'TRAINED'" class="btn-blue margin-left" @click="clearSimulation">Clear stream data</button>
+                    <button class="btn-blue margin-left" @click="openModal=true">Delete event log</button>
                 </div>
                 <modal-component v-if="openModal" title="Are you sure?" @closeModal="closeModal">
                     <template v-slot:content>
@@ -49,7 +49,7 @@
                             <p>Deleting this event log will result in deletion of all cases associated with it.</p>
                             <div class="row">
                                 <button type="submit" class="btn-blue" @click="deleteLog">Delete</button>
-                                <button class="btn-blue margin" @click="openModal=false">Cancel</button>
+                                <button class="btn-blue margin-left" @click="openModal=false">Cancel</button>
                             </div>
                         </div>
                     </template>
@@ -58,7 +58,8 @@
             <div v-if="selectedLog" class="column">
                 <div class="row">
                     <h3 class="bold blue">Recommendation Parameters</h3>
-                    <router-link class="btn-blue margin" :to="{name: 'parameters'}">Change</router-link>
+                    <router-link class="btn-blue margin-left" :to="{name: 'parameters'}">Change parameters</router-link>
+                    <router-link class="btn-blue margin-left" :to="{name: 'columns'}">Change column types</router-link>
                 </div>
                 <div v-if="selectedLog.case_completion" class="row">
                     <div class="parameter">

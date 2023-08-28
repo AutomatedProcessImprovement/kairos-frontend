@@ -2,7 +2,7 @@ import {createRouter, createWebHistory, RouterView} from "vue-router";
 import {h} from 'vue';
 import CasePage from "./views/CasePage.vue"
 import CasesPage from "./views/CasesPage.vue"
-import HomePage from "./views/HomePage"
+import UploadPage from "./views/UploadPage"
 import DashBoard from './views/DashBoard'
 import ParametersPage from './views/ParametersPage'
 import ColumnsDefinitionPage from "./views/ColumnsDefinitionPage"
@@ -12,7 +12,7 @@ const routes = [
     {
         path: "/",
         name: "home",
-        component: HomePage,
+        component: UploadPage,
     },
     {
         path: "/dashboard",

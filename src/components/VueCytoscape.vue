@@ -28,6 +28,13 @@ cytoscape.use( dagre );
           return {
             cy: null,
             elems: [],
+            colours: {
+              default: {light: '#8392AB',dark: '#074EE8'},
+              nextActivity: { light: '#F2994A', dark: '#be6415' },
+              activity: { light: '#d7d7d7', dark: '#474747' },
+              intervention: { light: '#BB6BD9', dark: '#7e2a9d' },
+              selectedNode: { light: '#579aff', dark: '#1954ae' },
+            },
             recommendationTypes: {
                     'ALARM': null,
                     'NEXT_ACTIVITY': {
@@ -79,8 +86,15 @@ cytoscape.use( dagre );
 
             if(oldEl){
               let oldSelectedNodes = this.cy.nodes(oldEl);
-              if (oldSelectedNodes.length > 0)
-                oldSelectedNodes.removeClass('active');
+              if (oldSelectedNodes.length > 0){
+                const oldSelectedNode = oldSelectedNodes[0];
+                let newBorderColour = this.filterNodeColour(oldSelectedNode,'light');
+                oldSelectedNode.style({
+                  'border-color': newBorderColour,
+                  'border-width': 2,
+                  'background-color': 'white'
+                })
+              }
             }
 
             let selectedNodes = this.cy.nodes(el);
@@ -89,7 +103,12 @@ cytoscape.use( dagre );
               
               if(selectedNode.visible()){
                 if(isRecommendation){
-                  selectedNode.addClass('active')
+                  let newBorderColour = this.filterNodeColour(selectedNode,'dark');
+                  selectedNode.style({
+                    'border-color': newBorderColour,
+                    'border-width': 4,
+                    'background-color': '#EBF0FF'
+                  })
                   var eles = {eles: selectedNode};
                   this.cy.animate({
                     zoom: 1.1,
@@ -111,6 +130,14 @@ cytoscape.use( dagre );
                 }
               }
             }
+          },
+
+          filterNodeColour(node,shade){
+            if(shade === 'light' && shade === 'dark') return;
+            let nodeClasses = node.classes();
+            if(nodeClasses.length > 0)
+              return this.colours[nodeClasses[0]][shade];
+            return node.style()['border-color'];
           },
 
           togglePastRecommendations(){
@@ -150,14 +177,14 @@ cytoscape.use( dagre );
                     selector: '.nextActivity',
                     style : {
                       'label' : 'data(label)',
-                      'border-color' : '#F2994A'
+                      'border-color' : this.colours.nextActivity.light
                     }
                   },
                   {
                   selector: '.nextActivityEdge',
                   style: {
-                    'line-color' : '#F2994A',
-                    'target-arrow-color': '#F2994A',
+                    'line-color' : this.colours.nextActivity.light,
+                    'target-arrow-color': this.colours.nextActivity.light,
                   }
                 },
                   
@@ -165,29 +192,29 @@ cytoscape.use( dagre );
                   selector: '.activity',
                     style : {
                       'label': 'data(label)',
-                      'border-color' : '#d7d7d7',
+                      'border-color' : this.colours.activity.light,
                   }
                 },
                 {
                   selector: '.activityEdge',
                   style: {
-                    'line-color' : '#d7d7d7',
-                    'target-arrow-color': '#d7d7d7',
+                    'line-color' : this.colours.activity.light,
+                    'target-arrow-color': this.colours.activity.light,
                   }
                 },
                 {
                   selector: '.intervention',
                   style: {
                     'label' : 'data(label)',
-                    'border-color' : '#BB6BD9'
+                    'border-color' : this.colours.intervention.light
                   }
                 },
 
                 {
                   selector: '.interventionEdge',
                   style: {
-                    'line-color' : '#BB6BD9',
-                    'target-arrow-color': '#BB6BD9',
+                    'line-color' : this.colours.intervention.light,
+                    'target-arrow-color': this.colours.intervention.light,
                   }
                 },
 
@@ -195,14 +222,14 @@ cytoscape.use( dagre );
                     selector: '.selectedNode',
                     style: {
                       'label': 'data(label)',
-                      'border-color' : '#579aff',
+                      'border-color' : this.colours.selectedNode.light,
                     }
                   },
                   {
                     selector: '.selectedEdge',
                     style: {
-                      'line-color' : '#579aff',
-                      'target-arrow-color': '#579aff',
+                      'line-color' : this.colours.selectedNode.light,
+                      'target-arrow-color': this.colours.selectedNode.light,
                     }
                   },
                   
@@ -251,14 +278,6 @@ cytoscape.use( dagre );
                       'border-color' : '#d7d7d7',
                       'border-width': 4,
 
-                    }
-                  },
-                  {
-                    selector: '.active',
-                    style : {
-                      'border-color' : '#074EE8',
-                      'border-width' : lineWidth + 1,
-                      'background-color': '#EBF0FF',
                     }
                   },
               ],
