@@ -149,10 +149,10 @@ export default {
                         title: 'Warning',
                         text: 'Please define all the columns!',
                         type: 'warning'
-                    })
+                    });
                     return;
                 }
-            })
+            });
 
             this.loadingText = "Getting supported parameters...";
             this.isLoading = true;
@@ -161,13 +161,13 @@ export default {
                 "columns_definition": this.types,
                 "cost_units": this.costUnits,
                 "case_attributes": this.caseAttributes
-            }
+            };
 
             logsService.defineColumnTypes(shared.getLocal('logId'),data)
             .then(response => {
-                console.log(response.data)
+                console.log(response.data);
                 this.isLoading = false;
-                this.$router.push({name: 'parameters'})
+                this.$router.push({name: 'parameters'});
             })
             .catch(error => {
                 this.isLoading = false;
@@ -179,7 +179,7 @@ export default {
                         title: 'An error occured',
                         text: resMessage,
                         type: 'error'
-                    })
+                });
             });
         },
 

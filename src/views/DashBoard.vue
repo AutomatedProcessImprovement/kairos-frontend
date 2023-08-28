@@ -8,7 +8,7 @@
                 <h3 class="bold blue">Event logs</h3>
                 <button class="btn-blue margin-left" @click="goToHome">Upload log</button>
             </div>
-            <div class="row">
+            <div v-if="eventlogs.length > 0" class="row">
                 <ion-icon class="input-icon" name="search"></ion-icon>
                 <input type="text" id="find-log" @keyup="findLog" placeholder="Find log...">
             </div>
