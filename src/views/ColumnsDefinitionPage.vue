@@ -171,9 +171,10 @@ export default {
             })
             .catch(error => {
                 this.isLoading = false;
-                const resMessage =
+                let resMessage =
                 (error.response && error.response.data && error.response.data.error) ||
                 error.message || error.toString();
+                if (error.response.data.prcore) resMessage = "Error occured in the core. Try changing some column types to 'Text'.";
                 this.$notify({
                         title: 'An error occured',
                         text: resMessage,
