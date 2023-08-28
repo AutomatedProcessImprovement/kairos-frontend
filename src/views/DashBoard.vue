@@ -58,7 +58,8 @@
             <div v-if="selectedLog" class="column">
                 <div class="row">
                     <h3 class="bold blue">Recommendation Parameters</h3>
-                    <router-link class="btn-blue margin-left" :to="{name: 'parameters'}">Change</router-link>
+                    <router-link class="btn-blue margin-left" :to="{name: 'parameters'}">Change parameters</router-link>
+                    <router-link class="btn-blue margin-left" :to="{name: 'columns'}">Change column types</router-link>
                 </div>
                 <div v-if="selectedLog.case_completion" class="row">
                     <div class="parameter">
