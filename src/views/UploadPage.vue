@@ -2,6 +2,7 @@
   <div id="home">
       <h1 class="pointer" @click="goToHome">Kairos</h1>
       <small>Kairos is a tool that visualises prescriptive process monitoring output.</small>
+      <button class="btn-blue margin-top" @click="gotToDashboard">Go to dashboard</button>
       <div class="upload-file">
         <loading v-if="isLoading" text="Preprocessing data..."></loading>
         <h2>Upload</h2>
@@ -151,7 +152,11 @@ export default {
 
         goToHome(){
             this.$router.push({name: 'home'});
-        }
+        },
+
+        gotToDashboard(){
+            this.$router.push({name: 'dashboard'});
+        },
     }
 }
 </script>

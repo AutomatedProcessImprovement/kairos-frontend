@@ -267,9 +267,12 @@ input::placeholder{
   transition: 0.1s;
   cursor: pointer;
 
-  &.margin{
+  &.margin-left{
       margin-left: 10px;
   }
+  &.margin-top{
+    margin-top: 10px;
+}
 
   &:hover{
       filter: brightness(93%);
