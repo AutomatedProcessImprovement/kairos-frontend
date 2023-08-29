@@ -385,13 +385,17 @@ input::placeholder{
     display: flex;
     justify-content: center;
     padding: 10px;
-    margin: 10px 20px 0px 0px;
+    margin: 10px 10px 0px 0px;
     background-color: $k-white;
     box-shadow: 0px 10px 27px rgba(0, 0, 0, 0.05);
     color: $k-black;
     border-radius: 10px;
     transition: 0.2s;
     height: max-content;
+
+    .target-value{
+      white-space: nowrap;
+    }
 
     &.wrap-text{
       small{

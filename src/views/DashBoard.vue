@@ -63,7 +63,7 @@
                 </div>
                 <div v-if="selectedLog.case_completion" class="row">
                     <div class="parameter">
-                        <small class="upper"> Activity equals </small>
+                        <small class="upper"> Activity EQUAL </small>
                         <p> {{ selectedLog.case_completion }}</p>
                         <small>Case completion</small>
                     </div>
@@ -78,7 +78,7 @@
                         <small>Intervention</small>
                     </div>
                     <div class="parameter">
-                        <small> Threshold less than </small>
+                        <small> Threshold more than </small>
                         <p>{{selectedLog.alarm_threshold}}</p>
                         <small>Alarm Threshold</small>
                     </div>

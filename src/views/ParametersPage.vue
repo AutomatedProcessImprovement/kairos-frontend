@@ -267,6 +267,7 @@ export  default {
                     })
                 return;
             }
+            if(this.positiveOutcome.column !=='DURATION') this.positiveOutcome.unit = undefined;
             this.openModal=true;
         },
 
