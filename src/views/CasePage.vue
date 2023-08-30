@@ -23,7 +23,7 @@
             <p :class="['bold', caseKpi.outcome? 'green' : 'warning']">{{ caseKpi.value }} {{ caseKpi.unit }}</p>
             <small>Case {{ caseKpi.column }}</small>
           </div>
-          <div class="case-details">
+          <div v-if="Object.keys(caseDetails).length > 0" class="case-details">
             <p>Case details</p>
             <div class="row">
               <div class="column" v-for="(value,name) in caseDetails" :key='name'>
