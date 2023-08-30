@@ -17,7 +17,7 @@
           <h3 class="blue target-value">{{ parameters.kpi.value }} {{ parameters.kpi.unit }}</h3>
           <small>Case {{ parameters.kpi.column }}  {{ parameters.kpi.operator }}</small>
         </div>
-        <div class="stats-card case-information">
+        <div class="stats-card case-information" ref="caseInformation">
           <div class="case-performance">
             <p>Case performance</p>
             <p :class="['bold', caseKpi.outcome? 'green' : 'warning']">{{ caseKpi.value }} {{ caseKpi.unit }}</p>
