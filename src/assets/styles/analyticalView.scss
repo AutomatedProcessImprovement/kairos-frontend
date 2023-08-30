@@ -12,7 +12,12 @@
       width: 350px;
       min-width: 350px;
       height: calc(100vh - $case-top);
-      overflow-y: auto;
+      overflow-y: hidden;
+      
+      .tabs-component{
+        height: 97%;
+        overflow-y: auto;
+      }
 
       h4 {
         padding-right: 5px;

@@ -14,16 +14,16 @@
       <div class="stats">
         <div v-if="parameters.kpi" class="stats-card column">
           <p>Target</p>
-          <h3 class="blue">{{ parameters.kpi.value }} {{ parameters.kpi.unit }}</h3>
+          <h3 class="blue target-value">{{ parameters.kpi.value }} {{ parameters.kpi.unit }}</h3>
           <small>Case {{ parameters.kpi.column }}  {{ parameters.kpi.operator }}</small>
         </div>
-        <div class="stats-card">
+        <div class="stats-card case-information" ref="caseInformation">
           <div class="case-performance">
             <p>Case performance</p>
             <p :class="['bold', caseKpi.outcome? 'green' : 'warning']">{{ caseKpi.value }} {{ caseKpi.unit }}</p>
             <small>Case {{ caseKpi.column }}</small>
           </div>
-          <div class="case-details">
+          <div v-if="Object.keys(caseDetails).length > 0" class="case-details">
             <p>Case details</p>
             <div class="row">
               <div class="column" v-for="(value,name) in caseDetails" :key='name'>
@@ -99,6 +99,7 @@
       },
 
       methods: {
+
         getCase(){
           this.caseId = (this.$route.params.caseId);
           casesService.getCase(this.caseId).then(

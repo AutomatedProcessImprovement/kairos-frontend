@@ -26,11 +26,23 @@
 
   .stats-card{
     align-items: flex-start !important;
+    justify-content: flex-start !important;
     
     p,small{
       white-space: nowrap;
     }
 
+    &.case-information{
+      margin-right: 0;
+      overflow: auto;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      
+      &::-webkit-scrollbar{
+        width: 0 !important;
+        height: 0 !important;
+      }
+    }
   }
 
   .case-performance{
