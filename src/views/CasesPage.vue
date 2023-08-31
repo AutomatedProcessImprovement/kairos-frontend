@@ -34,6 +34,7 @@
       <ongoing-charts-component v-if="!completion"
       :cases="cases"
       :casesData="casesData"
+      :alarmThreshold="alarmThreshold"
       ></ongoing-charts-component>
     </div>    
     
@@ -106,6 +107,7 @@
         
         performanceColumn: undefined,
         performanceColumnType: undefined,
+        alarmThreshold: undefined,
       };
     },
   

@@ -16,6 +16,7 @@
 <script>
 
 import VueApexCharts from 'vue3-apexcharts';
+import shared from '@/services/shared';
 
 export default {
     name: "ChartsComponent",
@@ -27,14 +28,15 @@ export default {
     props: {
         cases: Array,
         casesData: Array,
+        alarmThreshold: Number,
     },
 
     data() {
       return {
         recommendationsByType: {
-          'ALARM' : {total: 0, accepted: 0},
-          'NEXT_ACTIVITY' : {total: 0, accepted: 0},
-          'TREATMENT_EFFECT' : {total: 0, accepted: 0}
+          'ALARM' : {total: 0, accepted: 0, recommended: 0},
+          'NEXT_ACTIVITY' : {total: 0, accepted: 0, recommended: 0},
+          'TREATMENT_EFFECT' : {total: 0, accepted: 0, recommended: 0}
         },
         
         recommendationTypes: {
@@ -117,13 +119,11 @@ export default {
             }
           },
         },
-
-
       };
     },
 
     watch:{
-        cases(){
+        alarmThreshold(){
           this.createRecommendationTypes();
           this.createRecommendationsAcceptance();
         },
@@ -138,18 +138,23 @@ export default {
           this.recommendationsAcceptance.series[1].data[i] = Math.round(100 * (t.total - t.accepted)/t.total) || 0;
         }
       },
-
-      createRecommendationTypes(){
+      
+      async createRecommendationTypes(){
         this.cases.forEach(({activities}) => {
-          const prescriptions = activities.map(a => a.prescriptions).flat();
-
-          prescriptions.forEach(p => {
-            if(p.status === 'accepted') this.recommendationsByType[p.type].accepted += 1;
-            this.recommendationsByType[p.type].total += 1
-          });
+          const l = activities.length;
+          if (l < 1) return;
+          
+          for (let i = 0; i < l; i++) {
+            const prescriptions = activities[i].prescriptions;
+            prescriptions.forEach(p => {
+              if(p.status === 'accepted') this.recommendationsByType[p.type].accepted += 1;
+              this.recommendationsByType[p.type].total += 1;
+              if(i === (l - 1) && shared.prescriptionAttributes[p.type].pIsRecommended(p,this.alarmThreshold)) this.recommendationsByType[p.type].recommended += 1;
+            });
+          }
         });
 
-        this.recommendationTypes.series = Object.keys(this.recommendationsByType).map(k => this.recommendationsByType[k].total)
+        this.recommendationTypes.series = Object.keys(this.recommendationsByType).map(k => this.recommendationsByType[k].recommended)
       },
     }
 }
