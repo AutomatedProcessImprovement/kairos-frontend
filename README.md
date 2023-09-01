@@ -11,7 +11,7 @@ The interface and the prescriptive process monitoring output may be tested using
 
 ### BPIC 2012 
 
-**The log:** [BPIC 2012](https://github.com/AutomatedProcessImprovement/kairos-frontend/examples/logs/BPI_Challenge_2012.zip)
+**The log:** [BPIC 2012](https://github.com/AutomatedProcessImprovement/kairos-frontend/blob/master/examples/logs/BPI_Challenge_2012.zip)
 
 **Data column types:**
 
@@ -34,7 +34,7 @@ In this example, the case is considered completed when the application is finali
 
 ### Road Traffic Fine Management Process
 
-**The log:** [Road Traffic Management Process](https://github.com/AutomatedProcessImprovement/kairos-frontend/examples/logs/Road_Traffic_Fine_Management_Process.zip)
+**The log:** [Road Traffic Management Process](https://github.com/AutomatedProcessImprovement/kairos-frontend/blob/master/examples/logs/Road_Traffic_Fine_Management_Process.zip)
 
 **Data column types:**
 
@@ -68,7 +68,7 @@ This event log has many cases, and it takes longer for recommendations to appear
 
 ### Claims Management Simplified
 
-**The log:** [Claims Management Simplified](https://github.com/AutomatedProcessImprovement/kairos-frontend/examples/logs/Claims_Management_Simplified.zip)
+**The log:** [Claims Management Simplified](https://github.com/AutomatedProcessImprovement/kairos-frontend/blob/master/examples/logs/Claims_Management_Simplified.zip)
 
 **Data column types:**
 
