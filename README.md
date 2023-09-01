@@ -7,11 +7,11 @@ This is the frontend of Kairos - a tool for visualising prescriptive process mon
 
 ## Example logs
 
-The interface and the prescriptive process monitoring output may be tested using the following event logs and configurations.
+The following event logs and configurations are some examples that can be used to test Kairos.
 
-### BPIC 2012 
+### BPIC 2012 [^bpic2012]
 
-**The log:** [BPIC 2012](https://github.com/AutomatedProcessImprovement/kairos-frontend/blob/master/examples/logs/BPI_Challenge_2012.zip)
+**Download the log here (.csv):** [BPIC 2012](https://github.com/AutomatedProcessImprovement/kairos-frontend/blob/master/examples/logs/BPI_Challenge_2012.zip)
 
 **Data column types:**
 
@@ -32,9 +32,9 @@ In this example, the case is considered completed when the application is finali
 * Intervention - `concept:name EQUAL W_Nabellen offertes`
 * Alarm threshold - custom, e.g. 0.6
 
-### Road Traffic Fine Management Process
+### Road Traffic Fine Management Process [^traffic]
 
-**The log:** [Road Traffic Management Process](https://github.com/AutomatedProcessImprovement/kairos-frontend/blob/master/examples/logs/Road_Traffic_Fine_Management_Process.zip)
+**Download the log here (.csv):** [Road Traffic Management Process](https://github.com/AutomatedProcessImprovement/kairos-frontend/blob/master/examples/logs/Road_Traffic_Fine_Management_Process.zip)
 
 **Data column types:**
 
@@ -68,7 +68,7 @@ This event log has many cases, and it takes longer for recommendations to appear
 
 ### Claims Management Simplified
 
-**The log:** [Claims Management Simplified](https://github.com/AutomatedProcessImprovement/kairos-frontend/blob/master/examples/logs/Claims_Management_Simplified.zip)
+**Download the log here (.csv):** [Claims Management Simplified](https://github.com/AutomatedProcessImprovement/kairos-frontend/blob/master/examples/logs/Claims_Management_Simplified.zip)
 
 **Data column types:**
 
@@ -120,3 +120,8 @@ The frontend requires a running instance of `api`. The instructions on how to st
     docker run -p 80:80 kairos-client-local
     ```
 3) Access http://localhost:80/
+
+
+[^bpic2012]: BPIC 2012 source log: https://data.4tu.nl/articles/_/12689204/1 
+
+[^traffic]: Road Traffic Fine Management Process source log: https://data.4tu.nl/articles/dataset/Road_Traffic_Fine_Management_Process/12683249 
