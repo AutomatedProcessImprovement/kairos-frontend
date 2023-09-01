@@ -28,7 +28,7 @@ that contains all the variables.
 @import "@vueform/slider/themes/default.css";
 
 
-#app{
+#app {
   display: flex;
   min-height: 100vh;
 }
@@ -43,26 +43,31 @@ body {
 }
 
 
-*, ::after, ::before {
+*,
+::after,
+::before {
   box-sizing: border-box;
   color: $k-black;
   padding: 0;
   margin: 0;
 }
 
-small{
+small {
   color: $k-blue2;
 }
 
-p,th,a,div {
+p,
+th,
+a,
+div {
   font-size: 14px;
 }
 
-.pointer{
+.pointer {
   cursor: pointer;
 }
 
-a{
+a {
   text-decoration: none;
   color: $k-black;
   cursor: pointer;
@@ -83,42 +88,46 @@ table {
   border-collapse: collapse;
   border-radius: 10px;
 }
-.vtl{
+
+.vtl {
   border-radius: 10px;
 
   @media (max-width: 900px) {
-      
-    .vtl-paging{
+
+    .vtl-paging {
       flex-direction: column;
     }
   }
 
-  .vtl-paging{
+  .vtl-paging {
 
-    &>*{
+    &>* {
       float: none;
     }
-    select{
+
+    select {
       border-radius: 5px !important;
       margin: 0px 5px;
     }
   }
-  th div{
+
+  th div {
     color: $k-blue2;
   }
 }
 
-td{
+td {
   border: none !important;
   border-top: 1px solid $k-gray1 !important;
 }
 
-td, th {
+td,
+th {
   padding: 10px 10px;
-  text-align:left;
+  text-align: left;
 }
 
-.case-recommendations{
+.case-recommendations {
   border-radius: 5px;
   color: $k-white;
   padding: 0px 10px;
@@ -126,113 +135,115 @@ td, th {
   text-transform: uppercase;
   display: flex;
   align-items: center;
-  
-  &.available{
+
+  &.available {
     background: linear-gradient(135deg, $k-green1 5%, $k-green2 100%);
   }
 
-  &.unavailable{
-    background: linear-gradient(135deg, #AAAAAA 0%, #979797 100%);    
+  &.unavailable {
+    background: linear-gradient(135deg, #AAAAAA 0%, #979797 100%);
   }
 }
 
-.relative{
+.relative {
   position: relative;
 }
 
-.absolute{
+.absolute {
   position: absolute;
 }
 
-.shadow{
+.shadow {
   box-shadow: 0px 20px 27px rgba(0, 0, 0, 0.05);
 }
 
-.bold{
+.bold {
   font-weight: bold;
 }
-.column{
+
+.column {
   display: flex;
   flex-direction: column;
 }
 
-.row{
+.row {
   display: flex;
   flex-direction: row;
 }
 
-.flex-grow{
+.flex-grow {
   display: flex;
   flex-grow: 1;
 }
 
-.align-end{
+.align-end {
   align-items: flex-end;
 }
-.align-start{
+
+.align-start {
   align-items: flex-start;
 }
 
-.align-center{
+.align-center {
   align-items: center;
 }
 
-.content-space-between{
+.content-space-between {
   justify-content: space-between;
 }
 
-.justify-center{
+.justify-center {
   justify-content: center;
 }
 
-.justify-start{
+.justify-start {
   justify-content: flex-start;
 }
 
-.wrap{
+.wrap {
   flex-wrap: wrap;
 }
 
-.divider{
+.divider {
   height: 2px;
   background-color: $k-blue2;
   margin: 5px 0px;
   border-radius: 2px;
 }
 
-.warning{
+.warning {
   color: $k-red;
 }
 
-.blue{
+.blue {
   color: $k-blue;
-} 
+}
 
-.blue2{
+.blue2 {
   color: $k-blue2;
-} 
+}
 
-.black{
+.black {
   color: $k-black
 }
 
-.green{
+.green {
   color: $k-green2
 }
 
-.background-purple{
+.background-purple {
   background-color: $k-purple;
 }
 
-.background-blue5{
+.background-blue5 {
   background-color: $k-blue5;
 }
 
-.background-orange2{
+.background-orange2 {
   background-color: $k-orange2;
 }
 
-#resources{
+#resources {
   padding: 20px 30px;
   display: flex;
   flex-direction: column;
@@ -240,22 +251,22 @@ td, th {
 }
 
 select,
-input{
+input {
   padding: 5px;
   border: 1px solid $k-gray2;
   border-radius: 8px;
   margin: 0px;
 
-  &:focus{
-      outline: 2px solid $k-blue;
+  &:focus {
+    outline: 2px solid $k-blue;
   }
 }
 
-input::placeholder{
+input::placeholder {
   color: $k-gray2;
 }
 
-.btn-blue{
+.btn-blue {
   color: $k-white;
   background-color: $k-blue;
   padding: 5px 10px;
@@ -263,105 +274,110 @@ input::placeholder{
   border: none;
   text-transform: uppercase;
   font-size: 0.7rem;
-  width:max-content;
+  width: max-content;
   transition: 0.1s;
   cursor: pointer;
 
-  &.margin-left{
-      margin-left: 10px;
+  &.margin-left {
+    margin-left: 10px;
   }
 
-  &.margin-top{
+  &.margin-top {
     margin-top: 10px;
   }
 
-  &:hover{
-      filter: brightness(93%);
+  &:hover {
+    filter: brightness(93%);
   }
 
-  &:active{
+  &:active {
     filter: brightness(85%);
   }
 
-  &:disabled{
+  &:disabled {
     filter: opacity(50%);
     cursor: auto;
   }
 }
 
-.toggle-container{
-  &:focus{
-      outline: none;
-      box-shadow: none;
+.toggle-container {
+  &:focus {
+    outline: none;
+    box-shadow: none;
   }
-  .toggle-on{
-      background: $k-blue;
-      border-color: $k-blue;
+
+  .toggle-on {
+    background: $k-blue;
+    border-color: $k-blue;
   }
 }
 
-.cases-table,.recommendations-table{
-  display:flex;
+.cases-table,
+.recommendations-table {
+  display: flex;
   flex: 1;
   align-items: flex-start;
   margin-top: 10px;
 
-  &.hide-paging{
-    .vtl-paging{
-      display:none;
+  &.hide-paging {
+    .vtl-paging {
+      display: none;
     }
   }
 
-  .vtl{
-    flex:1;
+  .vtl {
+    flex: 1;
     box-shadow: 0px 10px 27px rgba(0, 0, 0, 0.05);
 
-    tr{
+    tr {
       cursor: pointer;
       padding: 10px 0px;
-      
-      &.clicked-row{
+
+      &.clicked-row {
         background-color: $k-blue4;
       }
-      &.last-clicked-row{
+
+      &.last-clicked-row {
         background-color: $k-gray2;
       }
     }
   }
 }
 
-.vtl-table{
+.vtl-table {
   transition: 0.5s;
 }
 
-.vtl-paging{
+.vtl-paging {
   padding: 0px 10px 10px 10px;
   align-items: center;
 }
 
-.vtl-loading-mask{
+.vtl-loading-mask {
   background-color: rgba($color: $k-white, $alpha: 0.6) !important;
   border-radius: 10px;
-  span{
+
+  span {
     color: $k-blue !important;
     font-size: 1.2rem;
     font-weight: bold;
   }
 }
 
-.slider-target{
+.slider-target {
   width: 200px;
   padding-right: 10px;
   z-index: 0;
 
-  .slider-connect{
+  .slider-connect {
     background-color: $k-blue;
   }
-  .slider-tooltip{
+
+  .slider-tooltip {
     background-color: $k-blue;
     border: 1px solid $k-blue;
-    
-    &::before{
+
+    &::before {
       border-bottom-color: $k-blue !important;
     }
   }
@@ -369,19 +385,20 @@ input::placeholder{
 }
 
 @media (max-width: 800px) {
-      
-  .stats{
+
+  .stats {
     flex-wrap: wrap;
   }
 }
 
-.stats{
+.stats {
   display: flex;
-  
-  .btn-blue{
+
+  .btn-blue {
     margin: 20px 20px 10px 0px;
   }
-  .stats-card{
+
+  .stats-card {
     display: flex;
     justify-content: center;
     padding: 10px;
@@ -393,37 +410,38 @@ input::placeholder{
     transition: 0.2s;
     height: max-content;
 
-    .target-value{
+    .target-value {
       white-space: nowrap;
     }
 
-    &.wrap-text{
-      small{
+    &.wrap-text {
+      small {
         min-width: 100px;
         max-width: 120px;
       }
     }
 
-    .large-number{
+    .large-number {
       padding: 4px 12px;
       border-radius: 8px;
       margin-left: 5px;
       box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.1);
 
-      &.bg-green{
+      &.bg-green {
         background-color: $k-green2;
       }
-      &.bg-gray{
+
+      &.bg-gray {
         background-color: $k-gray2;
       }
     }
 
 
-    &.selected{
+    &.selected {
       background-color: $k-blue4;
     }
 
-    .column{
+    .column {
       padding: 0px 20px 0 0;
 
       * {
@@ -433,18 +451,18 @@ input::placeholder{
 
     }
 
-      ion-icon{
-        color: $k-white;
-        background-color: $k-blue;
-        width: 20px;
-        height: 20px;
-        padding: 5px;
-        border-radius: 5px;
-        margin-top: 10px;
-      }
+    ion-icon {
+      color: $k-white;
+      background-color: $k-blue;
+      width: 20px;
+      height: 20px;
+      padding: 5px;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
   }
 
-  span{
+  span {
     padding: 10px 40px 20px 5px
   }
 }

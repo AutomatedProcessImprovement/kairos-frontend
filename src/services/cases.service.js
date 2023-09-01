@@ -6,7 +6,7 @@ class CasesService {
         return http.get('/cases');
     }
 
-    getCase(caseId){
+    getCase(caseId) {
         return http.get(`/cases/${caseId}`)
     }
 
@@ -14,7 +14,7 @@ class CasesService {
         return http.get(`/event_logs/${logId}/cases`);
     }
 
-    getCasesByLogAndCompletion(logId,caseCompletion) {
+    getCasesByLogAndCompletion(logId, caseCompletion) {
         return http.get(`/event_logs/${logId}/cases/${caseCompletion}`);
     }
 }

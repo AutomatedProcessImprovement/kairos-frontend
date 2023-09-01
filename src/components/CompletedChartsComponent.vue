@@ -17,14 +17,14 @@
   
       <div class="cases-chart shadow">
         <div class="row justify-start">
-          <h3>Models statistics</h3>
+          <h3>Recommendations Statistics</h3>
           <tooltip-component :iconSize="25" icon="information-circle" color="grey" :tooltipSize="400">           
             <template v-slot:title>
                 <h3>What do model statistics describe?</h3>
             </template>
             <template v-slot:content>
               <p>Each number represents the percentage of a type of prescription (alarm, next activity, intervention) 
-                prescribed and accepted in cases with different outcomes (successful, unsuccessful).</p>
+                prescribed and accepted in cases with different outcomes (positive, negative).</p>
             </template>
           </tooltip-component>
         </div>

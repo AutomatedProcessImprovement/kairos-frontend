@@ -1,4 +1,4 @@
-#loading{
+#loading {
   background-color: $k-white;
   text-transform: uppercase;
   font-weight: bold;
@@ -8,7 +8,7 @@
   justify-content: center;
   align-items: center;
 
-  ion-icon{
+  ion-icon {
     width: 30px;
     height: 30px;
     margin-right: 15px;
@@ -16,6 +16,7 @@
   }
 
 }
+
 .rotate {
   animation: rotation 2s infinite linear;
 }
@@ -24,10 +25,12 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(359deg);
   }
 }
+
 .overlay {
   position: fixed;
   top: 0;
@@ -37,11 +40,11 @@
   height: 100%;
   z-index: 999;
 
-  &.opaque{
+  &.opaque {
     background: rgba($color: $k-blue3, $alpha: 1);
   }
-  &.transparent{
+
+  &.transparent {
     background: rgba($color: $k-blue3, $alpha: 0.3);
   }
 }
-

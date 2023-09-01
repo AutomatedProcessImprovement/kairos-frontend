@@ -1,23 +1,23 @@
 .diagram,
-.flow-diagram{
+.flow-diagram {
     display: flex;
     flex-grow: 1;
-    
-     *{
+
+    * {
         display: flex;
         flex-grow: 1;
     }
 }
 
-.diagram{
-    .zooming-buttons{
+.diagram {
+    .zooming-buttons {
         position: absolute;
         bottom: 5px;
         right: 10px;
         display: flex;
         flex-direction: column;
 
-        ion-icon{
+        ion-icon {
             height: 30px;
             width: 30px;
             cursor: pointer;
@@ -29,7 +29,7 @@
             background-color: $k-white;
             transition: 0.1s;
 
-            &:hover{
+            &:hover {
                 filter: brightness(98%);
             }
         }
