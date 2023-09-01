@@ -20,7 +20,7 @@
           <h3>Recommendations Statistics</h3>
           <tooltip-component :iconSize="25" icon="information-circle" color="grey" :tooltipSize="400">           
             <template v-slot:title>
-                <h3>What do model statistics describe?</h3>
+                <h3>What do recommendations statistics describe?</h3>
             </template>
             <template v-slot:content>
               <p>Each number represents the percentage of a type of prescription (alarm, next activity, intervention) 
