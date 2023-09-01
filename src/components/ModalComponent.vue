@@ -2,7 +2,7 @@
     <div class="overlay transparent modal-overlay">
         <div id="modal">
             <h3>{{ title }}</h3>
-            <slot name="content"/>
+            <slot name="content" />
             <ion-icon name="close-outline" @click="closeModal"></ion-icon>
         </div>
     </div>
@@ -12,15 +12,15 @@
 export default {
     name: "ModalComponent",
 
-    props:{
+    props: {
         title: {
             type: String,
             default: 'Title'
         },
     },
 
-    methods:{
-        closeModal(){
+    methods: {
+        closeModal() {
             this.$emit('closeModal')
         }
     }

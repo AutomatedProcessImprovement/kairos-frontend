@@ -25,36 +25,40 @@
                     <thead>
                         <tr>
                             <th v-for="head in headers" :key="head">
-                                {{head}}
+                                {{ head }}
                             </th>
                         </tr>
                         <tr>
                             <th v-for="head in headers" :key="head">
                                 <div class="column">
                                     <select class="dropdown" v-model="types[head]" required>
-                                        <option v-for="myType in typeList" :key="myType" :selected="types[head] == myType.type" :value="myType.type"> {{myType.text}} </option>
+                                        <option v-for="myType in typeList" :key="myType"
+                                            :selected="types[head] == myType.type" :value="myType.type"> {{ myType.text }}
+                                        </option>
                                     </select>
-                                    <select class="dropdown cost-unit" :class="{active: types[head] === 'COST'}" v-model="costUnits[head]" required>
-                                        <option v-for="currency in currencies" :key="currency" > {{currency}} </option>
+                                    <select class="dropdown cost-unit" :class="{ active: types[head] === 'COST' }"
+                                        v-model="costUnits[head]" required>
+                                        <option v-for="currency in currencies" :key="currency"> {{ currency }} </option>
                                     </select>
                                 </div>
                             </th>
                         </tr>
                         <tr>
                             <th v-for="head in headers" :key="head">
-                                <button @click="toggleCaseAttribute(head)" class="btn-blue" :class="{selected: caseAttributes.indexOf(head) >= 0}">Case attribute</button>
+                                <button @click="toggleCaseAttribute(head)" class="btn-blue"
+                                    :class="{ selected: caseAttributes.indexOf(head) >= 0 }">Case attribute</button>
                             </th>
                         </tr>
-    
+
                     </thead>
-    
+
                     <tbody>
-                    <tr v-for="row in values" :key="row">
-                        <td v-for="cell in row" :key="cell">{{cell}}</td>
-                    </tr>
+                        <tr v-for="row in values" :key="row">
+                            <td v-for="cell in row" :key="cell">{{ cell }}</td>
+                        </tr>
                     </tbody>
                 </table>
-                
+
                 <div class="buttons">
                     <button class="btn-blue" v-on:click="submit">Upload log</button>
                     <button class="btn-blue" v-on:click="goToHome">Cancel</button>
@@ -78,26 +82,26 @@ export default {
         TooltipComponent,
     },
 
-    data () {
+    data() {
         return {
             isLoading: false,
             loadingText: "Please wait...",
 
-            currencies: ['AED','AFN','ALL','AMD','ANG','AOA','ARS','AUD','AWG','AZN','BAM','BBD','BDT','BGN','BIF','BMD','BND','BOB','BRL','BSD','BWP','BZD','CAD','CDF','CHF','CLP','CNY','COP','CRC','CVE','CZK','DJF','DKK','DOP','DZD','EGP','ETB','EUR','FJD','FKP','GBP','GEL','GIP','GMD','GNF','GTQ','GYD','HKD','HNL','HRK','HTG','HUF','IDR','ILS','INR','ISK','JMD','JPY','KES','KGS','KHR','KMF','KRW','KYD','KZT','LAK','LBP','LKR','LRD','LSL','MAD','MDL','MGA','MKD','MNT','MOP','MRO','MUR','MVR','MWK','MXN','MYR','MZN','NAD','NGN','NIO','NOK','NPR','NZD','PAB','PEN','PGK','PHP','PKR','PLN','PYG','QAR','RON','RSD','RUB','RWF','SAR','SBD','SCR','SEK','SGD','SHP','SLL','SOS','SRD','STD','SVC','SZL','THB','TJS','TOP','TRY','TTD','TWD','TZS','UAH','UGX','USD','UYU','UZS','VND','VUV','WST','XAF','XCD','XOF','XPF','YER','ZAR','ZMW'],
+            currencies: ['AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD', 'AWG', 'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BIF', 'BMD', 'BND', 'BOB', 'BRL', 'BSD', 'BWP', 'BZD', 'CAD', 'CDF', 'CHF', 'CLP', 'CNY', 'COP', 'CRC', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD', 'EGP', 'ETB', 'EUR', 'FJD', 'FKP', 'GBP', 'GEL', 'GIP', 'GMD', 'GNF', 'GTQ', 'GYD', 'HKD', 'HNL', 'HRK', 'HTG', 'HUF', 'IDR', 'ILS', 'INR', 'ISK', 'JMD', 'JPY', 'KES', 'KGS', 'KHR', 'KMF', 'KRW', 'KYD', 'KZT', 'LAK', 'LBP', 'LKR', 'LRD', 'LSL', 'MAD', 'MDL', 'MGA', 'MKD', 'MNT', 'MOP', 'MRO', 'MUR', 'MVR', 'MWK', 'MXN', 'MYR', 'MZN', 'NAD', 'NGN', 'NIO', 'NOK', 'NPR', 'NZD', 'PAB', 'PEN', 'PGK', 'PHP', 'PKR', 'PLN', 'PYG', 'QAR', 'RON', 'RSD', 'RUB', 'RWF', 'SAR', 'SBD', 'SCR', 'SEK', 'SGD', 'SHP', 'SLL', 'SOS', 'SRD', 'STD', 'SVC', 'SZL', 'THB', 'TJS', 'TOP', 'TRY', 'TTD', 'TWD', 'TZS', 'UAH', 'UGX', 'USD', 'UYU', 'UZS', 'VND', 'VUV', 'WST', 'XAF', 'XCD', 'XOF', 'XPF', 'YER', 'ZAR', 'ZMW'],
             typeList: [
-                {type: 'CASE_ID', text: 'Case id',definition:'Identifier associated with each trace. At least one column with given type should be defined.'},
-                {type: 'TEXT', text: 'Text',definition:'Textual data.'},
-                {type: 'NUMBER', text: 'Numerical',definition:'Numerical data.'},
-                {type: 'BOOLEAN', text: 'Boolean',definition:'True or false.'},
-                {type: 'DATETIME', text: 'Datetime',definition:'Time data.'},
-                {type: 'TRANSITION', text: 'Transition',definition:'An indication of the status of an activity instance. Possible values are start, complete, schedule, suspend, resume, etc.'},
-                {type: 'ACTIVITY', text: 'Activity',definition:'Name of the activity carried out during the event. At least one column with given type should be defined.'},
-                {type: 'RESOURCE', text: 'Resource',definition:'The resource that carried out the event.'},
-                {type: 'TIMESTAMP', text: 'Timestamp',definition:'Date and time of the event execution. At least one column with given type should be specified.'},
-                {type: 'START_TIMESTAMP', text: 'Start time',definition:'Date and time at which the event started. If defined, the user must also define "End time".'},
-                {type: 'END_TIMESTAMP', text: 'End time',definition:'Date and time at which the event ended. If defined, the user must also define "Start time".'},
-                {type: 'DURATION', text: 'Duration',definition:'Duration of the trace or corresponding event.'},
-                {type: 'COST', text: 'Cost',definition:'Cost associated with the trace or corresponding event.'},
+                { type: 'CASE_ID', text: 'Case id', definition: 'Identifier associated with each trace. At least one column with given type should be defined.' },
+                { type: 'TEXT', text: 'Text', definition: 'Textual data.' },
+                { type: 'NUMBER', text: 'Numerical', definition: 'Numerical data.' },
+                { type: 'BOOLEAN', text: 'Boolean', definition: 'True or false.' },
+                { type: 'DATETIME', text: 'Datetime', definition: 'Time data.' },
+                { type: 'TRANSITION', text: 'Transition', definition: 'An indication of the status of an activity instance. Possible values are start, complete, schedule, suspend, resume, etc.' },
+                { type: 'ACTIVITY', text: 'Activity', definition: 'Name of the activity carried out during the event. At least one column with given type should be defined.' },
+                { type: 'RESOURCE', text: 'Resource', definition: 'The resource that carried out the event.' },
+                { type: 'TIMESTAMP', text: 'Timestamp', definition: 'Date and time of the event execution. At least one column with given type should be specified.' },
+                { type: 'START_TIMESTAMP', text: 'Start time', definition: 'Date and time at which the event started. If defined, the user must also define "End time".' },
+                { type: 'END_TIMESTAMP', text: 'End time', definition: 'Date and time at which the event ended. If defined, the user must also define "Start time".' },
+                { type: 'DURATION', text: 'Duration', definition: 'Duration of the trace or corresponding event.' },
+                { type: 'COST', text: 'Cost', definition: 'Cost associated with the trace or corresponding event.' },
             ],
             headers: [],
             types: {},
@@ -108,7 +112,7 @@ export default {
     },
 
     mounted() {
-        if(shared.getLocal('logId')) this.loadCols();
+        if (shared.getLocal('logId')) this.loadCols();
     },
 
     methods: {
@@ -116,35 +120,35 @@ export default {
             this.isLoading = true;
 
             let logId = shared.getLocal('logId');
- 
+
             logsService.getLog(logId)
-            .then(response => {
-                let log = response.data.event_log;
-                this.headers = log.columns_header;
-                this.types = log.columns_definition;
-                this.costUnits = log.cost_units || {};
-                this.caseAttributes = log.case_attributes || [];
-                for (const r of log.columns_data) {
-                    this.values.push(r)
-                }
-                this.isLoading = false;
-            })
-            .catch(error => {
-                this.isLoading = false;
-                const resMessage =
-                (error.response && error.response.data && error.response.data.error) ||
-                error.message || error.toString();
-                this.$notify({
+                .then(response => {
+                    let log = response.data.event_log;
+                    this.headers = log.columns_header;
+                    this.types = log.columns_definition;
+                    this.costUnits = log.cost_units || {};
+                    this.caseAttributes = log.case_attributes || [];
+                    for (const r of log.columns_data) {
+                        this.values.push(r)
+                    }
+                    this.isLoading = false;
+                })
+                .catch(error => {
+                    this.isLoading = false;
+                    const resMessage =
+                        (error.response && error.response.data && error.response.data.error) ||
+                        error.message || error.toString();
+                    this.$notify({
                         title: 'An error occured',
                         text: resMessage,
                         type: 'error'
                     })
-            });
+                });
         },
         submit() {
 
-            Object.values(this.types).forEach(value => {  
-                if (!value){
+            Object.values(this.types).forEach(value => {
+                if (!value) {
                     this.$notify({
                         title: 'Warning',
                         text: 'Please define all the columns!',
@@ -163,37 +167,37 @@ export default {
                 "case_attributes": this.caseAttributes
             };
 
-            logsService.defineColumnTypes(shared.getLocal('logId'),data)
-            .then(response => {
-                console.log(response.data);
-                this.isLoading = false;
-                this.$router.push({name: 'parameters'});
-            })
-            .catch(error => {
-                this.isLoading = false;
-                let resMessage =
-                (error.response && error.response.data && error.response.data.error) ||
-                error.message || error.toString();
-                if (error.response.data.prcore) resMessage = "Error occured in the core. Try changing some column types to 'Text'.";
-                this.$notify({
+            logsService.defineColumnTypes(shared.getLocal('logId'), data)
+                .then(response => {
+                    console.log(response.data);
+                    this.isLoading = false;
+                    this.$router.push({ name: 'parameters' });
+                })
+                .catch(error => {
+                    this.isLoading = false;
+                    let resMessage =
+                        (error.response && error.response.data && error.response.data.error) ||
+                        error.message || error.toString();
+                    if (error.response.data.prcore) resMessage = "Error occured in the core. Try changing some column types to 'Text'.";
+                    this.$notify({
                         title: 'An error occured',
                         text: resMessage,
                         type: 'error'
+                    });
                 });
-            });
         },
 
-        toggleCaseAttribute(head){
+        toggleCaseAttribute(head) {
             var ind = this.caseAttributes.indexOf(head);
-            if (ind < 0){
-                this.caseAttributes.push(head);  
+            if (ind < 0) {
+                this.caseAttributes.push(head);
                 return;
             }
-            this.caseAttributes.splice(ind,1);
+            this.caseAttributes.splice(ind, 1);
         },
 
-        goToHome(){
-            this.$router.push({name: 'home'});
+        goToHome() {
+            this.$router.push({ name: 'home' });
         }
     },
 }

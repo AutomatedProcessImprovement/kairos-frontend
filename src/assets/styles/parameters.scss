@@ -1,56 +1,57 @@
-#parameters{
+#parameters {
     padding: 10px;
     display: flex;
     align-items: center;
     flex-grow: 1;
     flex-direction: column;
 
-    .log-card{
+    .log-card {
         margin: 0;
     }
 
 
-    .parameter{
+    .parameter {
         display: flex;
         flex-direction: column;
         padding: 5px 0px;
 
         select,
-        input{
+        input {
             margin: 5px 0px;
 
-            &:disabled{
+            &:disabled {
                 filter: opacity(60%);
             }
         }
 
-        .input-group{
+        .input-group {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            
-            *{
+
+            * {
                 padding-right: 10px;
             }
 
             select,
-            input{
+            input {
                 width: 250px;
             }
 
-            .double-input{
+            .double-input {
                 padding: 0px;
+
                 select,
-                input{
+                input {
                     width: 120px;
                 }
 
-                input{
+                input {
                     margin-right: 10px;
                 }
 
             }
         }
     }
-    
+
 }

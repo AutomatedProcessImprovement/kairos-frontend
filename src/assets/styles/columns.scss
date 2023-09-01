@@ -1,32 +1,32 @@
-#log-columns{
+#log-columns {
     padding: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-grow: 1;
 
-    .log-table{
+    .log-table {
         display: flex;
         flex-direction: column;
         max-width: 90vw;
-        
-        table{
+
+        table {
             border-radius: 10px;
             border-collapse: separate;
-            box-shadow: 0px 10px 27px rgba(0, 0, 0, 0.05); 
-            
+            box-shadow: 0px 10px 27px rgba(0, 0, 0, 0.05);
+
             tr {
-                .btn-blue{
+                .btn-blue {
                     filter: opacity(50%);
-        
-                    &.selected{
+
+                    &.selected {
                         filter: none;
                     }
                 }
             }
 
-            .dropdown{
-                &.cost-unit{
+            .dropdown {
+                &.cost-unit {
                     z-index: -1;
                     padding: 0px 10px;
                     margin: 0px;
@@ -34,8 +34,8 @@
                     transition: all 0.3s;
                     visibility: collapse;
                     border: 0;
-                    
-                    &.active{
+
+                    &.active {
                         z-index: 0;
                         padding: 5px 10px;
                         margin: 10px 0px 0px 0px;
@@ -50,11 +50,12 @@
 
 
     }
-    .buttons{
+
+    .buttons {
         display: flex;
         justify-content: flex-start;
 
-        .btn-blue{
+        .btn-blue {
             margin: 10px !important;
         }
     }

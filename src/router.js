@@ -1,5 +1,5 @@
-import {createRouter, createWebHistory, RouterView} from "vue-router";
-import {h} from 'vue';
+import { createRouter, createWebHistory, RouterView } from "vue-router";
+import { h } from 'vue';
 import CasePage from "./views/CasePage.vue"
 import CasesPage from "./views/CasesPage.vue"
 import UploadPage from "./views/UploadPage"
@@ -31,13 +31,13 @@ const routes = [
     },
     {
         path: "/cases",
-        component: { render: () => h(RouterView)},
+        component: { render: () => h(RouterView) },
         children: [
             {
                 path: ':completion',
-                component: { render: () => h(RouterView)},
+                component: { render: () => h(RouterView) },
                 params: {
-                    completion: ['completed','ongoing']
+                    completion: ['completed', 'ongoing']
                 },
                 children: [
                     {
@@ -55,7 +55,7 @@ const routes = [
                     },
                 ]
             },
-            
+
         ]
     },
     {

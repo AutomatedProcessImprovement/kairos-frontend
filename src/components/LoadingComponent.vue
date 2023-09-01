@@ -3,20 +3,18 @@
         <div class="overlay opaque loading-overlay" :style="overlayStyle">
             <div id="loading">
                 <ion-icon class="rotate" name="reload-circle"></ion-icon>
-                {{text}}
+                {{ text }}
             </div>
         </div>
     </div>
 </template>
 
-<style scoped>
-    
-</style>
+<style scoped></style>
 
 <script>
 export default {
     name: "LoadingComponent",
-    props:{
+    props: {
         text: {
             type: String,
             default: 'Please wait...'
@@ -27,9 +25,9 @@ export default {
         },
     },
 
-    computed:{
-        overlayStyle(){
-            return{
+    computed: {
+        overlayStyle() {
+            return {
                 left: this.startPosition,
                 width: (window.innerWidth - this.startPosition) + "px",
             }

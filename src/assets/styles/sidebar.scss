@@ -11,22 +11,22 @@
   border: 1px solid $k-gray1;
   border-radius: 0 0 10px 0px;
 
-  &:hover{
-    box-shadow: -14px -12px 10px -12px rgba(0,0,0,0.08) inset;
+  &:hover {
+    box-shadow: -14px -12px 10px -12px rgba(0, 0, 0, 0.08) inset;
 
-    .sidebar-collapse-icon{
+    .sidebar-collapse-icon {
       display: block;
     }
   }
 
-  &.collapsed{
+  &.collapsed {
     visibility: collapse;
     max-width: 5px;
     min-width: 5px;
     overflow: hidden;
   }
 
-  .sidebar-collapse-icon{
+  .sidebar-collapse-icon {
     background-color: $k-white;
     padding: 5px;
     border-radius: 15px;
@@ -36,50 +36,51 @@
     display: none;
     visibility: visible;
     transition: 0.5s;
-    box-shadow: 0px 3px 5px rgba(0,0,0,0.06);
+    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.06);
 
-    &.active{
+    &.active {
       rotate: 180deg;
       box-shadow: 0px 0px 5px rgba(0, 72, 255, 0.3);
       visibility: visible;
       display: block;
       left: 5px;
     }
-    
-    &:hover{
+
+    &:hover {
       filter: brightness(90%);
       box-shadow: 0px 0px 5px rgba(0, 72, 255, 0.3);
 
     }
-}
+  }
 
-.kairos-logo{
-  width: 35px;
-  margin-right: 10px;
-}
+  .kairos-logo {
+    width: 35px;
+    margin-right: 10px;
+  }
 
-  ion-icon{
+  ion-icon {
     width: 20px;
     height: 20px;
     padding: 5px;
     transition: 0.2s;
   }
-  .sidebar-heading{
+
+  .sidebar-heading {
     padding: 5px 20px 5px 10px;
     display: flex;
     align-items: center;
   }
 
-  .sidebar-content{
+  .sidebar-content {
     display: flex;
     flex-direction: column;
-    justify-content:space-around;
+    justify-content: space-around;
     flex-grow: 1;
 
-    &>*{
+    &>* {
       padding-top: 30px;
     }
-    
+
     // sidebar items container
     .sidebar-items {
       // margin-top: 30%;
@@ -87,9 +88,9 @@
       display: flex;
       flex-direction: column;
     }
-    
+
     // sidebar item
-    
+
     .sidebar-item {
       background-color: $k-gray1;
       border: none;
@@ -104,44 +105,44 @@
       cursor: pointer;
       margin: 2px 0px;
 
-      &.sub-item{
+      &.sub-item {
         margin-left: 20px;
         padding: 5px;
       }
-      
-      &:hover{
-      background-color: $k-white;
-      color: $k-black;
-      }  
-  
+
+      &:hover {
+        background-color: $k-white;
+        color: $k-black;
+      }
+
       &.router-link-active,
-      &.active{
+      &.active {
         background-color: $k-white;
         box-shadow: 0px 1px 5px $k-gray2;
         color: $k-black;
         z-index: 2;
-  
-        ion-icon{
+
+        ion-icon {
           color: $k-white;
           background-color: $k-blue;
           box-shadow: none;
         }
       }
-  
-      ion-icon{
+
+      ion-icon {
         margin-right: 10px;
         background-color: $k-white;
         border-radius: 5px;
         box-shadow: 0px 1px 5px $k-gray2;
-      } 
-    }  
+      }
+    }
 
     // switch views
 
-    .switch-views{
+    .switch-views {
       display: flex;
       flex-direction: column;
     }
   }
-  
-  }
+
+}
