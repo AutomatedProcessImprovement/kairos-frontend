@@ -122,12 +122,18 @@ export default {
       },
     };
   },
-
+  
   watch: {
-    alarmThreshold() {
+    alarmThreshold(){
       this.createRecommendationTypes();
       this.createRecommendationsAcceptance();
     },
+    cases() {
+      if(this.alarmThreshold){
+        this.createRecommendationTypes();
+        this.createRecommendationsAcceptance();
+      }
+    }
   },
 
   methods: {
@@ -141,9 +147,11 @@ export default {
     },
 
     async createRecommendationTypes() {
+      this.resetRecommendationCounts();
       this.cases.forEach(({ activities }) => {
         const l = activities.length;
         if (l < 1) return;
+
 
         for (let i = 0; i < l; i++) {
           const prescriptions = activities[i].prescriptions;
@@ -156,6 +164,15 @@ export default {
       });
 
       this.recommendationTypes.series = Object.keys(this.recommendationsByType).map(k => this.recommendationsByType[k].recommended)
+    },
+
+    resetRecommendationCounts() {
+      Object.keys(this.recommendationsByType).forEach(t => {
+        const recType = this.recommendationsByType[t];
+        recType.accepted = 0;
+        recType.recommended = 0;
+        recType.total = 0;
+      });
     },
   }
 }
