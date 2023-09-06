@@ -346,6 +346,13 @@ input::placeholder {
 
 .vtl-table {
   transition: 0.5s;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+  }
 }
 
 .vtl-paging {
