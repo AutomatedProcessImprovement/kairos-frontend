@@ -300,6 +300,31 @@ input::placeholder {
   }
 }
 
+.btn-link {
+  background-color: $k-gray2;
+  padding: 3px 10px;
+  border-radius: 5px;
+  border: none;
+  width: max-content;
+  transition: 0.1s;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  box-shadow: 0px 2px 7px rgba(0, 0, 0, 0.05);
+
+  &:hover {
+    filter: brightness(95%);
+  }
+
+  ion-icon {
+    height: 20px;
+    width: 20px;
+    padding: 5px;
+  }
+}
+
 .toggle-container {
   &:focus {
     outline: none;
@@ -474,7 +499,7 @@ input::placeholder {
   }
 }
 
-.hide-scrollbar{
+.hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
 

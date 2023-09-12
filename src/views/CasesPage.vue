@@ -34,11 +34,11 @@
 
     <div v-if="!showTable" class="cases-table-preview-heading shadow">
       <h3>Cases Overview Table</h3>
-      <button v-if="!showTable" @click="toggleShowTable" class="link-btn">Show full <ion-icon
+      <button v-if="!showTable" @click="toggleShowTable" class="btn-link">Show full <ion-icon
           name="open-outline"></ion-icon></button>
     </div>
     <div class="column">
-      <button v-if="showTable" @click="toggleShowTable" class="link-btn"><ion-icon name="chevron-back"></ion-icon> Return
+      <button v-if="showTable" @click="toggleShowTable" class="btn-link"><ion-icon name="chevron-back"></ion-icon> Return
         to overview</button>
 
       <cases-table-component :completed="completion" :performanceColumn="performanceColumn"

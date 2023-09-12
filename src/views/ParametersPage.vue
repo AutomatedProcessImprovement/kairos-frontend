@@ -53,45 +53,66 @@
                     </div>
                     <small>Please specify what is considered as the positive outcome of the case.</small>
 
-                    <div class="input-group">
-                        <small>Outcome Type</small>
-                        <select v-model="positiveOutcome.column">
-                            <option v-for="outcomeType in positiveOutcomeTypes" :key="outcomeType" :value="outcomeType">{{
-                                outcomeType }}</option>
-                        </select>
-                    </div>
+                    <div v-for="(positiveOutcomeGroup, index1) in positiveOutcome" :key="index1"
+                        class="positive-outcome-group container">
 
-                    <div class="input-group">
-                        <small>Outcome Evaluation Method</small>
-                        <select v-if="positiveOutcome.column" v-model="positiveOutcome.operator">
-                            <option v-for="evaluationMethod in getEvaluationMethods(positiveOutcome.column, 'outcome')"
-                                :key="evaluationMethod">{{ evaluationMethod }}</option>
-                        </select>
-                        <select v-else disabled></select>
-                    </div>
+                        <ion-icon @click="deletePositiveOutcomeGroup(index1)" class="btn-close" name="close-outline"></ion-icon>
 
-                    <div class="input-group">
-                        <small>Outcome Value</small>
-                        <select v-if="positiveOutcome.columnDefinition === 'ACTIVITY'" v-model="positiveOutcome.value">
-                            <option v-for="activity in activities" :key="activity">{{ activity }}</option>
-                        </select>
-                        <span v-else-if="positiveOutcome.columnDefinition === 'BOOLEAN'"></span>
-                        <div class="double-input" v-else-if="positiveOutcome.columnDefinition === 'DURATION'">
-                            <input type="number" min="0" v-model="positiveOutcome.value" />
-                            <select v-model="positiveOutcome.unit">
-                                <!-- <option>month</option> -->
-                                <option>weeks</option>
-                                <option>days</option>
-                                <option>hours</option>
-                                <option>minutes</option>
-                                <option>seconds</option>
-                            </select>
+                        <div v-for="(positiveOutcomeItem, index2) in positiveOutcomeGroup" :key="index2"
+                            class="positive-outcome-group item">
+
+                            <ion-icon @click="deletePositiveOutcomeItem(index1, index2)" class="btn-close" name="close-outline"></ion-icon>
+
+                            <div class="input-group">
+                                <small>Outcome Type</small>
+                                <select v-model="positiveOutcomeItem.column">
+                                    <option v-for="outcomeType in positiveOutcomeTypes" :key="outcomeType"
+                                        :value="outcomeType">{{
+                                            outcomeType }}</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <small>Outcome Evaluation Method</small>
+                                <select v-if="positiveOutcomeItem.column" v-model="positiveOutcomeItem.operator">
+                                    <option
+                                        v-for="evaluationMethod in getEvaluationMethods(positiveOutcomeItem.column, 'outcome', index1, index2)"
+                                        :key="evaluationMethod">{{ evaluationMethod }}</option>
+                                </select>
+                                <select v-else disabled></select>
+                            </div>
+
+                            <div class="input-group">
+                                <small>Outcome Value</small>
+                                <select v-if="positiveOutcomeItem.columnDefinition === 'ACTIVITY'"
+                                    v-model="positiveOutcomeItem.value">
+                                    <option v-for="activity in activities" :key="activity">{{ activity }}</option>
+                                </select>
+                                <span v-else-if="positiveOutcomeItem.columnDefinition === 'BOOLEAN'"></span>
+                                <div class="double-input" v-else-if="positiveOutcomeItem.columnDefinition === 'DURATION'">
+                                    <input type="number" min="0" v-model="positiveOutcomeItem.value" />
+                                    <select v-model="positiveOutcomeItem.unit">
+                                        <!-- <option>month</option> -->
+                                        <option>weeks</option>
+                                        <option>days</option>
+                                        <option>hours</option>
+                                        <option>minutes</option>
+                                        <option>seconds</option>
+                                    </select>
+                                </div>
+                                <input v-else-if="positiveOutcomeItem.columnDefinition"
+                                    :type="getInputType(positiveOutcomeItem.columnDefinition)"
+                                    v-model="positiveOutcomeItem.value" />
+                                <select v-else disabled></select>
+                            </div>
                         </div>
-                        <input v-else-if="positiveOutcome.columnDefinition"
-                            :type="getInputType(positiveOutcome.columnDefinition)" v-model="positiveOutcome.value" />
-                        <select v-else disabled></select>
+                        <button class="btn-link" @click="addPositiveOutcomeItem(index1)">and <ion-icon
+                                name="add-outline"></ion-icon></button>
                     </div>
+                    <button class="btn-link" @click="addPositiveOutcomeGroup">or <ion-icon
+                            name="add-outline"></ion-icon></button>
                 </div>
+
                 <h3>Recommendation Parameters</h3>
                 <small>Kairos provides prescriptions based on different algorithms. Please specify the parameters for
                     them.</small>
@@ -169,7 +190,7 @@
                 <button type="submit" class="btn-blue" @click="validate">Submit</button>
             </div>
         </div>
-        <modal-component v-if="openModal" title="Parameters group name" @closeModal="closeModal">
+        <modal-component v-if="openModal" title="Parameters group name" @closeModal="this.openModal = false;">
             <template v-slot:content>
                 <div class="column">
                     <input type="text" minlength="2" maxlength="100" placeholder="Description..."
@@ -212,7 +233,14 @@ export default {
             caseCompletion: null,
 
             positiveOutcomeTypes: null,
-            positiveOutcome: {},
+            positiveOutcome: [],
+            defaultPositiveOutcomeItem: {
+                "column": undefined,
+                "operator": undefined,
+                "value": undefined,
+                "unit": undefined,
+                "columnDefinition": undefined
+            },
 
             interventionTypes: null,
             intervention: {},
@@ -260,19 +288,13 @@ export default {
         formatParameters() {
             this.caseCompletion = this.log.case_completion;
             this.alarmThreshold = this.log.alarm_threshold;
-            this.positiveOutcome = this.log.positive_outcome;
-            // this.positiveOutcome.operator = this.deformat(this.positiveOutcome.operator);
             this.intervention = this.log.treatment;
-            // this.intervention.operator = this.deformat(this.intervention.operator);
-        },
-
-        closeModal() {
-            this.openModal = false;
+            if (typeof this.log.positive_outcome === "object") this.positiveOutcome = [[this.log.positive_outcome]];
+            else this.positiveOutcome = this.log.positive_outcome;
         },
 
         validate() {
-            if (!this.caseCompletion || !this.alarmThreshold || !this.intervention.column || !this.intervention.operator || !this.intervention.value ||
-                !this.positiveOutcome.value || !this.positiveOutcome.column || !this.positiveOutcome.operator || (this.positiveOutcome.column === 'DURATION' && !this.positiveOutcome.unit)) {
+            if (!this.caseCompletion || !this.alarmThreshold || !this.intervention.column || !this.intervention.operator || !this.intervention.value || !this.isValidPositiveOutcome()) {
                 this.$notify({
                     title: 'Warning',
                     text: 'Please fill in all the fields!',
@@ -297,12 +319,14 @@ export default {
             this.loadingText = "Creating project...";
             this.isLoading = true;
 
-            let positiveOutcome = {
-                "column": this.positiveOutcome.column,
-                "operator": shared.format(this.positiveOutcome.operator),
-                "value": this.positiveOutcome.value,
-                "unit": this.positiveOutcome.unit
-            }
+            let positiveOutcome = this.positiveOutcome.map(group => group.map(item => {
+                return {
+                    "column": item.column,
+                    "operator": shared.format(item.operator),
+                    "value": item.value,
+                    "unit": item.unit
+                }
+            }));
 
             let intervention = {
                 "column": this.intervention.column,
@@ -336,12 +360,41 @@ export default {
                 });
         },
 
-        getEvaluationMethods(type, parameter) {
+        isValidPositiveOutcome() {
+            return this.positiveOutcome.length > 0 &&
+                this.positiveOutcome.every(positiveOutcomeGroup =>
+                    positiveOutcomeGroup.every(element =>
+                        element.column && element.operator && element.value &&
+                        (element.column !== 'DURATION' || element.unit)
+                    )
+                );
+        },
+
+        addPositiveOutcomeGroup() {
+            this.positiveOutcome.push([{...this.defaultPositiveOutcomeItem}]);
+        },
+
+        addPositiveOutcomeItem(index1) {
+            if (index1 >= this.positiveOutcome.length) return;
+            this.positiveOutcome[index1].push({...this.defaultPositiveOutcomeItem});
+        },
+
+        deletePositiveOutcomeGroup(index1) {
+            if (index1 >= this.positiveOutcome.length) return;
+            this.positiveOutcome.splice(index1, 1);
+        },
+
+        deletePositiveOutcomeItem(index1, index2) {
+            if (index1 >= this.positiveOutcome.length || index2 >= this.positiveOutcome[index1].length) return;
+            this.positiveOutcome[index1].splice(index2, 1);
+        },
+
+        getEvaluationMethods(type, parameter, index1 = undefined, index2 = undefined) {
             let definition = this.columnsDefinition[type];
             if (!definition) {
                 definition = type;
             }
-            if (parameter === 'outcome') this.positiveOutcome.columnDefinition = definition;
+            if (parameter === 'outcome') this.positiveOutcome[index1][index2].columnDefinition = definition;
             else this.intervention.columnDefinition = definition;
             let method = shared.evaluationMethods[definition];
             return Object.keys(method.operators);
