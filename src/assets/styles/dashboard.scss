@@ -29,12 +29,6 @@
         }
     }
 
-    .parameter {
-        display: flex;
-        flex-direction: column;
-        padding-right: 20px;
-    }
-
     .select-view {
         display: flex;
         align-items: center;
@@ -48,6 +42,57 @@
     input[type='text'] {
         padding: 10px 28px !important;
     }
+
+    .parameters-container {
+        * {
+            margin-bottom: 0;
+        }
+
+        .parameters {
+
+            margin: 5px 0px;
+
+            .parameter {
+                display: flex;
+                flex-direction: column;
+                padding: 10px 15px 10px 0px;
+
+                * {
+                    margin-bottom: 5px;
+                }
+
+            }
+
+            .positive-outcome {
+                padding: 0px 10px 0px 0px;
+
+                .positive-outcome-group {
+                    display: flex;
+                    border-radius: 5px;
+                    margin: 0px 5px;
+                    border-radius: 5px;
+                    padding: 5px;
+                    
+                    &.container {
+                        flex-direction: row;
+                        background-color: $k-gray2;
+
+                        span{
+                            padding: 5px;
+                        }
+                    }
+                    
+                    &.parameter {
+                        background-color: $k-gray1;
+                        margin: 0px;
+                    }
+                }
+            }
+        }
+
+
+    }
+
 
 }
 

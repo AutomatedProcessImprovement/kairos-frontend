@@ -54,12 +54,12 @@
                     <small>Please specify what is considered as the positive outcome of the case.</small>
 
                     <div v-for="(positiveOutcomeGroup, index1) in positiveOutcome" :key="index1"
-                        class="positive-outcome-group container">
+                        class="positive-outcome-group container column">
 
                         <ion-icon @click="deletePositiveOutcomeGroup(index1)" class="btn-close" name="close-outline"></ion-icon>
 
                         <div v-for="(positiveOutcomeItem, index2) in positiveOutcomeGroup" :key="index2"
-                            class="positive-outcome-group item">
+                            class="positive-outcome-group item column">
 
                             <ion-icon @click="deletePositiveOutcomeItem(index1, index2)" class="btn-close" name="close-outline"></ion-icon>
 
@@ -73,7 +73,7 @@
                             </div>
 
                             <div class="input-group">
-                                <small>Outcome Evaluation Method</small>
+                                <small>Outcome Operator</small>
                                 <select v-if="positiveOutcomeItem.column" v-model="positiveOutcomeItem.operator">
                                     <option
                                         v-for="evaluationMethod in getEvaluationMethods(positiveOutcomeItem.column, 'outcome', index1, index2)"
@@ -289,7 +289,7 @@ export default {
             this.caseCompletion = this.log.case_completion;
             this.alarmThreshold = this.log.alarm_threshold;
             this.intervention = this.log.treatment;
-            if (typeof this.log.positive_outcome === "object") this.positiveOutcome = [[this.log.positive_outcome]];
+            if (!Array.isArray(this.log.positive_outcome)) this.positiveOutcome = [[this.log.positive_outcome]];
             else this.positiveOutcome = this.log.positive_outcome;
         },
 
