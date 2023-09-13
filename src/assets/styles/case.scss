@@ -24,6 +24,12 @@
 
 .case-top {
 
+  .stats{
+    p{
+      padding: 0px 10px 0px 0px;
+    }
+  }
+
   .stats-card {
     align-items: flex-start !important;
     justify-content: flex-start !important;
@@ -40,7 +46,8 @@
   }
 
   .case-performance {
-    padding-right: 50px
+    padding-right: 20px;
+    
   }
 
   .case-recommendations {
