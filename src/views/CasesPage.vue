@@ -41,8 +41,7 @@
       <button v-if="showTable" @click="toggleShowTable" class="btn-link"><ion-icon name="chevron-back"></ion-icon> Return
         to overview</button>
 
-      <cases-table-component :completed="completion" :performanceColumn="performanceColumn"
-        :performanceColumnType="performanceColumnType" :caseAttributes="caseAttributes" :cases="casesDataToShow"
+      <cases-table-component :completed="completion" :performanceColumns="performanceColumns" :caseAttributes="caseAttributes" :cases="casesDataToShow"
         :isFullView="showTable"></cases-table-component>
     </div>
 
@@ -96,9 +95,9 @@ export default {
       caseAttributes: [],
       costUnits: {},
 
-      performanceColumn: undefined,
-      performanceColumnType: undefined,
+      performanceColumns: undefined,
       alarmThreshold: undefined,
+      columnsDefinition: undefined,
     };
   },
 
@@ -153,16 +152,12 @@ export default {
       );
     },
 
-    async getPerformanceColumnType() {
+    async getParameters() {
       try {
         const response = await logsService.getParameters(shared.getLocal('logId'));
         this.alarmThreshold = response.data.parameters.alarmThreshold || 1.0;
         this.costUnits = response.data.parameters.costUnits || {};
-
-        this.performanceColumnType = response.data.parameters.columnsDefinition[this.performanceColumn];
-        if (!this.performanceColumnType) {
-          this.performanceColumnType = this.performanceColumn;
-        }
+        this.columnsDefinition = response.data.parameters.columnsDefinition;
       } catch (error) {
         this.isLoading = false;
         const resMessage = (error.response &&
@@ -182,17 +177,27 @@ export default {
       if (this.casesData.length > 0) {
         this.casesData = [];
       } else {
-        if (!this.performanceColumn) {
-          this.performanceColumn = this.cases[0].case_performance.column;
-          await this.getPerformanceColumnType();
+        if (!this.performanceColumns) {
+          await this.getParameters();
+
+          let performanceColumns = {}
+
+          let casePerformance = Array.isArray(this.cases[0].case_performance) ? this.cases[0].case_performance : [[this.cases[0].case_performance]];
+          casePerformance.forEach(performanceGroup => {
+            performanceGroup.forEach(performanceItem => {
+              performanceColumns[performanceItem.column] = this.columnsDefinition[performanceItem.column] || performanceItem.column;
+            });
+          });
+          this.performanceColumns = performanceColumns;
         }
         Object.keys(this.cases[0].case_attributes).forEach(k => {
-          if (this.performanceColumn === k) return;
-          this.caseAttributes.push({
-            label: k + (this.costUnits[k] ? ' (' + this.costUnits[k] + ')' : ''),
-            field: k,
-            sortable: true
-          });
+          if (!this.performanceColumns[k]) {
+            this.caseAttributes.push({
+              label: k + (this.costUnits[k] ? ' (' + this.costUnits[k] + ')' : ''),
+              field: k,
+              sortable: true
+            });
+          }
         })
       }
 
