@@ -224,17 +224,8 @@ export default {
 
     createRecommendationsStatistics() {
       this.cases.forEach(({ case_performance, activities }) => {
-        let cumulativeOutcome = false;
-        const casePerformance = Array.isArray(case_performance) ? case_performance : [[case_performance]];
-
-        casePerformance.forEach(performanceGroup => {
-          let groupOutcome = true;
-          performanceGroup.forEach(performanceItem => {
-            if (performanceItem.outcome === false) groupOutcome = performanceItem.outcome;
-          });
-          if (groupOutcome === true) cumulativeOutcome = groupOutcome;
-        });
-        const outcome = cumulativeOutcome;
+        
+        const outcome = shared.calculateCaseOutcome(case_performance);
         const prescriptions = activities.map(a => a.prescriptions).flat();
 
         prescriptions.forEach(p => {

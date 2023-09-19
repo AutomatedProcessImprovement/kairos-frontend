@@ -11,11 +11,15 @@
     <div class="row">
       <div class="case-performance-details shadow">
         <h4>Case details</h4>
-        <div class="row">
-          <ion-icon v-if="!caseKpi.outcome" class="warning" name="alert"></ion-icon>
-          <p> Case {{ caseKpi.column }} equals {{ caseKpi.value }} {{ caseKpi.unit }}</p>
+        <div class="column" v-for="outcomeGroup in caseKpi" :key="outcomeGroup">
+          <div class="column" v-for="outcomeItem in outcomeGroup" :key="outcomeItem">
+            <div class="row">
+              <ion-icon v-if="!outcomeItem.outcome" class="warning" name="alert"></ion-icon>
+              <p> Case {{ outcomeItem.column }} equals {{ outcomeItem.value }} {{ outcomeItem.unit }}</p>
+            </div>
+          </div>
         </div>
-        <small>The case performance {{ caseKpi.outcome ? 'does not violate' : 'violates' }} the positive outcome
+        <small>The case performance {{ caseOutcome ? 'does not violate' : 'violates' }} the positive outcome
           condition.</small>
       </div>
       <div class="recommendations-list shadow">
@@ -67,6 +71,7 @@
 import TooltipComponent from './TooltipComponent.vue';
 import OperationalRecommendationComponent from './OperationalRecommendationComponent.vue';
 import FlowDiagramComponent from './FlowDiagramComponent.vue';
+import shared from '@/services/shared';
 
 export default {
   name: 'OperationalWorkerView',
@@ -99,7 +104,10 @@ export default {
       return this.currentCase.activities.slice(-1)[0];
     },
     caseKpi() {
-      return this.currentCase.case_performance;
+      return Array.isArray(this.currentCase.case_performance) ? this.currentCase.case_performance: [[this.currentCase.case_performance]];
+    },
+    caseOutcome(){
+      return shared.calculateCaseOutcome(this.caseKpi);
     }
   },
 

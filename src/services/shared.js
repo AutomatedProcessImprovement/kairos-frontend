@@ -195,4 +195,18 @@ export default {
 
     return data;
   },
+
+  calculateCaseOutcome(casePerformance){
+    let cumulativeOutcome = false;
+    casePerformance = Array.isArray(casePerformance) ? casePerformance : [[casePerformance]];
+
+    casePerformance.forEach(performanceGroup => {
+      let groupOutcome = true;
+      performanceGroup.forEach(performanceItem => {
+        if (performanceItem.outcome === false) groupOutcome = performanceItem.outcome;
+      });
+      if (groupOutcome === true) cumulativeOutcome = groupOutcome;
+    });
+    return cumulativeOutcome;
+  }
 }
