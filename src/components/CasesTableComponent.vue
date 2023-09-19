@@ -129,7 +129,7 @@ export default {
       Object.keys(value).forEach((k, index) => {
         this.table.headers.splice(2 + index, 0,
           {
-            label: k,
+            label: `Current ${k}`,
             field: k,
             sortable: true,
           });
