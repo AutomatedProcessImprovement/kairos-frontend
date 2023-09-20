@@ -64,7 +64,7 @@ export default {
       pType: 'Alarm',
       pColor: 'background-blue5',
       pText: () => 'Action required',
-      pMetric: (p, alarmThreshold) => 'Probability ' + p.output + ' (' + ((p.output >= alarmThreshold) ? '> ' : '< ') + 'defined threshold)',
+      pMetric: (p, alarmThreshold) => 'Probability: ' + ((p.output >= alarmThreshold) ? 'high' : 'low') + ' (' + p.output + ((p.output >= alarmThreshold) ? ' >' : ' <') + ' defined threshold)',
       pStatus: () => '',
       pIsRecommended: (p, alarmThreshold) => p.output >= alarmThreshold
     },
