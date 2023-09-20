@@ -144,7 +144,6 @@
                     </div>
                 </div>
 
-
                 <div class="parameter">
                     <div class="row">
                         <p>Alarm Threshold</p>
@@ -164,6 +163,52 @@
                     </div>
                     <small>Please specify when an alarm should be triggered. Enter a value between 0.1 and 0.9.</small>
                     <input type="number" min="0.1" max="0.9" step="0.1" v-model="alarmThreshold" />
+                </div>
+
+                <h3>Resource Allocation</h3>
+
+                <div class="parameter">
+                    <div class="row">
+                        <p>Available Resources</p>
+                        <tooltip-component :iconSize="15" :tooltipSize="500">
+                            <template v-slot:title>
+                                <h3 class="bold">What are available resources?</h3>
+                            </template>
+                            <template v-slot:content>
+                                <p>[insert information here]</p>
+                            </template>
+                        </tooltip-component>
+                    </div>
+                    <small>Please specify the resources that carry out the activities.</small>
+                    <input type="text" v-model="availableResources" />
+                </div>
+
+                <div class="parameter">
+                    <div class="row">
+                        <p>Treatment Duration</p>
+                        <tooltip-component :iconSize="15" :tooltipSize="400">
+                            <template v-slot:title>
+                                <h3 class="bold">What is treatment duration?</h3>
+                            </template>
+                            <template v-slot:content>
+                                <p>[text here]</p>
+                            </template>
+                        </tooltip-component>
+                    </div>
+                    <small>Please specify the length of treatment.</small>
+
+                    <div class="input-group">
+                        <div class="double-input">
+                            <input type="number" min="0" v-model="treatmentDuration.value" />
+                            <select v-model="treatmentDuration.unit">
+                                <option>weeks</option>
+                                <option>days</option>
+                                <option>hours</option>
+                                <option>minutes</option>
+                                <option>seconds</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-blue" @click="validate">Submit</button>
@@ -218,8 +263,11 @@ export default {
             intervention: {},
 
             alarmThreshold: null,
-            parametersDescription: null
 
+            availableResources: [],
+            treatmentDuration: {},
+
+            parametersDescription: null
         }
     },
 
