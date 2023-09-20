@@ -23,36 +23,55 @@
 }
 
 .case-top {
-
+  
   .stats{
-    p{
-      padding: 0px 10px 0px 0px;
-    }
-  }
-
-  .stats-card {
-    align-items: flex-start !important;
-    justify-content: flex-start !important;
-
-    p,
-    small {
-      white-space: nowrap;
-    }
-
-    &.case-information {
-      margin-right: 0;
-      overflow: auto;
-    }
-  }
-
-  .case-performance {
-    padding-right: 20px;
+    margin: 10px 0px 0px 0px;
     
+    .targets-container{
+      display: flex;
+      max-width: 50%;
+      overflow-x: auto;
+      margin-right: 10px;
+      border-radius: 10px;
+      background-color: $k-white;
+
+      .stats-card{
+        box-shadow: none;
+      }
+      
+      .outcome-grouping{
+        padding: 0px 5px;
+      }
+    }
+
+    .stats-card {
+      align-items: flex-start !important;
+      justify-content: flex-start !important;
+      margin: 0;
+
+      p,
+      small {
+        white-space: nowrap;
+      }
+  
+      &.case-information {
+        margin-right: 0;
+        min-width: 50%;
+        flex: 1;
+        overflow-x: auto;
+      }
+    }
+  
+    .case-performance {
+      padding-right: 20px;
+      
+    }
+  
+    .case-recommendations {
+      margin-left: 5px;
+    }
   }
 
-  .case-recommendations {
-    margin-left: 5px;
-  }
 }
 
 

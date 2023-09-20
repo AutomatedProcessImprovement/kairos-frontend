@@ -12,11 +12,11 @@
       </div>
 
       <div class="stats">
-        <div v-if="parameters.kpi" class="row">
+        <div v-if="parameters.kpi" class="targets-container shadow hide-scrollbar">
           <div v-for="(positiveOutcomeGroup,index1) in parameters.kpi" :key="index1" class="row align-center">
-            <p v-if="index1 > 0">or</p>
+            <small class="outcome-grouping" v-if="index1 > 0">or</small>
             <div v-for="(positiveOutcomeItem,index2) in positiveOutcomeGroup" :key="index2" class="row align-center">
-              <p v-if="index2 > 0">and</p>
+              <small class="outcome-grouping" v-if="index2 > 0">and</small>
               <div class="stats-card column">
                 <p>Target</p>
                 <h3 class="blue target-value">{{ positiveOutcomeItem.value }} {{ positiveOutcomeItem.unit }}</h3>
@@ -26,7 +26,7 @@
           </div>
         </div>
 
-        <div class="stats-card case-information hide-scrollbar" ref="caseInformation">
+        <div class="stats-card case-information hide-scrollbar">
           <div v-for="(caseOutcomeGroup,index1) in caseKpi" :key="index1" class="row">
             <div v-for="(caseOutcomeItem,index2) in caseOutcomeGroup" :key="index2" class="row">
               <div class="case-performance">
