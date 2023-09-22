@@ -9,7 +9,6 @@
         margin: 0;
     }
 
-
     .parameter {
         display: flex;
         flex-direction: column;
@@ -40,6 +39,13 @@
 
             .double-input {
                 padding: 0px;
+
+                &.fill{
+                    select,
+                    input {
+                        width: 250px;
+                    }
+                }
 
                 select,
                 input {

@@ -184,6 +184,10 @@ th {
   align-items: flex-start;
 }
 
+.align-end {
+  align-items: flex-end;
+}
+
 .align-center {
   align-items: center;
 }
@@ -198,6 +202,9 @@ th {
 
 .justify-start {
   justify-content: flex-start;
+}
+.justify-end {
+  justify-content: flex-end;
 }
 
 .wrap {

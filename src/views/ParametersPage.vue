@@ -165,48 +165,55 @@
                     <input type="number" min="0.1" max="0.9" step="0.1" v-model="alarmThreshold" />
                 </div>
 
-                <h3>Resource Allocation</h3>
-
-                <div class="parameter">
-                    <div class="row">
-                        <p>Available Resources</p>
-                        <tooltip-component :iconSize="15" :tooltipSize="500">
-                            <template v-slot:title>
-                                <h3 class="bold">What are available resources?</h3>
-                            </template>
-                            <template v-slot:content>
-                                <p>[insert information here]</p>
-                            </template>
-                        </tooltip-component>
-                    </div>
-                    <small>Please specify the resources that carry out the activities.</small>
-                    <input type="text" v-model="availableResources" />
+                <div class="row justify-end">
+                    <button @click="showResourceAllocation = !showResourceAllocation" class="btn-blue">Resource
+                        Allocation</button>
                 </div>
 
-                <div class="parameter">
-                    <div class="row">
-                        <p>Treatment Duration</p>
-                        <tooltip-component :iconSize="15" :tooltipSize="400">
-                            <template v-slot:title>
-                                <h3 class="bold">What is treatment duration?</h3>
-                            </template>
-                            <template v-slot:content>
-                                <p>[text here]</p>
-                            </template>
-                        </tooltip-component>
-                    </div>
-                    <small>Please specify the length of treatment.</small>
+                <div class="column" v-if="showResourceAllocation">
+                    <h3>Resource Allocation</h3>
 
-                    <div class="input-group">
-                        <div class="double-input">
-                            <input type="number" min="0" v-model="treatmentDuration.value" />
-                            <select v-model="treatmentDuration.unit">
-                                <option>weeks</option>
-                                <option>days</option>
-                                <option>hours</option>
-                                <option>minutes</option>
-                                <option>seconds</option>
-                            </select>
+                    <div class="parameter">
+                        <div class="row">
+                            <p>Available Resources</p>
+                            <tooltip-component :iconSize="15" :tooltipSize="500">
+                                <template v-slot:title>
+                                    <h3 class="bold">What are available resources?</h3>
+                                </template>
+                                <template v-slot:content>
+                                    <p>[insert information here]</p>
+                                </template>
+                            </tooltip-component>
+                        </div>
+                        <small>Please specify the resources that carry out the activities.</small>
+                        <input type="text" v-model="availableResources" />
+                    </div>
+
+                    <div class="parameter">
+                        <div class="row">
+                            <p>Treatment Duration</p>
+                            <tooltip-component :iconSize="15" :tooltipSize="400">
+                                <template v-slot:title>
+                                    <h3 class="bold">What is treatment duration?</h3>
+                                </template>
+                                <template v-slot:content>
+                                    <p>[text here]</p>
+                                </template>
+                            </tooltip-component>
+                        </div>
+                        <small>Please specify the length of treatment.</small>
+
+                        <div class="input-group">
+                            <div class="double-input fill">
+                                <input type="number" min="0" v-model="treatmentDuration.value" />
+                                <select v-model="treatmentDuration.unit">
+                                    <option>weeks</option>
+                                    <option>days</option>
+                                    <option>hours</option>
+                                    <option>minutes</option>
+                                    <option>seconds</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -264,6 +271,7 @@ export default {
 
             alarmThreshold: null,
 
+            showResourceAllocation: false,
             availableResources: [],
             treatmentDuration: {},
 
@@ -309,9 +317,12 @@ export default {
             this.caseCompletion = this.log.case_completion;
             this.alarmThreshold = this.log.alarm_threshold;
             this.positiveOutcome = this.log.positive_outcome;
-            // this.positiveOutcome.operator = this.deformat(this.positiveOutcome.operator);
             this.intervention = this.log.treatment;
-            // this.intervention.operator = this.deformat(this.intervention.operator);
+            if (this.log.additional_info){
+                this.availableResources = this.log.additional_info.plugin_causallift_resource_allocation.available_resources;
+                this.treatmentDuration = this.log.additional_info.plugin_causallift_resource_allocation.treatment_duration;
+                this.showResourceAllocation = true;
+            }
         },
 
         closeModal() {
@@ -336,6 +347,15 @@ export default {
                 })
                 return;
             }
+            if (this.showResourceAllocation && (this.availableResources.length === 0 || !this.treatmentDuration.value || !this.treatmentDuration.unit)) {
+                this.$notify({
+                    title: 'Warning',
+                    text: 'Please complete defining resource allocation data!',
+                    type: 'warning'
+                })
+                return;
+            }
+
             if (this.positiveOutcome.column !== 'DURATION') this.positiveOutcome.unit = undefined;
             this.openModal = true;
         },
@@ -357,12 +377,22 @@ export default {
                 "operator": shared.format(this.intervention.operator),
                 "value": this.intervention.value,
             }
+
             let data = {
                 'case_completion': this.caseCompletion,
                 'positive_outcome': positiveOutcome,
                 'treatment': intervention,
                 'alarm_threshold': this.alarmThreshold,
                 'parameters_description': this.parametersDescription
+            }
+
+            if (this.showResourceAllocation) {
+                data['additional_info'] = {
+                    "plugin_causallift_resource_allocation": {
+                        "available_resources": this.availableResources,
+                        "treatment_duration": this.treatmentDuration
+                    }
+                };
             }
 
             logsService.defineParameters(shared.getLocal('logId'), data)
