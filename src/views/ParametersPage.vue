@@ -79,7 +79,6 @@
                         <div class="double-input" v-else-if="positiveOutcome.columnDefinition === 'DURATION'">
                             <input type="number" min="0" v-model="positiveOutcome.value" />
                             <select v-model="positiveOutcome.unit">
-                                <!-- <option>month</option> -->
                                 <option>weeks</option>
                                 <option>days</option>
                                 <option>hours</option>
@@ -185,8 +184,10 @@
                                 </template>
                             </tooltip-component>
                         </div>
-                        <small>Please specify the resources that carry out the activities.</small>
-                        <input type="text" v-model="availableResources" />
+                        <small>Please specify the resource that carry out the activities. (type the resource and press
+                            enter)</small>
+
+                        <v-select v-model="availableResources" class="without-dropdown" multiple taggable></v-select>
                     </div>
 
                     <div class="parameter">
@@ -241,6 +242,7 @@ import TooltipComponent from "@/components/TooltipComponent.vue";
 import ModalComponent from "@/components/ModalComponent.vue";
 import logsService from "@/services/logs.service.js";
 import shared from "@/services/shared";
+import vSelect from 'vue-select';
 
 export default {
     name: "ParametersPage",
@@ -248,7 +250,8 @@ export default {
     components: {
         Loading,
         TooltipComponent,
-        ModalComponent
+        ModalComponent,
+        vSelect,
     },
 
     data() {
@@ -284,6 +287,7 @@ export default {
     },
 
     methods: {
+
         getLog() {
             this.isLoading = true;
             let logId = shared.getLocal('logId');
@@ -318,7 +322,7 @@ export default {
             this.alarmThreshold = this.log.alarm_threshold;
             this.positiveOutcome = this.log.positive_outcome;
             this.intervention = this.log.treatment;
-            if (this.log.additional_info){
+            if (this.log.additional_info) {
                 this.availableResources = this.log.additional_info.plugin_causallift_resource_allocation.available_resources;
                 this.treatmentDuration = this.log.additional_info.plugin_causallift_resource_allocation.treatment_duration;
                 this.showResourceAllocation = true;
@@ -331,7 +335,7 @@ export default {
 
         validate() {
             if (!this.caseCompletion || !this.alarmThreshold || !this.intervention.column || !this.intervention.operator || !this.intervention.value ||
-                !this.positiveOutcome.value || !this.positiveOutcome.column || !this.positiveOutcome.operator || (this.positiveOutcome.column === 'DURATION' && !this.positiveOutcome.unit)) {
+            !this.positiveOutcome.value || !this.positiveOutcome.column || !this.positiveOutcome.operator || (this.positiveOutcome.column === 'DURATION' && !this.positiveOutcome.unit)) {
                 this.$notify({
                     title: 'Warning',
                     text: 'Please fill in all the fields!',
@@ -355,6 +359,7 @@ export default {
                 })
                 return;
             }
+            console.log(this.availableResources);
 
             if (this.positiveOutcome.column !== 'DURATION') this.positiveOutcome.unit = undefined;
             this.openModal = true;

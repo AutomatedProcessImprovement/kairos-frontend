@@ -15,12 +15,16 @@
         padding: 5px 0px;
 
         select,
-        input {
+        input,
+        .v-select {
             margin: 5px 0px;
 
             &:disabled {
                 filter: opacity(60%);
             }
+        }
+        .v-select{
+            max-width: 510px;
         }
 
         .input-group {

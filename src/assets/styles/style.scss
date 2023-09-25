@@ -24,8 +24,10 @@ that contains all the variables.
 @import 'notification.scss';
 @import 'modal.scss';
 @import 'casesTable.scss';
+@import 'vueSelect.scss';
 @import "@vueform/toggle/themes/default.css";
 @import "@vueform/slider/themes/default.css";
+@import 'vue-select/dist/vue-select.css';
 
 
 #app {
@@ -38,7 +40,7 @@ body {
   font-family: $k-font-sans-serif;
   font-size: 1rem;
   font-weight: 400;
-  line-height: 1.5;
+  // line-height: 1.5;
   background-color: $k-gray1;
 }
 
