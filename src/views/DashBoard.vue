@@ -88,6 +88,18 @@
                         <p>{{ selectedLog.alarm_threshold }}</p>
                         <small>Alarm Threshold</small>
                     </div>
+                    <div v-if="selectedLog.additional_info" class="parameter">
+                        <small> Treatment Duration </small>
+
+                        <p>{{ selectedLog.additional_info.plugin_causallift_resource_allocation.treatment_duration.value }} {{ selectedLog.additional_info.plugin_causallift_resource_allocation.treatment_duration.unit }}</p>
+                        <small>Additional Information</small>
+                    </div>
+                    <div v-if="selectedLog.additional_info" class="parameter">
+                        <small> Available Resources </small>
+
+                        <p>{{ selectedLog.additional_info.plugin_causallift_resource_allocation.available_resources.join(', ') }}</p>
+                        <small>Additional Information</small>
+                    </div>
                 </div>
                 <div v-else>
                     <p class="warning">No parameters defined.</p>
