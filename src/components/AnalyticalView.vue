@@ -82,6 +82,11 @@
         </tabs>
       </div>
 
+      <openai-chat
+      :currentCase="currentCase"
+      :selectedRec="selectedRec"
+      :selectedRecObject="selectedRecObject"
+      ></openai-chat>
     </div>
   </template>
   
@@ -90,6 +95,7 @@
   import LegendComponent from './LegendComponent.vue';
   import TooltipComponent from './TooltipComponent.vue';
   import RecommendationComponent from './RecommendationComponent.vue';
+  import OpenaiChat from "@/components/OpenaiChatComponent.vue";
   import Toggle from '@vueform/toggle'
   
     export default {
@@ -99,7 +105,8 @@
         LegendComponent,
         TooltipComponent,
         RecommendationComponent,
-        Toggle
+        Toggle,
+        OpenaiChat
       },
   
       props: {

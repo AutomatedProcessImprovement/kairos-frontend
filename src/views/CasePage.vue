@@ -64,7 +64,7 @@
         OperationalView,
         AnalyticalView,
         Loading,
-        Error
+        Error,
       },
       params: {
           caseId:{
