@@ -99,7 +99,7 @@ export default {
                 }
                 const interaction = {
                     'sender': sender,
-                    'content': content
+                    'content': content.replace(/For case [^:]+: /, '')
                 };
                 interactions.push(interaction);
             });
