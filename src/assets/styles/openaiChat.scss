@@ -29,7 +29,7 @@
         position: absolute;
         bottom: 30px;
         right: 30px;
-        padding: 20px;
+        padding: 10px;
         border: none;
         border-radius: 10px;
         background-color: $k-gray1;
@@ -38,7 +38,7 @@
         z-index: 3;
         width: 500px;
         box-shadow: 0px 0px 5px 2px #dce0e4;
-        max-height: 500px;
+        height: 70vh;
 
         $animationTime: 0.8s;
         $dotSize: 10px;
@@ -78,12 +78,18 @@
             }
         }
 
+        .messages{
+            height: 100%;
+            overflow: auto;
+            padding: 10px;
+        }
+
         .message {
             position: relative;
             margin: 10px 0px;
             border-radius: 10px;
             max-width: 300px;
-            padding: 5px;
+            padding: 10px;
         }
 
         .ai-message {

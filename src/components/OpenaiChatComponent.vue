@@ -4,8 +4,8 @@
             <ion-icon name="chatbubbles-outline"></ion-icon>
         </div>
         <div class="chat-window" v-if="showChat">
-            <div class="messages column">
-                <div :class="['row',message.sender === 'AI' ? 'ai-message' : 'human-message']" v-for="message in chatHistory" :key="message">
+            <div class="messages column" ref="messages">
+                <div :class="['row',message.sender === 'Human' ? 'human-message' : 'ai-message']" v-for="message in chatHistory" :key="message">
                     <div class="message">
                         <p>{{ message.content }}</p>
                     </div>
@@ -49,7 +49,17 @@ export default {
 
             chatHistory: [],
             newMessage: null,
-            contextSaved: false,
+        }
+    },
+
+    watch: {
+        chatHistory: {
+            handler() {
+                this.$nextTick(() => {
+                    this.scrollToBottom();
+                });
+            },
+            deep: true
         }
     },
 
@@ -64,7 +74,7 @@ export default {
         getChatHistory() {
             openaiService.getChatHistory(this.logId,this.caseId).then(
                 (response) => {
-                    this.chatHistory = this.formatChatHistory(response.data.memory.chat_history);
+                    this.chatHistory = this.formatChatHistory(response.data.memory);
                 },
                 (error) => {
                     this.isLoading = false;
@@ -84,8 +94,7 @@ export default {
         },
 
         formatChatHistory(chatHistory){
-            console.log(chatHistory);
-            if (chatHistory.trim().length < 1) return [];
+            if (!chatHistory || chatHistory === '') return [];
             const lines = chatHistory.split('\n');
             let interactions = [];
 
@@ -93,10 +102,7 @@ export default {
                 const idx = line.indexOf(':');
                 const sender = line.slice(0, idx).trim();
                 const content = line.slice(idx + 2).trim();
-                if (content.includes('Save context: ') || content.includes('Context saved.')) {
-                    this.contextSaved = true;
-                    return;
-                }
+
                 const interaction = {
                     'sender': sender,
                     'content': content.replace(/For case [^:]+: /, '')
@@ -111,22 +117,16 @@ export default {
 
             let newMessage = this.newMessage;
             this.newMessage = null;
-            let context = null;
 
             let data = {
                 'question': `For case ${this.caseId}: ${newMessage}`,
-            }
-            if(!this.contextSaved){
-                context = {'case': this.currentCase}
-                if (this.selectedRecObject) context.prescription = this.selectedRecObject;
-                data.context = context;
             }
 
             this.chatHistory.push({
                 sender: 'Human',
                 content: newMessage
             });
-
+            
             openaiService.getAnswer(this.logId,data).then(
                 (response) => {
                     this.chatHistory.push({
@@ -153,6 +153,11 @@ export default {
                 }
             );
         },
+
+        scrollToBottom() {
+            const container = this.$refs.messages;
+            container.scrollTop = container.scrollHeight;
+        }
     }
 }
 </script>
