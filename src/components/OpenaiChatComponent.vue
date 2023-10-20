@@ -5,7 +5,7 @@
         </div>
         <div class="chat-window" v-if="showChat">
             <div class="messages column" ref="messages">
-                <div :class="['row',message.sender === 'Human' ? 'human-message' : 'ai-message']" v-for="message in chatHistory" :key="message">
+                <div :class="['row',message.role === 'user' ? 'user-message' : 'assistant-message']" v-for="message in chatHistory" :key="message">
                     <div class="message">
                         <p>{{ message.content }}</p>
                     </div>
@@ -72,9 +72,9 @@ export default {
 
     methods: {
         getChatHistory() {
-            openaiService.getChatHistory(this.logId,this.caseId).then(
+            openaiService.getChatHistoryCase(this.logId,this.caseId).then(
                 (response) => {
-                    this.chatHistory = this.formatChatHistory(response.data.memory);
+                    this.chatHistory = response.data.memory;
                 },
                 (error) => {
                     this.isLoading = false;
@@ -93,25 +93,6 @@ export default {
             );
         },
 
-        formatChatHistory(chatHistory){
-            if (!chatHistory || chatHistory === '') return [];
-            const lines = chatHistory.split('\n');
-            let interactions = [];
-
-            lines.forEach(line => {
-                const idx = line.indexOf(':');
-                const sender = line.slice(0, idx).trim();
-                const content = line.slice(idx + 2).trim();
-
-                const interaction = {
-                    'sender': sender,
-                    'content': content.replace(/For case [^:]+: /, '')
-                };
-                interactions.push(interaction);
-            });
-            return interactions;
-        },
-
         getAnswer() {
             this.answerLoading = true;
 
@@ -123,17 +104,16 @@ export default {
             }
 
             this.chatHistory.push({
-                sender: 'Human',
+                role: 'user',
                 content: newMessage
             });
             
             openaiService.getAnswer(this.logId,data).then(
                 (response) => {
                     this.chatHistory.push({
-                        sender: 'AI',
+                        sender: 'assistant',
                         content: response.data.answer
                     });
-                    this.contextSaved = true;
                     this.answerLoading = false;
                 },
                 (error) => {
