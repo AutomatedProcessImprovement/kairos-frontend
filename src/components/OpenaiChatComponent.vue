@@ -44,7 +44,7 @@ export default {
         return {
             caseId: null,
             logId: shared.getLocal('logId'),
-            showChat: true,
+            showChat: false,
             answerLoading: false,
 
             chatHistory: [],
@@ -100,7 +100,7 @@ export default {
             this.newMessage = null;
 
             let data = {
-                'question': `For case ${this.caseId}: ${newMessage}`,
+                'question': newMessage,
             }
 
             this.chatHistory.push({
@@ -108,12 +108,12 @@ export default {
                 content: newMessage
             });
             
-            openaiService.getAnswer(this.logId,data).then(
+            openaiService.getAnswer(this.logId,this.caseId,data).then(
                 (response) => {
                     this.chatHistory.push({
-                        sender: 'assistant',
+                        role: 'assistant',
                         content: response.data.answer
-                    });
+                    })
                     this.answerLoading = false;
                 },
                 (error) => {
