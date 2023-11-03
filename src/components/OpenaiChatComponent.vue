@@ -1,11 +1,11 @@
 <template>
     <div id="chat">
-        <div class="chat-toggle" @click="showChat=!showChat" :class="{'icon-selected': showChat}">
+        <div class="chat-toggle" @click="toggleChat" :class="{'icon-selected': showChat}">
             <ion-icon name="chatbubbles-outline"></ion-icon>
         </div>
         <div class="chat-window" v-if="showChat">
             <div class="messages column" ref="messages">
-                <div :class="['row',message.role === 'user' ? 'user-message' : 'assistant-message']" v-for="message in chatHistory" :key="message">
+                <div :class="['row',message.role === 'user' ? 'user-message' : 'assistant-message']" v-for="(message,index) in chatHistory" :key="index">
                     <div class="message">
                         <p>{{ message.content }}</p>
                     </div>
@@ -31,6 +31,7 @@
 
 import openaiService from "@/services/openai.service";
 import shared from "@/services/shared";
+// import MarkdownIt from 'markdown-it'
 
 export default {
     name: 'OpenaiChatComponent',
@@ -55,9 +56,11 @@ export default {
     watch: {
         chatHistory: {
             handler() {
-                this.$nextTick(() => {
-                    this.scrollToBottom();
-                });
+                if(this.showChat){
+                    this.$nextTick(() => {
+                        this.scrollToBottom();
+                    });
+                }
             },
             deep: true
         }
@@ -71,6 +74,15 @@ export default {
     },
 
     methods: {
+        toggleChat(){
+            this.showChat = !this.showChat;
+            if (this.showChat){
+                this.$nextTick(() => {
+                    this.scrollToBottom();
+                });
+            }
+        },
+
         getChatHistory() {
             openaiService.getChatHistoryCase(this.logId,this.caseId).then(
                 (response) => {
