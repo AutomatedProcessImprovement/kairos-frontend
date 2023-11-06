@@ -64,7 +64,7 @@ import AnalyticalView from '@/components/AnalyticalView.vue';
 import SideBar from '@/components/SideBar.vue';
 import Loading from "@/components/LoadingComponent.vue";
 import Error from "@/components/ErrorComponent.vue";
-import shared from "@/services/shared";
+import utils from "@/common/utils";
 
 export default {
   name: 'CasePage',
@@ -95,8 +95,8 @@ export default {
 
   mounted() {
     window.addEventListener('view-changed', this.changeView);
-    this.selectedView = shared.getLocal('view');
-    if (shared.getLocal('logId')) {
+    this.selectedView = utils.getLocal('view');
+    if (utils.getLocal('logId')) {
       this.getParameters();
       this.getProjectStatus();
     }
@@ -137,7 +137,7 @@ export default {
     },
 
     getParameters() {
-      logsService.getParameters(shared.getLocal('logId')).then(
+      logsService.getParameters(utils.getLocal('logId')).then(
         (response) => {
           this.parameters = response.data.parameters;
           if (!this.parameters.costUnits) this.parameters.costUnits = {};
@@ -178,7 +178,7 @@ export default {
     },
 
     getProjectStatus() {
-      logsService.getProjectStatus(shared.getLocal('logId')).then(
+      logsService.getProjectStatus(utils.getLocal('logId')).then(
         (response) => {
           let status = response.data.status;
           if (status === 'SIMULATING') {

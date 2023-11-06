@@ -71,7 +71,7 @@
 import TooltipComponent from './TooltipComponent.vue';
 import OperationalRecommendationComponent from './OperationalRecommendationComponent.vue';
 import FlowDiagramComponent from './FlowDiagramComponent.vue';
-import shared from '@/services/shared';
+import utils from '@/common/utils';
 
 export default {
   name: 'OperationalWorkerView',
@@ -107,7 +107,7 @@ export default {
       return Array.isArray(this.currentCase.case_performance) ? this.currentCase.case_performance: [[this.currentCase.case_performance]];
     },
     caseOutcome(){
-      return shared.calculateCaseOutcome(this.caseKpi);
+      return utils.calculateCaseOutcome(this.caseKpi);
     }
   },
 

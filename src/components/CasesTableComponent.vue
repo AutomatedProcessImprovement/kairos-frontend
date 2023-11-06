@@ -103,7 +103,7 @@
 <script>
 
 import TableLite from "vue3-table-lite";
-import shared from '@/services/shared';
+import utils from '@/common/utils';
 
 export default {
   name: 'CasesList',
@@ -176,31 +176,31 @@ export default {
 
       filters: {
         recommendations: {
-          value: shared.getLocal('casesListFilterRecommendations'),
+          value: utils.getLocal('casesListFilterRecommendations'),
           label: (value) => value ? 'Available' : 'Unavailable',
           isFiltered: (row, filterValue) =>
             filterValue ? row.recommendations > 0 : row.recommendations < 1,
-          applied: shared.getLocal('casesListFilterRecommendations') !== null,
+          applied: utils.getLocal('casesListFilterRecommendations') !== null,
         },
         intervened: {
-          value: shared.getLocal('casesListFilterIntervened'),
+          value: utils.getLocal('casesListFilterIntervened'),
           label: (value) => value,
           isFiltered: (row, filterValue) => row.intervened === filterValue,
-          applied: shared.getLocal('casesListFilterIntervened') !== null,
+          applied: utils.getLocal('casesListFilterIntervened') !== null,
         },
         performance: {
-          value: shared.getLocal('casesListFilterPerformance') || { operator: null, value: null, unit: null },
+          value: utils.getLocal('casesListFilterPerformance') || { operator: null, value: null, unit: null },
           label: (value) => value.operator + " " + value.value + " " + (value.unit ?? ""),
           isFiltered: (row, filterValue) => this.isFilteredPerformance(row, filterValue),
-          applied: shared.getLocal('casesListFilterPerformance') !== null,
+          applied: utils.getLocal('casesListFilterPerformance') !== null,
         }
       },
 
       appliedFilters: {},
 
       table: {
-        pageSize: shared.getLocal('casesListLimit') || 10,
-        offset: shared.getLocal('casesListOffset') || 0,
+        pageSize: utils.getLocal('casesListLimit') || 10,
+        offset: utils.getLocal('casesListOffset') || 0,
         isLoading: false,
         headers: [
           {
@@ -227,12 +227,12 @@ export default {
           sortable: true,
         },
         sortable: {
-          order: shared.getLocal('casesListOrder'),
-          sort: shared.getLocal('casesListSort')
+          order: utils.getLocal('casesListOrder'),
+          sort: utils.getLocal('casesListSort')
         },
         rows: [],
         totalRecordCount: 0,
-        clickedRows: shared.getLocal(`casesListClickedRows${shared.getLocal('logId')}`) || [],
+        clickedRows: utils.getLocal(`casesListClickedRows${utils.getLocal('logId')}`) || [],
       },
     };
   },
@@ -255,7 +255,7 @@ export default {
     },
 
     formatEvaluationMethod(evaluationMethod) {
-      return shared.deformat(evaluationMethod);
+      return utils.deformat(evaluationMethod);
     },
 
     getRowClasses(row) {
@@ -277,7 +277,7 @@ export default {
       }
       this.table.clickedRows.unshift(row.id);
 
-      shared.setLocal(`casesListClickedRows${shared.getLocal('logId')}`, this.table.clickedRows, 1);
+      utils.setLocal(`casesListClickedRows${utils.getLocal('logId')}`, this.table.clickedRows, 1);
       this.$router.push({ name: 'case', params: { 'caseId': row.id } })
     },
 
@@ -291,8 +291,8 @@ export default {
 
           this.table.sortable.order = order;
           this.table.sortable.sort = sort;
-          shared.setLocal('casesListOrder', order, 5);
-          shared.setLocal('casesListSort', sort, 5);
+          utils.setLocal('casesListOrder', order, 5);
+          utils.setLocal('casesListSort', sort, 5);
 
           tempRows = doSort ? this.sortCases(tempRows) : tempRows;
         }
@@ -303,8 +303,8 @@ export default {
         this.table.offset = offset;
         this.table.pageSize = limit;
 
-        shared.setLocal('casesListOffset', offset, 5);
-        shared.setLocal('casesListLimit', limit, 5);
+        utils.setLocal('casesListOffset', offset, 5);
+        utils.setLocal('casesListLimit', limit, 5);
         this.table.isLoading = false;
       }, 400);
     },
@@ -316,7 +316,7 @@ export default {
       const sortOrder = sort === 'asc' ? 1 : -1;
       if (this.performanceColumns[order] === "DURATION") {
         rows = rows.sort((a, b) =>
-          (shared.parseDuration(a[order]) > shared.parseDuration(b[order])) ? (1 * sortOrder) : (-1 * sortOrder));
+          (utils.parseDuration(a[order]) > utils.parseDuration(b[order])) ? (1 * sortOrder) : (-1 * sortOrder));
       } else if (this.performanceColumns[order]) {
         rows = rows.sort((a, b) =>
           (a[order].value > b[order].value) ? (1 * sortOrder) : (-1 * sortOrder));
@@ -347,7 +347,7 @@ export default {
           if (filterIndex > -1) r['filters'].splice(filterIndex, 1);
         }
       });
-      shared.setLocal(`casesListFilter${shared.capitalise(key)}`, this.filters[key].value, 5);
+      utils.setLocal(`casesListFilter${utils.capitalise(key)}`, this.filters[key].value, 5);
       this.filters[key].applied = true;
     },
 
@@ -392,22 +392,22 @@ export default {
       else this.filters[key].value = null;
 
       this.filters[key].applied = false;
-      shared.removeLocal(`casesListFilter${shared.capitalise(key)}`);
+      utils.removeLocal(`casesListFilter${utils.capitalise(key)}`);
     },
 
     getPerformanceEvaluationMethods(performanceColumn) {
-      let method = shared.evaluationMethods[this.performanceColumns[performanceColumn]];
+      let method = utils.evaluationMethods[this.performanceColumns[performanceColumn]];
       return Object.keys(method.operators);
     },
 
     getPerformanceInputType(performanceColumn) {
-      return shared.evaluationMethods[this.performanceColumns[performanceColumn]].inputType;
+      return utils.evaluationMethods[this.performanceColumns[performanceColumn]].inputType;
     },
 
     isFilteredPerformance(performanceColumn,row, filterValue) {
       if (performanceColumn === "DURATION")
-        return shared.operatorEvaluationMethods[filterValue.operator](shared.parseDuration(row.performance), shared.parseDuration(filterValue));
-      return shared.operatorEvaluationMethods[filterValue.operator](row.performance.value, filterValue.value);
+        return utils.operatorEvaluationMethods[filterValue.operator](utils.parseDuration(row.performance), utils.parseDuration(filterValue));
+      return utils.operatorEvaluationMethods[filterValue.operator](row.performance.value, filterValue.value);
     },
 
     computeAppliedFilters(filterByValue = false) {

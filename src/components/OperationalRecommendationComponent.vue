@@ -24,7 +24,7 @@
 
 <script>
 import TooltipComponent from './TooltipComponent.vue';
-import shared from '@/services/shared';
+import utils from '@/common/utils';
 
 export default {
 
@@ -91,7 +91,7 @@ export default {
                     ]
                 }
                 else if (p.type === 'TREATMENT_EFFECT') {
-                    recommendationAttr = shared.formatIntervention(p.output, this.parameters.columnsDefinition);
+                    recommendationAttr = utils.formatIntervention(p.output, this.parameters.columnsDefinition);
                     if (p.output.cate <= 0) {
                         continue;
                     }

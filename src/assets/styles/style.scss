@@ -1,12 +1,3 @@
-/*
-This file contains global styles that
-we intend to use throughout the project.
-*/
-
-/*
-We can import the variables from one file
-that contains all the variables.
-*/
 @import 'variables.scss';
 @import 'sidebar.scss';
 @import 'case.scss';
@@ -40,7 +31,6 @@ body {
   font-family: $k-font-sans-serif;
   font-size: 1rem;
   font-weight: 400;
-  // line-height: 1.5;
   background-color: $k-gray1;
 }
 

@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import shared from '@/services/shared';
+import utils from '@/common/utils';
 
 export default {
     name: 'RecommendationComponent',
@@ -60,7 +60,7 @@ export default {
 
             for (let i = 0; i < this.batch.prescriptions.length; i++) {
                 let p = this.batch.prescriptions[i];
-                let prescriptionObject = shared.prescriptionAttributes[p.type];
+                let prescriptionObject = utils.prescriptionAttributes[p.type];
 
                 let data = {
                     recType: prescriptionObject.pType,

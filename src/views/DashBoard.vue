@@ -127,7 +127,7 @@ import logsService from "@/services/logs.service.js";
 import SideBar from '@/components/SideBar.vue';
 import Loading from "@/components/LoadingComponent.vue";
 import ModalComponent from "@/components/ModalComponent.vue";
-import shared from "@/services/shared";
+import utils from "@/common/utils";
 
 export default {
     name: "DashBoard",
@@ -152,7 +152,7 @@ export default {
                 { value: 'operational', name: 'Operational worker' },
                 { value: 'tactical', name: 'Tactical manager' }
             ],
-            selectedView: shared.getLocal('view'),
+            selectedView: utils.getLocal('view'),
             selectedLogStatus: { id: null, status: null },
         }
     },
@@ -183,7 +183,7 @@ export default {
                 (response) => {
                     this.eventlogs = response.data.event_logs;
                     if (this.eventlogs.length === 0) {
-                        shared.setLocal('logId', null);
+                        utils.setLocal('logId', null);
                         this.selectedLog = null;
                         this.selectedLogStatus = { id: null, status: null };
                         this.clearTimer();
@@ -196,10 +196,10 @@ export default {
                             eventlog.positive_outcome = [[eventlog.positive_outcome]];
                     });
 
-                    if (!shared.getLocal('logId')) {
-                        shared.setLocal('logId', this.eventlogs[0]._id, 30);
+                    if (!utils.getLocal('logId')) {
+                        utils.setLocal('logId', this.eventlogs[0]._id, 30);
                     }
-                    this.selectedLog = this.eventlogs.find(e => e._id === shared.getLocal('logId'));
+                    this.selectedLog = this.eventlogs.find(e => e._id === utils.getLocal('logId'));
 
                     if (!this.selectedLog) {
                         this.selectLog(this.eventlogs[0]._id);
@@ -232,13 +232,13 @@ export default {
 
         selectLog(logId) {
             if (!logId) return;
-            shared.setLocal('logId', logId, 30);
+            utils.setLocal('logId', logId, 30);
             this.selectedLog = this.eventlogs.find(e => e._id === logId);
             this.getProjectStatus(true);
         },
 
         startSimulation() {
-            logsService.startSimulation(shared.getLocal('logId')).then(
+            logsService.startSimulation(utils.getLocal('logId')).then(
                 (response) => {
                     console.log(response.data.message.message);
                 },
@@ -259,12 +259,12 @@ export default {
         },
 
         stopSimulation() {
-            logsService.stopSimulation(shared.getLocal('logId')).then(
+            logsService.stopSimulation(utils.getLocal('logId')).then(
                 (response) => {
                     console.log(response.data.message.message);
                     this.$notify({
                         title: 'Success',
-                        text: `Successfully stopped simulating log ${shared.getLocal('logId')}`,
+                        text: `Successfully stopped simulating log ${utils.getLocal('logId')}`,
                         type: 'success',
                     });
                 },
@@ -286,7 +286,7 @@ export default {
         },
 
         clearSimulation() {
-            logsService.clearSimulation(shared.getLocal('logId')).then(
+            logsService.clearSimulation(utils.getLocal('logId')).then(
                 (response) => {
                     this.$notify({
                         title: 'Success',
@@ -315,15 +315,15 @@ export default {
             clearInterval(this.timer);
             this.closeModal();
 
-            logsService.deleteLog(shared.getLocal('logId')).then(
+            logsService.deleteLog(utils.getLocal('logId')).then(
                 (response) => {
                     this.$notify({
                         title: 'Success',
                         text: response.data.message,
                         type: 'success'
                     });
-                    shared.removeLocal(`casesListClickedRows${shared.getLocal('logId')}`);
-                    shared.removeLocal('logId');
+                    utils.removeLocal(`casesListClickedRows${utils.getLocal('logId')}`);
+                    utils.removeLocal('logId');
                     this.selectedLogStatus.status = null;
                     this.getLogs();
                 },
@@ -350,7 +350,7 @@ export default {
                 text: "Getting results may take a while, please wait...",
                 type: 'warning'
             })
-            logsService.getStaticResults(shared.getLocal('logId')).then(
+            logsService.getStaticResults(utils.getLocal('logId')).then(
                 (response) => {
                     let type = 'success';
                     if (response.data.message === 'Ongoing dataset result is still processing') {
@@ -382,10 +382,10 @@ export default {
         getProjectStatus(delay = false) {
             let oldLogstatus = this.selectedLogStatus;
             if (delay) this.selectedLogStatus.status = null;
-            logsService.getProjectStatus(shared.getLocal('logId')).then(
+            logsService.getProjectStatus(utils.getLocal('logId')).then(
                 (response) => {
                     let status = response.data.status;
-                    let newLogStatus = { id: shared.getLocal('logId'), status: status };
+                    let newLogStatus = { id: utils.getLocal('logId'), status: status };
                     this.notifyForNewStatus(oldLogstatus, newLogStatus);
                     this.selectedLogStatus = newLogStatus;
                 },
@@ -412,7 +412,7 @@ export default {
             if ((oldLogStatus.status === 'TRAINED' && newLogStatus.status === 'SIMULATING')) {
                 this.$notify({
                     title: 'Success',
-                    text: `Successfully started simulating log ${shared.getLocal('logId')}`,
+                    text: `Successfully started simulating log ${utils.getLocal('logId')}`,
                     type: 'success',
                 });
             }

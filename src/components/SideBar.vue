@@ -34,7 +34,7 @@
 
 <script>
 
-import shared from '@/services/shared';
+import utils from '@/common/utils';
 
 export default {
   name: 'SideBarComponent',
@@ -47,7 +47,7 @@ export default {
         { name: 'Tactical manager', value: 'tactical', icon: 'people' }
       ],
       selectedView: null,
-      isCollapsed: shared.getLocal('isCollapsed') || false,
+      isCollapsed: utils.getLocal('isCollapsed') || false,
     }
   },
 
@@ -58,20 +58,20 @@ export default {
   },
 
   mounted() {
-    if (!shared.getLocal('view')) {
+    if (!utils.getLocal('view')) {
 
-      shared.setLocal('view', 'analytical', 30);
+      utils.setLocal('view', 'analytical', 30);
     }
-    this.selectedView = shared.getLocal('view');
+    this.selectedView = utils.getLocal('view');
   },
 
   methods: {
     selectView(view) {
       this.selectedView = view;
-      shared.setLocal('view', view, 30);
+      utils.setLocal('view', view, 30);
       window.dispatchEvent(new CustomEvent('view-changed', {
         detail: {
-          storage: shared.getLocal('view')
+          storage: utils.getLocal('view')
         }
       }));
     },
@@ -80,7 +80,7 @@ export default {
     },
     toggleSidebar() {
       this.isCollapsed = !this.isCollapsed;
-      shared.setLocal('isCollapsed', this.isCollapsed, 5);
+      utils.setLocal('isCollapsed', this.isCollapsed, 5);
     }
   }
 

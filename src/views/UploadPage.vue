@@ -54,7 +54,7 @@ import Loading from "@/components/LoadingComponent.vue";
 import logsService from "@/services/logs.service";
 import Toggle from '@vueform/toggle'
 import TooltipComponent from "@/components/TooltipComponent.vue";
-import shared from "@/services/shared";
+import utils from "@/common/utils";
 
 export default {
     name: "HomePage",
@@ -138,7 +138,7 @@ export default {
             logsService.uploadLog(formData)
                 .then(response => {
                     this.isLoading = false;
-                    shared.setLocal('logId', response.data.logId, 10);
+                    utils.setLocal('logId', response.data.logId, 10);
                     this.$router.push({ name: "columns" });
                 })
                 .catch(error => {

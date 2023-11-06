@@ -54,7 +54,7 @@
 <script>
 
 import VueApexCharts from 'vue3-apexcharts';
-import shared from '@/services/shared';
+import utils from '@/common/utils';
 import TooltipComponent from './TooltipComponent.vue';
 
 export default {
@@ -193,7 +193,7 @@ export default {
   computed: {
     recommendationsHistorySeries() {
       let series = [];
-      let outcomeCounts = shared.groupByAndCount(this.casesData, 'outcome', 'intervened', 'Yes');
+      let outcomeCounts = utils.groupByAndCount(this.casesData, 'outcome', 'intervened', 'Yes');
       if (Object.keys(outcomeCounts).length > 0) {
         const propertiesToCheck = [true, false, null];
         series = propertiesToCheck.map(property => {
@@ -225,7 +225,7 @@ export default {
     createRecommendationsStatistics() {
       this.cases.forEach(({ case_performance, activities }) => {
         
-        const outcome = shared.calculateCaseOutcome(case_performance);
+        const outcome = utils.calculateCaseOutcome(case_performance);
         const prescriptions = activities.map(a => a.prescriptions).flat();
 
         prescriptions.forEach(p => {

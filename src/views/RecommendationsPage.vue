@@ -41,7 +41,7 @@ import logsService from "@/services/logs.service";
 import SideBar from '@/components/SideBar.vue';
 import Loading from "@/components/LoadingComponent.vue";
 import TableLite from "vue3-table-lite";
-import shared from '@/services/shared'
+import utils from '@/common/utils'
 
 export default {
   name: 'CasesList',
@@ -91,15 +91,15 @@ export default {
         ],
         rows: [],
         sortable: {
-          order: shared.getLocal('recommendationsOrder'),
-          sort: shared.getLocal('recommendationsSort')
+          order: utils.getLocal('recommendationsOrder'),
+          sort: utils.getLocal('recommendationsSort')
         },
       },
     };
   },
 
   mounted() {
-    if (shared.getLocal('logId')) {
+    if (utils.getLocal('logId')) {
       this.getParameters();
       this.getProjectStatus();
     }
@@ -124,7 +124,7 @@ export default {
       const sortOrder = sort === 'asc' ? 1 : -1;
       if (order === "performance" && this.performanceColumn === "DURATION") {
         this.table.rows = this.table.rows.sort((a, b) =>
-          (shared.parseDuration(a[order]) > shared.parseDuration(b[order])) ? (1 * sortOrder) : (-1 * sortOrder));
+          (utils.parseDuration(a[order]) > utils.parseDuration(b[order])) ? (1 * sortOrder) : (-1 * sortOrder));
       } else if (order === "performance") {
         this.table.rows = this.table.rows.sort((a, b) =>
           (a[order].value > b[order].value) ? (1 * sortOrder) : (-1 * sortOrder));
@@ -132,8 +132,8 @@ export default {
       else {
         this.table.rows = this.table.rows.sort((a, b) => (a[order] > b[order]) ? (1 * sortOrder) : (-1 * sortOrder));
       }
-      shared.setLocal('recommendationsOrder', order, 30);
-      shared.setLocal('recommendationsSort', sort, 30);
+      utils.setLocal('recommendationsOrder', order, 30);
+      utils.setLocal('recommendationsSort', sort, 30);
 
       this.table.sortable.order = order;
       this.table.sortable.sort = sort;
@@ -162,7 +162,7 @@ export default {
     },
 
     getRecommendations() {
-      logsService.getRecommendations(shared.getLocal('logId')).then(
+      logsService.getRecommendations(utils.getLocal('logId')).then(
         (response) => {
           this.recommendations = response.data.prescriptions;
           if (this.recommendations.length > 0) this.formatRecommendations();
@@ -186,7 +186,7 @@ export default {
     },
     getParameters() {
       this.isLoading = true;
-      logsService.getParameters(shared.getLocal('logId')).then(
+      logsService.getParameters(utils.getLocal('logId')).then(
         (response) => {
           this.parameters = response.data.parameters;
           this.getRecommendations();
@@ -238,7 +238,7 @@ export default {
         recommendedAttr = 'Predicted probability of not meeting the target is high.';
       }
       else if (p.type === 'TREATMENT_EFFECT') {
-        recommendationAttr = shared.formatIntervention(p.output, this.parameters.columnsDefinition);
+        recommendationAttr = utils.formatIntervention(p.output, this.parameters.columnsDefinition);
         if (p.output.cate <= 0) return null;
 
         recommendedAttr = 'Predicted effect is positive.';
@@ -253,7 +253,7 @@ export default {
     },
 
     getProjectStatus() {
-      logsService.getProjectStatus(shared.getLocal('logId')).then(
+      logsService.getProjectStatus(utils.getLocal('logId')).then(
         (response) => {
           let status = response.data.status;
 

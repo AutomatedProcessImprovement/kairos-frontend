@@ -262,7 +262,7 @@ import Loading from "@/components/LoadingComponent.vue";
 import TooltipComponent from "@/components/TooltipComponent.vue";
 import ModalComponent from "@/components/ModalComponent.vue";
 import logsService from "@/services/logs.service.js";
-import shared from "@/services/shared";
+import utils from "@/common/utils";
 import vSelect from 'vue-select';
 
 export default {
@@ -311,14 +311,14 @@ export default {
     },
 
     mounted() {
-        if (shared.getLocal('logId')) this.getLog();
+        if (utils.getLocal('logId')) this.getLog();
     },
 
     methods: {
 
         getLog() {
             this.isLoading = true;
-            let logId = shared.getLocal('logId');
+            let logId = utils.getLocal('logId');
 
             logsService.getLog(logId)
                 .then(response => {
@@ -399,7 +399,7 @@ export default {
             let positiveOutcome = this.positiveOutcome.map(group => group.map(item => {
                 return {
                     "column": item.column,
-                    "operator": shared.format(item.operator),
+                    "operator": utils.format(item.operator),
                     "value": item.value,
                     "unit": item.unit
                 }
@@ -407,7 +407,7 @@ export default {
 
             let intervention = {
                 "column": this.intervention.column,
-                "operator": shared.format(this.intervention.operator),
+                "operator": utils.format(this.intervention.operator),
                 "value": this.intervention.value,
             }
 
@@ -428,7 +428,7 @@ export default {
                 };
             }
 
-            logsService.defineParameters(shared.getLocal('logId'), data)
+            logsService.defineParameters(utils.getLocal('logId'), data)
                 .then(response => {
                     console.log(response.data)
                     this.isLoading = false;
@@ -483,12 +483,12 @@ export default {
             }
             if (parameter === 'outcome') this.positiveOutcome[index1][index2].columnDefinition = definition;
             else this.intervention.columnDefinition = definition;
-            let method = shared.evaluationMethods[definition];
+            let method = utils.evaluationMethods[definition];
             return Object.keys(method.operators);
         },
 
         getInputType(method) {
-            return shared.evaluationMethods[method].inputType;
+            return utils.evaluationMethods[method].inputType;
         },
 
     },

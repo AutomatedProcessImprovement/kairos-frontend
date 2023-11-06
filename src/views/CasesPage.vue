@@ -54,7 +54,7 @@ import casesService from "@/services/cases.service";
 import logsService from "@/services/logs.service";
 import SideBar from '@/components/SideBar.vue';
 import Loading from "@/components/LoadingComponent.vue";
-import shared from '@/services/shared';
+import utils from '@/common/utils';
 import CasesTableComponent from "@/components/CasesTableComponent.vue";
 import CompletedChartsComponent from "@/components/CompletedChartsComponent.vue";
 import OngoingChartsComponent from "@/components/OngoingChartsComponent.vue";
@@ -87,7 +87,7 @@ export default {
       timer: null,
       logStatus: 'NULL',
       completion: this.$route.params.completion === 'completed',
-      showTable: shared.getLocal('casesListShowTable') || false,
+      showTable: utils.getLocal('casesListShowTable') || false,
 
       isLoading: false,
       cases: [],
@@ -102,7 +102,7 @@ export default {
   },
 
   mounted() {
-    if (shared.getLocal('logId')) {
+    if (utils.getLocal('logId')) {
       this.setup();
     }
   },
@@ -122,11 +122,11 @@ export default {
 
     toggleShowTable() {
       this.showTable = !this.showTable;
-      shared.setLocal('casesListShowTable', this.showTable, 5);
+      utils.setLocal('casesListShowTable', this.showTable, 5);
     },
 
     getCases() {
-      casesService.getCasesByLogAndCompletion(shared.getLocal('logId'), this.completionString.toLowerCase()).then(
+      casesService.getCasesByLogAndCompletion(utils.getLocal('logId'), this.completionString.toLowerCase()).then(
         (response) => {
           if (this.cases !== response.data.cases && response.data.cases.length > 0) {
             this.cases = response.data.cases;
@@ -154,7 +154,7 @@ export default {
 
     async getParameters() {
       try {
-        const response = await logsService.getParameters(shared.getLocal('logId'));
+        const response = await logsService.getParameters(utils.getLocal('logId'));
         this.alarmThreshold = response.data.parameters.alarmThreshold || 1.0;
         this.costUnits = response.data.parameters.costUnits || {};
         this.columnsDefinition = response.data.parameters.columnsDefinition;
@@ -203,7 +203,7 @@ export default {
 
       let data = {};
       for (const el of this.cases) {
-        data = shared.formatCase(el, this.alarmThreshold);
+        data = utils.formatCase(el, this.alarmThreshold);
         this.casesData.push(data);
       }
 
@@ -211,7 +211,7 @@ export default {
     },
 
     getProjectStatus() {
-      logsService.getProjectStatus(shared.getLocal('logId')).then(
+      logsService.getProjectStatus(utils.getLocal('logId')).then(
         (response) => {
           let status = response.data.status;
 

@@ -17,7 +17,7 @@
 <script>
 
 import VueApexCharts from 'vue3-apexcharts';
-import shared from '@/services/shared';
+import utils from '@/common/utils';
 
 export default {
   name: "ChartsComponent",
@@ -158,7 +158,7 @@ export default {
           prescriptions.forEach(p => {
             if (p.status === 'accepted') this.recommendationsByType[p.type].accepted += 1;
             this.recommendationsByType[p.type].total += 1;
-            if (i === (l - 1) && shared.prescriptionAttributes[p.type].pIsRecommended(p, this.alarmThreshold)) this.recommendationsByType[p.type].recommended += 1;
+            if (i === (l - 1) && utils.prescriptionAttributes[p.type].pIsRecommended(p, this.alarmThreshold)) this.recommendationsByType[p.type].recommended += 1;
           });
         }
       });

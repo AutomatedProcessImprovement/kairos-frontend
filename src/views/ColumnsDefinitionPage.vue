@@ -76,7 +76,7 @@
 import Loading from "@/components/LoadingComponent.vue";
 import logsService from "@/services/logs.service";
 import TooltipComponent from "@/components/TooltipComponent.vue";
-import shared from "@/services/shared";
+import utils from "@/common/utils";
 
 export default {
     name: "ColumnsDefinitionPage",
@@ -116,14 +116,14 @@ export default {
     },
 
     mounted() {
-        if (shared.getLocal('logId')) this.loadCols();
+        if (utils.getLocal('logId')) this.loadCols();
     },
 
     methods: {
         loadCols() {
             this.isLoading = true;
 
-            let logId = shared.getLocal('logId');
+            let logId = utils.getLocal('logId');
 
             logsService.getLog(logId)
                 .then(response => {
@@ -171,7 +171,7 @@ export default {
                 "case_attributes": this.caseAttributes
             };
 
-            logsService.defineColumnTypes(shared.getLocal('logId'), data)
+            logsService.defineColumnTypes(utils.getLocal('logId'), data)
                 .then(response => {
                     console.log(response.data);
                     this.isLoading = false;
