@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import TooltipComponent from './TooltipComponent.vue';
+import TooltipComponent from '@/components/TooltipComponent.vue';
 import utils from '@/common/utils';
 
 export default {

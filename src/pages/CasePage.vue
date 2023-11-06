@@ -59,9 +59,9 @@
 <script>
 import casesService from "@/services/cases.service";
 import logsService from "@/services/logs.service";
-import OperationalView from '@/components/OperationalView.vue';
-import AnalyticalView from '@/components/AnalyticalView.vue';
-import SideBar from '@/components/SideBar.vue';
+import OperationalView from '@/components/casePage/OperationalViewComponent.vue';
+import AnalyticalView from '@/components/casePage/AnalyticalViewComponent.vue';
+import SideBar from '@/components/SideBarComponent.vue';
 import Loading from "@/components/LoadingComponent.vue";
 import Error from "@/components/ErrorComponent.vue";
 import utils from "@/common/utils";

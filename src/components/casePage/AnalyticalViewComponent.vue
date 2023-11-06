@@ -86,9 +86,9 @@
 </template>
   
 <script>
-import VueCytoscape from './VueCytoscape.vue';
+import VueCytoscape from './CytoscapeComponent.vue';
 import LegendComponent from './LegendComponent.vue';
-import TooltipComponent from './TooltipComponent.vue';
+import TooltipComponent from '@/components/TooltipComponent.vue';
 import RecommendationComponent from './RecommendationComponent.vue';
 import Toggle from '@vueform/toggle'
 

@@ -38,7 +38,7 @@
 <script>
 
 import logsService from "@/services/logs.service";
-import SideBar from '@/components/SideBar.vue';
+import SideBar from '@/components/SideBarComponent.vue';
 import Loading from "@/components/LoadingComponent.vue";
 import TableLite from "vue3-table-lite";
 import utils from '@/common/utils'

@@ -124,7 +124,7 @@
     
 <script>
 import logsService from "@/services/logs.service.js";
-import SideBar from '@/components/SideBar.vue';
+import SideBar from '@/components/SideBarComponent.vue';
 import Loading from "@/components/LoadingComponent.vue";
 import ModalComponent from "@/components/ModalComponent.vue";
 import utils from "@/common/utils";

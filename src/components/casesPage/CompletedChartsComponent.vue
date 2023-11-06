@@ -55,7 +55,7 @@
 
 import VueApexCharts from 'vue3-apexcharts';
 import utils from '@/common/utils';
-import TooltipComponent from './TooltipComponent.vue';
+import TooltipComponent from '@/components/TooltipComponent.vue';
 
 export default {
   name: "ChartsComponent",

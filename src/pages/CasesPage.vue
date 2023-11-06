@@ -52,12 +52,12 @@
 
 import casesService from "@/services/cases.service";
 import logsService from "@/services/logs.service";
-import SideBar from '@/components/SideBar.vue';
+import SideBar from '@/components/SideBarComponent.vue';
 import Loading from "@/components/LoadingComponent.vue";
 import utils from '@/common/utils';
-import CasesTableComponent from "@/components/CasesTableComponent.vue";
-import CompletedChartsComponent from "@/components/CompletedChartsComponent.vue";
-import OngoingChartsComponent from "@/components/OngoingChartsComponent.vue";
+import CasesTableComponent from "@/components/casesPage/CasesTableComponent.vue";
+import CompletedChartsComponent from "@/components/casesPage/CompletedChartsComponent.vue";
+import OngoingChartsComponent from "@/components/casesPage/OngoingChartsComponent.vue";
 
 export default {
   name: 'CasesList',

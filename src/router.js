@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory, RouterView } from "vue-router";
 import { h } from 'vue';
-import CasePage from "./views/CasePage.vue"
-import CasesPage from "./views/CasesPage.vue"
-import UploadPage from "./views/UploadPage"
-import DashBoard from './views/DashBoard'
-import ParametersPage from './views/ParametersPage'
-import ColumnsDefinitionPage from "./views/ColumnsDefinitionPage"
-import RecommendationsPage from './views/RecommendationsPage'
+import CasePage from "./pages/CasePage.vue"
+import CasesPage from "./pages/CasesPage.vue"
+import UploadPage from "./pages/UploadPage"
+import DashBoardPage from './pages/DashBoardPage'
+import ParametersPage from './pages/ParametersPage'
+import ColumnsDefinitionPage from "./pages/ColumnsDefinitionPage"
+import RecommendationsPage from './pages/RecommendationsPage'
 
 const routes = [
     {
@@ -17,7 +17,7 @@ const routes = [
     {
         path: "/dashboard",
         name: "dashboard",
-        component: DashBoard,
+        component: DashBoardPage,
     },
     {
         path: "/parameters",

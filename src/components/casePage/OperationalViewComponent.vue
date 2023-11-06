@@ -68,7 +68,7 @@
   
 <script>
 
-import TooltipComponent from './TooltipComponent.vue';
+import TooltipComponent from '@/components/TooltipComponent.vue';
 import OperationalRecommendationComponent from './OperationalRecommendationComponent.vue';
 import FlowDiagramComponent from './FlowDiagramComponent.vue';
 import utils from '@/common/utils';
