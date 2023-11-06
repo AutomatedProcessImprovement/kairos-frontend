@@ -64,7 +64,7 @@ export default {
       pType: 'Alarm',
       pColor: 'background-blue5',
       pText: () => 'Action required',
-      pMetric: (p, alarmThreshold) => 'Probability ' + p.output + ' (' + ((p.output >= alarmThreshold) ? '> ' : '< ') + 'defined threshold)',
+      pMetric: (p, alarmThreshold) => 'Probability: ' + ((p.output >= alarmThreshold) ? 'high' : 'low') + ' (' + p.output + ((p.output >= alarmThreshold) ? ' >' : ' <') + ' defined threshold)',
       pStatus: () => '',
       pIsRecommended: (p, alarmThreshold) => p.output >= alarmThreshold
     },
@@ -72,7 +72,7 @@ export default {
       pType: 'Intervention',
       pColor: 'background-purple',
       pText: function (p, columnsDefinition) { return formatIntervention(p.output, columnsDefinition) },
-      pMetric: (p) => 'Causal effect: ' + p.output.cate + ' ' + (p.output.cate > 0 ? '(positive)' : '(negative)'),
+      pMetric: (p) => 'Causal effect: ' + p.output.cate_category + ' (' + p.output.cate + ')',
       pStatus: (p) => p.status,
       pIsRecommended: (p) => p.output.cate > 0
     },
