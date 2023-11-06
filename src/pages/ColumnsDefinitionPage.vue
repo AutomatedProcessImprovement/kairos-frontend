@@ -21,46 +21,48 @@
                 <h3 class="warning">Please upload a log first.</h3>
             </div>
             <div v-else class="column">
-                <div class="log-table hide-scrollbar">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th v-for="head in headers" :key="head">
-                                    {{ head }}
-                                </th>
-                            </tr>
-                            <tr>
-                                <th v-for="head in headers" :key="head">
-                                    <div class="column">
-                                        <select class="dropdown" v-model="types[head]" required>
-                                            <option v-for="myType in typeList" :key="myType"
-                                                :selected="types[head] == myType.type" :value="myType.type"> {{ myType.text
-                                                }}
-                                            </option>
-                                        </select>
-                                        <select class="dropdown cost-unit" :class="{ active: types[head] === 'COST' }"
-                                            v-model="costUnits[head]" required>
-                                            <option v-for="currency in currencies" :key="currency"> {{ currency }} </option>
-                                        </select>
-                                    </div>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th v-for="head in headers" :key="head">
-                                    <button @click="toggleCaseAttribute(head)" class="btn-blue"
-                                        :class="{ selected: caseAttributes.indexOf(head) >= 0 }">Case attribute</button>
-                                </th>
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-                            <tr v-for="row in values" :key="row">
-                                <td v-for="cell in row" :key="cell">{{ cell }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
+                <div class="log-table-container">
+                    <div class="log-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th v-for="head in headers" :key="head">
+                                        {{ head }}
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th v-for="head in headers" :key="head">
+                                        <div class="column">
+                                            <select class="dropdown" v-model="types[head]" required>
+                                                <option v-for="myType in typeList" :key="myType"
+                                                    :selected="types[head] == myType.type" :value="myType.type"> {{ myType.text
+                                                    }}
+                                                </option>
+                                            </select>
+                                            <select class="dropdown cost-unit" :class="{ active: types[head] === 'COST' }"
+                                                v-model="costUnits[head]" required>
+                                                <option v-for="currency in currencies" :key="currency"> {{ currency }} </option>
+                                            </select>
+                                        </div>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th v-for="head in headers" :key="head">
+                                        <button @click="toggleCaseAttribute(head)" class="btn-blue"
+                                            :class="{ selected: caseAttributes.indexOf(head) >= 0 }">Case attribute</button>
+                                    </th>
+                                </tr>
+    
+                            </thead>
+    
+                            <tbody>
+                                <tr v-for="row in values" :key="row">
+                                    <td v-for="cell in row" :key="cell">{{ cell }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+    
+                    </div>
                 </div>
 
                 <div class="buttons">
