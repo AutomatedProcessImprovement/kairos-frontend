@@ -61,21 +61,34 @@
                     </template>
                 </modal-component>
             </div>
-            <div v-if="selectedLog" class="column">
+            <div v-if="selectedLog" class="parameters-container column">
                 <div class="row">
                     <h3 class="bold blue">Recommendation Parameters</h3>
                     <router-link class="btn-blue margin-left" :to="{ name: 'parameters' }">Change parameters</router-link>
                     <router-link class="btn-blue margin-left" :to="{ name: 'columns' }">Change column types</router-link>
                 </div>
-                <div v-if="selectedLog.case_completion" class="row">
+                <div v-if="selectedLog.case_completion" class="parameters row">
                     <div class="parameter">
                         <small class="upper"> Activity EQUAL </small>
                         <p> {{ selectedLog.case_completion }}</p>
                         <small>Case completion</small>
                     </div>
-                    <div class="parameter">
-                        <small>{{ selectedLog.positive_outcome.column }} {{ selectedLog.positive_outcome.operator }}</small>
-                        <p>{{ selectedLog.positive_outcome.value }} {{ selectedLog.positive_outcome.unit }}</p>
+
+                    <div class="positive-outcome column">
+                        <div class="row">
+                            <div v-for="(positiveOutcomeGroup,index1) in selectedLog.positive_outcome" :key="index1" class="row align-center">
+                                <span v-if="index1 > 0">or</span>
+                                <div class="positive-outcome-group container">
+                                    <div v-for="(positiveOutcomeItem,index2) in positiveOutcomeGroup" :key="index2" class="row align-center">
+                                        <span v-if="index2 > 0">and</span>
+                                        <div class="positive-outcome-group parameter">
+                                            <small>{{ positiveOutcomeItem.column }} {{ positiveOutcomeItem.operator }}</small>
+                                            <p>{{ positiveOutcomeItem.value }} {{ positiveOutcomeItem.unit }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <small>Positive case outcome</small>
                     </div>
                     <div class="parameter">
@@ -177,6 +190,12 @@ export default {
                         this.isLoading = false;
                         return;
                     }
+
+                    this.eventlogs.forEach(eventlog => {
+                        if(eventlog.positive_outcome && !Array.isArray(eventlog.positive_outcome))
+                            eventlog.positive_outcome = [[eventlog.positive_outcome]];
+                    });
+
                     if (!shared.getLocal('logId')) {
                         shared.setLocal('logId', this.eventlogs[0]._id, 30);
                     }

@@ -62,6 +62,41 @@
 
             }
         }
+
+        .positive-outcome-group{
+            position: relative;
+            background-color: $k-gray1;
+            display: flex;
+            flex-direction: column;
+            border-radius: 5px;
+            
+            &.item{
+                padding: 15px;
+                margin: 10px;
+            }
+            
+            &.container{
+                padding: 10px;
+                margin: 10px 0px;
+                background-color: $k-gray1-5;
+            }
+        }
+
+        .btn-link{
+            align-self: flex-end;
+            padding: 5px;
+            margin: 0;
+            ion-icon{
+                padding: 0 0 0 5px;
+            }
+        }
+        .btn-close{
+            position: absolute;
+            right: 0;
+            top: 0;
+            padding: 3px;
+            cursor: pointer;
+        }
     }
 
 }

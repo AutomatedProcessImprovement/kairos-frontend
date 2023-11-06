@@ -12,16 +12,29 @@
       </div>
 
       <div class="stats">
-        <div v-if="parameters.kpi" class="stats-card column">
-          <p>Target</p>
-          <h3 class="blue target-value">{{ parameters.kpi.value }} {{ parameters.kpi.unit }}</h3>
-          <small>Case {{ parameters.kpi.column }} {{ parameters.kpi.operator }}</small>
+        <div v-if="parameters.kpi" class="targets-container shadow hide-scrollbar">
+          <div v-for="(positiveOutcomeGroup,index1) in parameters.kpi" :key="index1" class="row align-center">
+            <small class="outcome-grouping" v-if="index1 > 0">or</small>
+            <div v-for="(positiveOutcomeItem,index2) in positiveOutcomeGroup" :key="index2" class="row align-center">
+              <small class="outcome-grouping" v-if="index2 > 0">and</small>
+              <div class="stats-card column">
+                <p>Target</p>
+                <h3 class="blue target-value">{{ positiveOutcomeItem.value }} {{ positiveOutcomeItem.unit }}</h3>
+                <small>Case {{ positiveOutcomeItem.column }} {{ positiveOutcomeItem.operator }}</small>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="stats-card case-information hide-scrollbar" ref="caseInformation">
-          <div class="case-performance">
-            <p>Case performance</p>
-            <p :class="['bold', caseKpi.outcome ? 'green' : 'warning']">{{ caseKpi.value }} {{ caseKpi.unit }}</p>
-            <small>Case {{ caseKpi.column }}</small>
+
+        <div class="stats-card case-information hide-scrollbar">
+          <div v-for="(caseOutcomeGroup,index1) in caseKpi" :key="index1" class="row">
+            <div v-for="(caseOutcomeItem,index2) in caseOutcomeGroup" :key="index2" class="row">
+              <div class="case-performance">
+                <p>Case performance</p>
+                <p :class="['bold', caseOutcomeItem.outcome ? 'green' : 'warning']">{{ caseOutcomeItem.value }} {{ caseOutcomeItem.unit }}</p>
+                <small>Case {{ caseOutcomeItem.column }}</small>
+              </div>
+            </div>
           </div>
           <div v-if="Object.keys(caseDetails).length > 0" class="case-details">
             <p>Case details</p>
@@ -128,6 +141,7 @@ export default {
         (response) => {
           this.parameters = response.data.parameters;
           if (!this.parameters.costUnits) this.parameters.costUnits = {};
+          if(!Array.isArray(this.parameters.kpi)) this.parameters.kpi = [[this.parameters.kpi]];
           this.getCase();
         },
         (error) => {
@@ -154,6 +168,7 @@ export default {
 
       if (this.currentCase.case_performance) {
         this.caseKpi = this.currentCase.case_performance;
+        if(!Array.isArray(this.caseKpi)) this.caseKpi = [[this.caseKpi]];
       }
       this.isLoading = false;
     },

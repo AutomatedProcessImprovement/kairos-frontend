@@ -152,14 +152,7 @@ export default {
 
     let caseActivities = singleCase.activities;
     let intervened = "No";
-    let performance, outcome;
-    if (singleCase.case_performance) {
-      performance = { value: singleCase.case_performance.value, unit: singleCase.case_performance.unit };
-      outcome = singleCase.case_performance.outcome
-    } else {
-      performance = { value: null, unit: null };
-      outcome = null
-    }
+    let casePerformance = Array.isArray(singleCase.case_performance) ? singleCase.case_performance : [[singleCase.case_performance]];
 
     caseActivities.forEach(activity => {
       if (activity.prescriptions) {
@@ -171,16 +164,30 @@ export default {
         })
       }
     });
+
     let recommendationsCount = caseActivities[caseActivities.length - 1].prescriptions.filter(p => this.prescriptionAttributes[p.type].pIsRecommended(p, alarmThreshold)).length;
     let data = {
       id: singleCase._id,
       recommendations: recommendationsCount,
       intervened: intervened,
-      performance: performance,
-      outcome: outcome,
       completed: singleCase.case_completed,
       filters: []
-    }
+    };
+
+    let cumulativeOutcome = false;
+
+    casePerformance.forEach(performanceGroup => {
+      let groupOutcome = true;
+      performanceGroup.forEach(performanceItem => {
+        if(!data[performanceItem.column]){
+          data[performanceItem.column] = { value: performanceItem.value, unit: performanceItem.unit, outcome: performanceItem.outcome};
+          if (performanceItem.outcome === false) groupOutcome = performanceItem.outcome;
+        }
+      });
+      if (groupOutcome === true) cumulativeOutcome = groupOutcome;
+    });
+
+    data.outcome = cumulativeOutcome;
 
     Object.keys(singleCase.case_attributes).forEach(k => {
       data[k] = singleCase.case_attributes[k];
@@ -188,4 +195,18 @@ export default {
 
     return data;
   },
+
+  calculateCaseOutcome(casePerformance){
+    let cumulativeOutcome = false;
+    casePerformance = Array.isArray(casePerformance) ? casePerformance : [[casePerformance]];
+
+    casePerformance.forEach(performanceGroup => {
+      let groupOutcome = true;
+      performanceGroup.forEach(performanceItem => {
+        if (performanceItem.outcome === false) groupOutcome = performanceItem.outcome;
+      });
+      if (groupOutcome === true) cumulativeOutcome = groupOutcome;
+    });
+    return cumulativeOutcome;
+  }
 }
