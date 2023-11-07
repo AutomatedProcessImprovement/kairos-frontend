@@ -16,6 +16,7 @@
 @import 'modal.scss';
 @import 'casesTable.scss';
 @import 'vueSelect.scss';
+@import 'openaiChat.scss';
 @import "@vueform/toggle/themes/default.css";
 @import "@vueform/slider/themes/default.css";
 @import 'vue-select/dist/vue-select.css';
@@ -59,7 +60,11 @@ div {
   cursor: pointer;
 }
 
-a {
+.line-breaks{
+  white-space: pre-line;
+}
+
+a{
   text-decoration: none;
   color: $k-black;
   cursor: pointer;
