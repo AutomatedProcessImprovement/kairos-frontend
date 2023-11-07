@@ -30,7 +30,7 @@
 <script>
 
 import openaiService from "@/services/openai.service";
-import shared from "@/services/shared";
+import utils from "@/common/utils";
 // import MarkdownIt from 'markdown-it'
 
 export default {
@@ -44,7 +44,7 @@ export default {
     data() {
         return {
             caseId: null,
-            logId: shared.getLocal('logId'),
+            logId: utils.getLocal('logId'),
             showChat: false,
             answerLoading: false,
 

@@ -91,8 +91,8 @@
 </template>
 
 <script>
-import VueCytoscape from '@/components/CytoscapeComponent.vue';
-import LegendComponent from '@/components/LegendComponent.vue';
+import VueCytoscape from './CytoscapeComponent.vue';
+import LegendComponent from './LegendComponent.vue';
 import TooltipComponent from '@/components/TooltipComponent.vue';
 import RecommendationComponent from './RecommendationComponent.vue';
 import OpenaiChat from "@/components/OpenaiChatComponent.vue";
