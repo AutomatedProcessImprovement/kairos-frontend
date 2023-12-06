@@ -6,8 +6,7 @@
         <div class="chat-window" v-if="showChat">
             <div class="messages column" ref="messages">
                 <div :class="['row',message.role === 'user' ? 'user-message' : 'assistant-message']" v-for="(message,index) in chatHistory" :key="index">
-                    <div class="message">
-                        <p>{{ message.content }}</p>
+                    <div class="message" v-html="markdownToHTML(message.content)">
                     </div>
                 </div>
                 <div class="loader" v-if="answerLoading">
@@ -22,6 +21,7 @@
             <div class="row align-center">
                 <input type="text" v-model="newMessage" @keyup.enter="getAnswer" placeholder="Message">
                 <ion-icon @click="getAnswer" name="chevron-forward" class="send-icon"></ion-icon>
+                <ion-icon @click="deleteThread" name="trash-outline" class="send-icon"></ion-icon>
             </div>
         </div>
     </div>
@@ -31,7 +31,7 @@
 
 import openaiService from "@/services/openai.service";
 import shared from "@/services/shared";
-// import MarkdownIt from 'markdown-it'
+import MarkdownIt from "markdown-it";
 
 export default {
     name: 'OpenaiChatComponent',
@@ -74,6 +74,40 @@ export default {
     },
 
     methods: {
+
+        markdownToHTML(markdown){
+            let md = new MarkdownIt();
+            var result = md.render(markdown);
+            return result;
+        },
+
+        deleteThread(){
+            openaiService.deleteThread(this.logId,this.caseId).then(
+                (response) => {
+                    console.log(response.data.message);
+                    this.$notify({
+                        title: 'Success',
+                        text: response.data.message,
+                        type: 'success'
+                    })
+                    this.getChatHistory();
+                },
+                (error) => {
+                    this.isLoading = false;
+                    const resMessage =
+                        (error.response &&
+                            error.response.data &&
+                            error.response.data.error) ||
+                        error.message ||
+                        error.toString();
+                    this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    })
+                })
+        },
+
         toggleChat(){
             this.showChat = !this.showChat;
             if (this.showChat){
@@ -87,6 +121,7 @@ export default {
             openaiService.getChatHistoryCase(this.logId,this.caseId).then(
                 (response) => {
                     this.chatHistory = response.data.memory;
+                    // console.log(response.data.memory);
                 },
                 (error) => {
                     this.isLoading = false;
@@ -124,8 +159,9 @@ export default {
                 (response) => {
                     this.chatHistory.push({
                         role: 'assistant',
-                        content: response.data.answer
+                        content: response.data.answer.content
                     })
+                    console.log(response.data.answer);
                     this.answerLoading = false;
                 },
                 (error) => {
