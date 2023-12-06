@@ -1,11 +1,11 @@
 <template>
     <div id="chat">
-        <div class="chat-toggle" @click="toggleChat" :class="{'icon-selected': showChat}">
+        <div class="chat-toggle" @click="toggleChat" :class="{ 'icon-selected': showChat }">
             <ion-icon name="chatbubbles-outline"></ion-icon>
         </div>
         <div class="chat-window" v-if="showChat">
             <div class="messages column" ref="messages">
-                <div :class="['row',message.role === 'user' ? 'user-message' : 'assistant-message']" v-for="(message,index) in chatHistory" :key="index">
+                <div :class="['row', message.role === 'user' ? 'user-message' : 'assistant-message']" v-for="(message, index) in chatHistory" :key="index">
                     <div class="message" v-html="markdownToHTML(message.content)">
                     </div>
                 </div>
@@ -56,7 +56,7 @@ export default {
     watch: {
         chatHistory: {
             handler() {
-                if(this.showChat){
+                if (this.showChat) {
                     this.$nextTick(() => {
                         this.scrollToBottom();
                     });
@@ -66,8 +66,8 @@ export default {
         }
     },
 
-    mounted(){
-        if (this.logId){ 
+    mounted() {
+        if (this.logId) {
             this.caseId = (this.$route.params.caseId);
             this.getChatHistory();
         }
@@ -75,14 +75,74 @@ export default {
 
     methods: {
 
-        markdownToHTML(markdown){
-            let md = new MarkdownIt();
-            var result = md.render(markdown);
-            return result;
+        getChatHistory() {
+            openaiService.getChatHistoryCase(this.logId, this.caseId).then(
+                (response) => {
+                    this.chatHistory = response.data.memory;
+                },
+                (error) => {
+                    this.isLoading = false;
+                    const resMessage =
+                        (error.response &&
+                            error.response.data &&
+                            error.response.data.error) ||
+                        error.message ||
+                        error.toString();
+                    this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    })
+                }
+            );
         },
 
-        deleteThread(){
-            openaiService.deleteThread(this.logId,this.caseId).then(
+        getAnswer() {
+            if (!this.newMessage) return;
+            if (this.newMessage.trim() === '') return;
+
+            this.answerLoading = true;
+            let newMessage = this.newMessage;
+            this.newMessage = null;
+
+            let data = {
+                'question': newMessage,
+            }
+
+            this.chatHistory.push({
+                role: 'user',
+                content: newMessage
+            });
+
+            openaiService.getAnswer(this.logId, this.caseId, data).then(
+                (response) => {
+                    this.chatHistory.push({
+                        role: 'assistant',
+                        content: response.data.answer.content
+                    })
+                    console.log(response.data.answer);
+                    this.answerLoading = false;
+                },
+                (error) => {
+                    this.isLoading = false;
+                    const resMessage =
+                        (error.response &&
+                            error.response.data &&
+                            error.response.data.error) ||
+                        error.message ||
+                        error.toString();
+                    this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    });
+                    this.answerLoading = false;
+                }
+            );
+        },
+
+        deleteThread() {
+            openaiService.deleteThread(this.logId, this.caseId).then(
                 (response) => {
                     console.log(response.data.message);
                     this.$notify({
@@ -108,78 +168,19 @@ export default {
                 })
         },
 
-        toggleChat(){
+        toggleChat() {
             this.showChat = !this.showChat;
-            if (this.showChat){
+            if (this.showChat) {
                 this.$nextTick(() => {
                     this.scrollToBottom();
                 });
             }
         },
 
-        getChatHistory() {
-            openaiService.getChatHistoryCase(this.logId,this.caseId).then(
-                (response) => {
-                    this.chatHistory = response.data.memory;
-                    // console.log(response.data.memory);
-                },
-                (error) => {
-                    this.isLoading = false;
-                    const resMessage =
-                        (error.response &&
-                            error.response.data &&
-                            error.response.data.error) ||
-                        error.message ||
-                        error.toString();
-                    this.$notify({
-                        title: 'An error occured',
-                        text: resMessage,
-                        type: 'error'
-                    })
-                }
-            );
-        },
-
-        getAnswer() {
-            this.answerLoading = true;
-
-            let newMessage = this.newMessage;
-            this.newMessage = null;
-
-            let data = {
-                'question': newMessage,
-            }
-
-            this.chatHistory.push({
-                role: 'user',
-                content: newMessage
-            });
-            
-            openaiService.getAnswer(this.logId,this.caseId,data).then(
-                (response) => {
-                    this.chatHistory.push({
-                        role: 'assistant',
-                        content: response.data.answer.content
-                    })
-                    console.log(response.data.answer);
-                    this.answerLoading = false;
-                },
-                (error) => {
-                    this.isLoading = false;
-                    const resMessage =
-                        (error.response &&
-                            error.response.data &&
-                            error.response.data.error) ||
-                        error.message ||
-                        error.toString();
-                    this.$notify({
-                        title: 'An error occured',
-                        text: resMessage,
-                        type: 'error'
-                    });
-                    this.answerLoading = false;
-                }
-            );
+        markdownToHTML(markdown) {
+            let md = new MarkdownIt();
+            var result = md.render(markdown);
+            return result;
         },
 
         scrollToBottom() {
