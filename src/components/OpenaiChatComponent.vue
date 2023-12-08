@@ -32,6 +32,7 @@
 import openaiService from "@/services/openai.service";
 import shared from "@/services/shared";
 import MarkdownIt from "markdown-it";
+import DOMPurify from 'dompurify';
 
 export default {
     name: 'OpenaiChatComponent',
@@ -179,8 +180,9 @@ export default {
 
         markdownToHTML(markdown) {
             let md = new MarkdownIt();
-            var result = md.render(markdown);
-            return result;
+            var html = md.render(markdown);
+            const cleanHtml = DOMPurify.sanitize(html);
+            return cleanHtml;
         },
 
         scrollToBottom() {
