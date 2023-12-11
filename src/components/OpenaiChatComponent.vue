@@ -19,7 +19,7 @@
                 <p>There are no messages yet.</p>
             </div>
             <div class="row align-center">
-                <input type="text" v-model="newMessage" @keyup.enter="getAnswer" placeholder="Message">
+                <textarea v-model="newMessage" @keyup.enter="getAnswer" placeholder="Message"></textarea>
                 <ion-icon @click="getAnswer" name="chevron-forward" class="send-icon"></ion-icon>
                 <ion-icon @click="deleteThread" name="trash-outline" class="send-icon"></ion-icon>
             </div>
@@ -99,6 +99,7 @@ export default {
         },
 
         getAnswer() {
+            if (this.answerLoading === true) return;
             if (!this.newMessage) return;
             if (this.newMessage.trim() === '') return;
 
