@@ -36,9 +36,8 @@ body {
 }
 
 
-*,
-::after,
-::before {
+*, ::after, ::before {
+  font-family: $k-font-sans-serif;
   box-sizing: border-box;
   color: $k-black;
   padding: 0;
@@ -280,7 +279,7 @@ th {
 }
 
 select,
-input {
+input,textarea{
   padding: 5px;
   border: 1px solid $k-gray2;
   border-radius: 8px;
@@ -291,8 +290,14 @@ input {
   }
 }
 
-input::placeholder {
+input::placeholder,
+textarea::placeholder{
   color: $k-gray2;
+}
+
+textarea{
+  resize: none;
+  height: 32px;
 }
 
 .btn-blue {

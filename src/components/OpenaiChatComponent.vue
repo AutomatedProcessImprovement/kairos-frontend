@@ -1,13 +1,12 @@
 <template>
     <div id="chat">
-        <div class="chat-toggle" @click="toggleChat" :class="{'icon-selected': showChat}">
+        <div class="chat-toggle" @click="toggleChat" :class="{ 'icon-selected': showChat }">
             <ion-icon name="chatbubbles-outline"></ion-icon>
         </div>
         <div class="chat-window" v-if="showChat">
             <div class="messages column" ref="messages">
-                <div :class="['row',message.role === 'user' ? 'user-message' : 'assistant-message']" v-for="(message,index) in chatHistory" :key="index">
-                    <div class="message">
-                        <p>{{ message.content }}</p>
+                <div :class="['row', message.role === 'user' ? 'user-message' : 'assistant-message']" v-for="(message, index) in chatHistory" :key="index">
+                    <div class="message" v-html="markdownToHTML(message.content)">
                     </div>
                 </div>
                 <div class="loader" v-if="answerLoading">
@@ -20,8 +19,9 @@
                 <p>There are no messages yet.</p>
             </div>
             <div class="row align-center">
-                <input type="text" v-model="newMessage" @keyup.enter="getAnswer" placeholder="Message">
+                <textarea v-model="newMessage" @keyup.enter="getAnswer" placeholder="Message"></textarea>
                 <ion-icon @click="getAnswer" name="chevron-forward" class="send-icon"></ion-icon>
+                <ion-icon @click="deleteThread" name="trash-outline" class="send-icon"></ion-icon>
             </div>
         </div>
     </div>
@@ -31,7 +31,8 @@
 
 import openaiService from "@/services/openai.service";
 import utils from "@/common/utils";
-// import MarkdownIt from 'markdown-it'
+import MarkdownIt from "markdown-it";
+import DOMPurify from 'dompurify';
 
 export default {
     name: 'OpenaiChatComponent',
@@ -56,7 +57,7 @@ export default {
     watch: {
         chatHistory: {
             handler() {
-                if(this.showChat){
+                if (this.showChat) {
                     this.$nextTick(() => {
                         this.scrollToBottom();
                     });
@@ -66,25 +67,17 @@ export default {
         }
     },
 
-    mounted(){
-        if (this.logId){ 
+    mounted() {
+        if (this.logId) {
             this.caseId = (this.$route.params.caseId);
             this.getChatHistory();
         }
     },
 
     methods: {
-        toggleChat(){
-            this.showChat = !this.showChat;
-            if (this.showChat){
-                this.$nextTick(() => {
-                    this.scrollToBottom();
-                });
-            }
-        },
 
         getChatHistory() {
-            openaiService.getChatHistoryCase(this.logId,this.caseId).then(
+            openaiService.getChatHistoryCase(this.logId, this.caseId).then(
                 (response) => {
                     this.chatHistory = response.data.memory;
                 },
@@ -106,8 +99,11 @@ export default {
         },
 
         getAnswer() {
-            this.answerLoading = true;
+            if (this.answerLoading === true) return;
+            if (!this.newMessage) return;
+            if (this.newMessage.trim() === '') return;
 
+            this.answerLoading = true;
             let newMessage = this.newMessage;
             this.newMessage = null;
 
@@ -119,13 +115,14 @@ export default {
                 role: 'user',
                 content: newMessage
             });
-            
-            openaiService.getAnswer(this.logId,this.caseId,data).then(
+
+            openaiService.getAnswer(this.logId, this.caseId, data).then(
                 (response) => {
                     this.chatHistory.push({
                         role: 'assistant',
-                        content: response.data.answer
+                        content: response.data.answer.content
                     })
+                    console.log(response.data.answer);
                     this.answerLoading = false;
                 },
                 (error) => {
@@ -144,6 +141,49 @@ export default {
                     this.answerLoading = false;
                 }
             );
+        },
+
+        deleteThread() {
+            openaiService.deleteThread(this.logId, this.caseId).then(
+                (response) => {
+                    console.log(response.data.message);
+                    this.$notify({
+                        title: 'Success',
+                        text: response.data.message,
+                        type: 'success'
+                    })
+                    this.getChatHistory();
+                },
+                (error) => {
+                    this.isLoading = false;
+                    const resMessage =
+                        (error.response &&
+                            error.response.data &&
+                            error.response.data.error) ||
+                        error.message ||
+                        error.toString();
+                    this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    })
+                })
+        },
+
+        toggleChat() {
+            this.showChat = !this.showChat;
+            if (this.showChat) {
+                this.$nextTick(() => {
+                    this.scrollToBottom();
+                });
+            }
+        },
+
+        markdownToHTML(markdown) {
+            let md = new MarkdownIt();
+            var html = md.render(markdown);
+            const cleanHtml = DOMPurify.sanitize(html);
+            return cleanHtml;
         },
 
         scrollToBottom() {
