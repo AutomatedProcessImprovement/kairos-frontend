@@ -29,10 +29,8 @@
 
 body {
   margin: 0;
-  font-family: $k-font-sans-serif;
-  font-size: 1rem;
-  font-weight: 400;
   background-color: $k-gray1;
+  font-size: 0.9rem;
 }
 
 
@@ -48,11 +46,8 @@ small {
   color: $k-blue2;
 }
 
-p,
-th,
-a,
-div {
-  font-size: 14px;
+p, th, a, div, button {
+  font-size: 0.9rem;
 }
 
 .pointer {

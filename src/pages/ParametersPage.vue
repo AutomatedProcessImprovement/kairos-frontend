@@ -186,8 +186,9 @@
                 </div>
 
                 <div class="row justify-end">
-                    <button @click="showResourceAllocation = !showResourceAllocation" class="btn-blue">Resource
-                        Allocation</button>
+                    <button @click="showResourceAllocation = !showResourceAllocation" :class="['btn-link',{'active' : showResourceAllocation}]">
+                        Resource Allocation 
+                    </button>
                 </div>
 
                 <div class="column" v-if="showResourceAllocation">
@@ -330,6 +331,9 @@ export default {
                     this.isLoading = false;
                     if (this.log.parameters_description) {
                         this.formatParameters();
+                    }
+                    else{
+                        this.addPositiveOutcomeGroup();
                     }
                 })
                 .catch(error => {

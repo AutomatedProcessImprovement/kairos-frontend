@@ -9,6 +9,13 @@
         margin: 0;
     }
 
+    .btn-link{
+
+        &.active{
+            filter: brightness(75%);
+        }
+    }
+
     .parameter {
         display: flex;
         flex-direction: column;
