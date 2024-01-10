@@ -158,7 +158,9 @@ export default {
     },
 
     tableRows() {
-      return this.table.rows.filter(r => r['filters'].length === 0).slice(this.table.offset, this.table.offset + this.table.pageSize);
+      let temp = this.table.rows.filter(r => r['filters'].length === 0);
+      if (!this.isFullView) return temp.slice(0,3);
+      else return temp.slice(this.table.offset, this.table.offset + this.table.pageSize);
     },
 
     tableRowsCount() {

@@ -41,7 +41,7 @@
       <button v-if="showTable" @click="toggleShowTable" class="btn-link"><ion-icon name="chevron-back"></ion-icon> Return
         to overview</button>
 
-      <cases-table-component :completed="completion" :performanceColumns="performanceColumns" :caseAttributes="caseAttributes" :cases="casesDataToShow"
+      <cases-table-component :completed="completion" :performanceColumns="performanceColumns" :caseAttributes="caseAttributes" :cases="casesData"
         :isFullView="showTable"></cases-table-component>
     </div>
 
@@ -77,9 +77,6 @@ export default {
     casesWithRecommendations() {
       return this.casesData.filter(c => c.recommendations > 0).length;
     },
-    casesDataToShow() {
-      return this.showTable ? this.casesData : this.casesData.slice(0, 3);
-    }
   },
 
   data() {
