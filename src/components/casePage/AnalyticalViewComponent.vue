@@ -96,7 +96,7 @@ import VueCytoscape from './CytoscapeComponent.vue';
 import LegendComponent from './LegendComponent.vue';
 import TooltipComponent from '@/components/TooltipComponent.vue';
 import RecommendationComponent from './RecommendationComponent.vue';
-import OpenaiChat from "@/components/OpenaiChatComponent.vue";
+import OpenaiChat from "@/components/casePage//OpenaiChatComponent.vue";
 import Toggle from '@vueform/toggle'
 
   export default {
