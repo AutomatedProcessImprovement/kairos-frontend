@@ -65,15 +65,16 @@
           <div v-if="selectedRecObject" class="details">
               
             <h4> Model description</h4>
-            <div v-if="selectedRecObject.description">
-              <p class="line-breaks">
-                {{ selectedRecObject.description }}
-              </p>
-            </div>
+            <div v-if="selectedRecObject.type === 'TREATMENT_EFFECT'">
+              <p>CATE score: {{ selectedRecObject.output.cate }}</p>
+              <p>Probability if treated: {{ Math.round((selectedRecObject.output.proba_if_treated * 100 + Number.EPSILON)*100)/100 }}%</p>
+              <p>Probability if untreated: {{ Math.round((selectedRecObject.output.proba_if_untreated * 100 + Number.EPSILON)*100)/100 }}%</p>
 
-            <div v-else class="row align-center">
-              <ion-icon class="rotate" name="reload-circle-outline"></ion-icon>
-              <p>Loading details...</p>
+            </div>
+            <div v-else>
+              <p>Accuracy: {{ Math.round((selectedRecObject.plugin.accuracy * 100 + Number.EPSILON)*100)/100 }}%</p>
+              <p>Recall: {{ Math.round((selectedRecObject.plugin.recall * 100 + Number.EPSILON)*100)/100 }}%</p>
+              <p>Precision: {{ Math.round((selectedRecObject.plugin.precision * 100 + Number.EPSILON)*100)/100 }}%</p>
             </div>
           </div>
       <h4 v-else>Please select a recommendation.</h4>
