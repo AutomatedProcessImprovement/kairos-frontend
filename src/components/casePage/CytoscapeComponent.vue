@@ -33,7 +33,7 @@ export default {
         nextActivity: { light: '#F2994A', dark: '#be6415' },
         activity: { light: '#d7d7d7', dark: '#474747' },
         intervention: { light: '#BB6BD9', dark: '#7e2a9d' },
-        selectedNode: { light: '#579aff', dark: '#1954ae' },
+        selectedNode: { light: '#074EE8', dark: '#042f8b' },
       },
       recommendationTypes: {
         'ALARM': null,
