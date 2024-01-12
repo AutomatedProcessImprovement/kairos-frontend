@@ -138,8 +138,9 @@ export default {
             logsService.uploadLog(formData)
                 .then(response => {
                     this.isLoading = false;
-                    utils.setLocal('logId', response.data.logId, 10);
-                    this.$router.push({ name: "columns" });
+                    let logId = response.data.logId;
+                    utils.setLocal('logId', logId, 10);
+                    this.$router.push({ name: "columns", params: {logId: logId} });
                 })
                 .catch(error => {
                     this.isLoading = false;

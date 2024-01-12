@@ -78,7 +78,6 @@
 import Loading from "@/components/LoadingComponent.vue";
 import logsService from "@/services/logs.service";
 import TooltipComponent from "@/components/TooltipComponent.vue";
-import utils from "@/common/utils";
 
 export default {
     name: "ColumnsDefinitionPage",
@@ -118,14 +117,14 @@ export default {
     },
 
     mounted() {
-        if (utils.getLocal('logId')) this.loadCols();
+        if (this.$route.params.logId) this.loadCols();
     },
 
     methods: {
         loadCols() {
             this.isLoading = true;
 
-            let logId = utils.getLocal('logId');
+            let logId = this.$route.params.logId;
 
             logsService.getLog(logId)
                 .then(response => {
@@ -173,11 +172,11 @@ export default {
                 "case_attributes": this.caseAttributes
             };
 
-            logsService.defineColumnTypes(utils.getLocal('logId'), data)
+            logsService.defineColumnTypes(this.$route.params.logId, data)
                 .then(response => {
                     console.log(response.data);
                     this.isLoading = false;
-                    this.$router.push({ name: 'parameters' });
+                    this.$router.push({ name: 'parameters', params: {logId: this.$route.params.logId} });
                 })
                 .catch(error => {
                     this.isLoading = false;

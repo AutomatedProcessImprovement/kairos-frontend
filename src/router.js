@@ -20,21 +20,13 @@ const routes = [
         component: DashBoardPage,
     },
     {
-        path: "/parameters",
-        name: "parameters",
-        component: ParametersPage,
-    },
-    {
-        path: '/columns',
-        name: 'columns',
-        component: ColumnsDefinitionPage,
-    },
-    {
-        path: "/cases",
-        component: { render: () => h(RouterView) },
+        path: "/event-logs/:logId?",
+        params: {
+            logId: []
+        },
         children: [
             {
-                path: ':completion',
+                path: "cases/:completion",
                 component: { render: () => h(RouterView) },
                 params: {
                     completion: ['completed', 'ongoing']
@@ -53,16 +45,27 @@ const routes = [
                             caseId: []
                         }
                     },
+
                 ]
             },
-
+            {
+                path: "parameters",
+                name: "parameters",
+                component: ParametersPage,
+            },
+            {
+                path: 'columns',
+                name: 'columns',
+                component: ColumnsDefinitionPage,
+            },
+            {
+                path: "recommendations",
+                name: "recommendations",
+                component: RecommendationsPage,
+            },
         ]
     },
-    {
-        path: "/recommendations",
-        name: "recommendations",
-        component: RecommendationsPage,
-    },
+
 ];
 
 const router = createRouter({

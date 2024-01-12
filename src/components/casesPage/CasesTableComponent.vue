@@ -280,7 +280,7 @@ export default {
       this.table.clickedRows.unshift(row.id);
 
       utils.setLocal(`casesListClickedRows${utils.getLocal('logId')}`, this.table.clickedRows, 1);
-      this.$router.push({ name: 'case', params: { 'caseId': row.id } })
+      this.$router.push({ name: 'case', params: {logId: utils.getLocal('logId'), 'caseId': row.id } })
     },
 
     doSearch(offset, limit, order, sort, doSort = false, isLoading = true, rowsData = null) {

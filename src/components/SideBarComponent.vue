@@ -13,12 +13,12 @@
         <router-link class="sidebar-item" :to="{ name: 'dashboard' }"><ion-icon
             name="home"></ion-icon>Dashboard</router-link>
         <router-link :class="['sidebar-item', { 'active': isCasesActive }]"
-          :to="{ name: 'cases', params: { completion: 'completed' } }"><ion-icon name="list"></ion-icon>Cases</router-link>
-        <router-link class="sidebar-item sub-item" :to="{ name: 'cases', params: { completion: 'completed' } }"><ion-icon
+          :to="{ name: 'cases', params: {logId: logId, completion: 'completed' } }"><ion-icon name="list"></ion-icon>Cases</router-link>
+        <router-link class="sidebar-item sub-item" :to="{ name: 'cases', params: {logId: logId, completion: 'completed' } }"><ion-icon
             name="stats-chart"></ion-icon>Completed Cases</router-link>
-        <router-link class="sidebar-item sub-item" :to="{ name: 'cases', params: { completion: 'ongoing' } }"><ion-icon
+        <router-link class="sidebar-item sub-item" :to="{ name: 'cases', params: {logId: logId, completion: 'ongoing' } }"><ion-icon
             name="stats-chart"></ion-icon>Ongoing Cases</router-link>
-        <router-link class="sidebar-item" :to="{ name: 'recommendations' }"><ion-icon
+        <router-link class="sidebar-item" :to="{logId: logId, name: 'recommendations' }"><ion-icon
             name="document-text"></ion-icon>Recommendations</router-link>
       </div>
 
@@ -48,20 +48,19 @@ export default {
       ],
       selectedView: null,
       isCollapsed: utils.getLocal('isCollapsed') || false,
+      logId: utils.getLocal('logId'),
     }
   },
 
   computed: {
     isCasesActive() {
-      return this.$route.path.startsWith('/cases');
+      return this.$route.path.includes('/cases');
     }
   },
 
   mounted() {
-    if (!utils.getLocal('view')) {
-
-      utils.setLocal('view', 'analytical', 30);
-    }
+    if (!utils.getLocal('view')) utils.setLocal('view', 'analytical', 30);
+    if (!utils.getLocal('logId')) utils.setLocal('logId', this.$route.params.logId, 30);
     this.selectedView = utils.getLocal('view');
   },
 

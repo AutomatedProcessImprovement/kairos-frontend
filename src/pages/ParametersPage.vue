@@ -312,14 +312,14 @@ export default {
     },
 
     mounted() {
-        if (utils.getLocal('logId')) this.getLog();
+        if (this.$route.params.logId) this.getLog();
     },
 
     methods: {
 
         getLog() {
             this.isLoading = true;
-            let logId = utils.getLocal('logId');
+            let logId = this.$route.params.logId;
 
             logsService.getLog(logId)
                 .then(response => {
@@ -432,7 +432,7 @@ export default {
                 };
             }
 
-            logsService.defineParameters(utils.getLocal('logId'), data)
+            logsService.defineParameters(this.$route.params.logId, data)
                 .then(response => {
                     console.log(response.data)
                     this.isLoading = false;
