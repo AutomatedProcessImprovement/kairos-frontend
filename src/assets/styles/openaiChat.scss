@@ -38,7 +38,7 @@
         z-index: 3;
         width: 400px;
         box-shadow: 0px 0px 5px 2px #dce0e4;
-        height: 70vh;
+        height: 60vh;
 
         $animationTime: 0.8s;
         $dotSize: 10px;
@@ -169,6 +169,7 @@
 
         textarea{
             width: 100%;
+            margin: 5px;
         }
     }
 }
