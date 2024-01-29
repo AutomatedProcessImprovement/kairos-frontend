@@ -12,7 +12,7 @@
                 <ion-icon class="input-icon" name="search"></ion-icon>
                 <input type="text" id="find-log" @keyup="findLog" placeholder="Find log...">
             </div>
-            <div v-if="eventlogs.length > 0" class='wrap align-center row'>
+            <div v-if="eventlogs.length > 0" class='wrap align-center row event-logs'>
                 <div class='log-card' :class="{ 'selected': log._id === selectedLog._id }" v-for="log in eventlogs" :key='log'
                     @click="selectLog(log._id)">
                     <p>{{ log.filename }}</p>
@@ -128,6 +128,7 @@ import SideBar from '@/components/SideBarComponent.vue';
 import Loading from "@/components/LoadingComponent.vue";
 import ModalComponent from "@/components/ModalComponent.vue";
 import utils from "@/common/utils";
+import {useShepherd} from 'vue-shepherd';
 
 export default {
     name: "DashBoard",
@@ -142,6 +143,7 @@ export default {
         return {
             isLoading: false,
             openModal: false,
+            onboradingCompleted: utils.getLocal('onboardingCompleted') || false,
 
             timer: null,
             eventlogs: [],
@@ -211,8 +213,9 @@ export default {
                         if (this.selectedLogStatus !== 'NULL') this.getProjectStatus();
                     }, 4000);
 
-                    this.isLoading = false;
+                    this.startOnboarding();
 
+                    this.isLoading = false;
                 },
                 (error) => {
                     const resMessage =
@@ -235,6 +238,68 @@ export default {
             utils.setLocal('logId', logId, 30);
             this.selectedLog = this.eventlogs.find(e => e._id === logId);
             this.getProjectStatus(true);
+        },
+
+        startOnboarding() {
+            if (this.onboardingCompleted === true) return;
+
+            const tour = useShepherd({
+                useModalOverlay: true,
+                defaultStepOptions: {
+                    classes: 'shadow-md bg-purple-dark',
+                    scrollTo: true
+                }
+            });
+            tour.addSteps([
+                {
+                    id: 'step1',
+                    text: 'Welcome to Kairos: a dashboard for prescriptive process monitoring.',
+                    classes: 'onboarding-step',
+                    buttons: [
+                        {
+                        text: 'Next',
+                        action: tour.next
+                        }
+                    ],
+                    arrow: false,
+                },
+                {
+                    id: 'step2',
+                    text: 'Here you will find the event logs uploaded by users. You may select one by clicking on it.',
+                    classes: 'onboarding-step',
+                    attachTo: {
+                        element: '.event-logs',
+                        on: 'bottom'
+                    },
+                    buttons: [
+                        {
+                        text: 'Next',
+                        action: tour.next,
+                        }
+                    ],
+                },
+                {
+                    id: 'step3',
+                    text: 'Here you will find the event logs uploaded by users. You may select one by clicking on it.',
+                    classes: 'onboarding-step',
+                    attachTo: {
+                        element: '.event-logs',
+                        on: 'bottom'
+                    },
+                    buttons: [
+                        {
+                        text: 'Done',
+                        action: function() {
+                                // this.onboardingCompleted = true;
+                                // utils.setLocal('onboardingCompleted',true,100);
+                                tour.complete;
+                            }
+                        }
+                    ],
+                },
+            ]);
+            
+            tour.start();
         },
 
         startSimulation() {
