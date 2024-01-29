@@ -2,8 +2,9 @@ import http from './axios';
 
 class LogsService {
 
-    getLogs() {
-        return http.get('/event_logs');
+    getLogs(logIds) {
+        console.log(logIds);
+        return http.get('/event_logs',{params: {'logIds': logIds}});
     }
 
     getLog(logId) {
