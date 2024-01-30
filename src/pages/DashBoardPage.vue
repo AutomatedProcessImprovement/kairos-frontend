@@ -13,8 +13,8 @@
                 <input type="text" id="find-log" @keyup="findLog" placeholder="Find log...">
             </div>
             <div v-if="eventlogs.length > 0" class='wrap align-center row event-logs'>
-                <div class='log-card' :class="{ 'selected': log._id === selectedLog._id }" v-for="log in eventlogs" :key='log'
-                    @click="selectLog(log._id)">
+                <div class='log-card' :class="{ 'selected': log._id === selectedLog._id }" v-for="log in eventlogs"
+                    :key='log' @click="selectLog(log._id)">
                     <p>{{ log.filename }}</p>
                     <p v-if="log.test_filename">Test set: {{ log.test_filename }}</p>
                     <small>{{ log.parameters_description }}</small>
@@ -41,10 +41,10 @@
                     <button class="btn-blue margin-left" @click="openModal = true">Delete event log</button>
                 </div>
                 <div v-else class="row">
-                    <button :disabled="selectedLogStatus.status !== 'TRAINED'" class="btn-blue"
+                    <button :disabled="selectedLogStatus.status !== 'TRAINED'" class="btn-blue start-simulation"
                         @click="startSimulation">Start simulation</button>
-                    <button :disabled="selectedLogStatus.status !== 'SIMULATING'" class="btn-blue margin-left"
-                        @click="stopSimulation">Stop simulation</button>
+                    <button :disabled="selectedLogStatus.status !== 'SIMULATING'"
+                        class="btn-blue margin-left stop-simulation" @click="stopSimulation">Stop simulation</button>
                     <button :disabled="selectedLogStatus.status !== 'TRAINED'" class="btn-blue margin-left"
                         @click="clearSimulation">Clear stream data</button>
                     <button class="btn-blue margin-left" @click="openModal = true">Delete event log</button>
@@ -76,13 +76,16 @@
 
                     <div class="positive-outcome column">
                         <div class="row">
-                            <div v-for="(positiveOutcomeGroup,index1) in selectedLog.positive_outcome" :key="index1" class="row align-center">
+                            <div v-for="(positiveOutcomeGroup, index1) in selectedLog.positive_outcome" :key="index1"
+                                class="row align-center">
                                 <span v-if="index1 > 0">or</span>
                                 <div class="positive-outcome-group container">
-                                    <div v-for="(positiveOutcomeItem,index2) in positiveOutcomeGroup" :key="index2" class="row align-center">
+                                    <div v-for="(positiveOutcomeItem, index2) in positiveOutcomeGroup" :key="index2"
+                                        class="row align-center">
                                         <span v-if="index2 > 0">and</span>
                                         <div class="positive-outcome-group parameter">
-                                            <small>{{ positiveOutcomeItem.column }} {{ positiveOutcomeItem.operator }}</small>
+                                            <small>{{ positiveOutcomeItem.column }} {{ positiveOutcomeItem.operator
+                                            }}</small>
                                             <p>{{ positiveOutcomeItem.value }} {{ positiveOutcomeItem.unit }}</p>
                                         </div>
                                     </div>
@@ -104,13 +107,15 @@
                     <div v-if="selectedLog.additional_info" class="parameter">
                         <small> Treatment Duration </small>
 
-                        <p>{{ selectedLog.additional_info.plugin_causallift_resource_allocation.treatment_duration.value }} {{ selectedLog.additional_info.plugin_causallift_resource_allocation.treatment_duration.unit }}</p>
+                        <p>{{ selectedLog.additional_info.plugin_causallift_resource_allocation.treatment_duration.value }}
+                            {{ selectedLog.additional_info.plugin_causallift_resource_allocation.treatment_duration.unit }}
+                        </p>
                         <small>Additional Information</small>
                     </div>
                     <div v-if="selectedLog.additional_info" class="parameter">
                         <small> Available Resources </small>
 
-                        <p>{{ selectedLog.additional_info.plugin_causallift_resource_allocation.available_resources.join(', ') }}</p>
+                        <p>{{ selectedLog.additional_info.plugin_causallift_resource_allocation.available_resources.join(',') }}</p>
                         <small>Additional Information</small>
                     </div>
                 </div>
@@ -128,7 +133,8 @@ import SideBar from '@/components/SideBarComponent.vue';
 import Loading from "@/components/LoadingComponent.vue";
 import ModalComponent from "@/components/ModalComponent.vue";
 import utils from "@/common/utils";
-import {useShepherd} from 'vue-shepherd';
+import { useShepherd } from 'vue-shepherd';
+import { offset } from '@floating-ui/dom';
 
 export default {
     name: "DashBoard",
@@ -143,7 +149,6 @@ export default {
         return {
             isLoading: false,
             openModal: false,
-            onboradingCompleted: utils.getLocal('onboardingCompleted') || false,
 
             timer: null,
             eventlogs: [],
@@ -194,7 +199,7 @@ export default {
                     }
 
                     this.eventlogs.forEach(eventlog => {
-                        if(eventlog.positive_outcome && !Array.isArray(eventlog.positive_outcome))
+                        if (eventlog.positive_outcome && !Array.isArray(eventlog.positive_outcome))
                             eventlog.positive_outcome = [[eventlog.positive_outcome]];
                     });
 
@@ -241,25 +246,37 @@ export default {
         },
 
         startOnboarding() {
-            if (this.onboardingCompleted === true) return;
+            console.log(utils.getLocal('onboardingCompleted'));
+            if (utils.getLocal('onboardingCompleted') === true) return;
 
             const tour = useShepherd({
                 useModalOverlay: true,
                 defaultStepOptions: {
-                    classes: 'shadow-md bg-purple-dark',
+                    classes: 'onboarding-kairos',
                     scrollTo: true
                 }
             });
+            
             tour.addSteps([
                 {
                     id: 'step1',
-                    text: 'Welcome to Kairos: a dashboard for prescriptive process monitoring.',
+                    title: 'Welcome to Kairos',
+                    text: 'A dashboard for prescriptive process monitoring.',
                     classes: 'onboarding-step',
                     buttons: [
                         {
-                        text: 'Next',
-                        action: tour.next
-                        }
+                            text: 'Next',
+                            action: tour.next,
+                            classes: 'shepherd-button-blue'
+                        },
+                        {
+                            text: '<ion-icon name="close-outline"></ion-icon>',
+                            action: function() {
+                                utils.setLocal('onboardingCompleted',true,10000)
+                                tour.cancel();
+                            },
+                            classes: 'shepherd-button-close' 
+                        },
                     ],
                     arrow: false,
                 },
@@ -273,32 +290,82 @@ export default {
                     },
                     buttons: [
                         {
-                        text: 'Next',
-                        action: tour.next,
-                        }
+                            text: 'Next',
+                            action: tour.next,
+                            classes: 'shepherd-button-blue'
+                        },
+                        {
+                            text: '<ion-icon name="close-outline"></ion-icon>',
+                            action: function() {
+                                utils.setLocal('onboardingCompleted',true,10000)
+                                tour.cancel();
+                            },
+                            classes: 'shepherd-button-close' 
+                        },
                     ],
+                    floatingUIOptions: {
+                        middleware: [offset({ mainAxis: 15, crossAxis: 10 })]
+                    }
                 },
                 {
                     id: 'step3',
-                    text: 'Here you will find the event logs uploaded by users. You may select one by clicking on it.',
+                    text: 'You may start simulating the streaming of events here.',
                     classes: 'onboarding-step',
                     attachTo: {
-                        element: '.event-logs',
-                        on: 'bottom'
+                        element: '.start-simulation',
+                        on: 'right-end'
                     },
                     buttons: [
                         {
-                        text: 'Done',
-                        action: function() {
-                                // this.onboardingCompleted = true;
-                                // utils.setLocal('onboardingCompleted',true,100);
-                                tour.complete;
-                            }
-                        }
+                            text: 'Next',
+                            action: tour.next,
+                            classes: 'shepherd-button-blue'
+                        },
+                        {
+                            text: '<ion-icon name="close-outline"></ion-icon>',
+                            action: function() {
+                                utils.setLocal('onboardingCompleted',true,10000)
+                                tour.cancel();
+                            },
+                            classes: 'shepherd-button-close' 
+                        },
                     ],
+                    floatingUIOptions: {
+                        middleware: [offset({ mainAxis: 15, crossAxis: 10 })]
+                    }
                 },
+                {
+                    id: 'step4',
+                    text: 'And stop the simulation here.',
+                    classes: 'onboarding-step',
+                    attachTo: {
+                        element: '.stop-simulation',
+                        on: 'right-end'
+                    },
+                    buttons: [
+                        {
+                            text: 'Next',
+                            classes: 'shepherd-button-blue',
+                            action: function () {
+                                window.dispatchEvent(new CustomEvent('dashboard-onboarding-completed', {}));
+                                tour.complete();
+                            }
+                        },
+                        {
+                            text: '<ion-icon name="close-outline"></ion-icon>',
+                            action: function() {
+                                utils.setLocal('onboardingCompleted',true,10000)
+                                tour.cancel();
+                            },
+                            classes: 'shepherd-button-close' 
+                        },
+                    ],
+                    floatingUIOptions: {
+                        middleware: [offset({ mainAxis: 15, crossAxis: 10 })]
+                    }
+                }
             ]);
-            
+
             tour.start();
         },
 

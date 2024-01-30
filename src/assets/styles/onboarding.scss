@@ -1,0 +1,53 @@
+.onboarding-kairos{
+
+    .shepherd-text{
+        color: $k-black;
+    }
+
+    .shepherd-header{
+        background: $k-blue3 !important;
+
+        .shepherd-title{
+            color: $k-blue;
+            font-size: large;
+            font-weight: bold;
+            justify-content: center;
+        }
+    }
+
+    .shepherd-button-blue{
+        color: $k-white;
+        background-color: $k-blue;
+        padding: 5px 10px;
+        border-radius: 5px;
+        border: none;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        width: max-content;
+        transition: 0.1s;
+        cursor: pointer;
+
+        &:hover {
+            background-color: $k-blue;
+            filter: brightness(80%);
+        }
+    
+        &:active {
+            background-color: $k-blue;
+            filter: brightness(80%);
+        }
+    }
+
+    .shepherd-button-close{
+        background-color: rgba($color: #000000, $alpha: 0);
+        position:absolute;
+        top: 0;
+        right: 0;
+        padding: 8px;
+
+        &:hover {
+            background-color: rgba($color: #000000, $alpha: 0);
+        }
+
+    }
+}

@@ -12,13 +12,16 @@
       <div class="sidebar-items">
         <router-link class="sidebar-item" :to="{ name: 'dashboard' }"><ion-icon
             name="home"></ion-icon>Dashboard</router-link>
-        <router-link :class="['sidebar-item', { 'active': isCasesActive }]"
-          :to="{ name: 'cases', params: {logId: logId, completion: 'completed' } }"><ion-icon name="list"></ion-icon>Cases</router-link>
-        <router-link class="sidebar-item sub-item" :to="{ name: 'cases', params: {logId: logId, completion: 'completed' } }"><ion-icon
+        <router-link :class="['sidebar-item', 'cases-sidebar-item', { 'active': isCasesActive }]"
+          :to="{ name: 'cases', params: { logId: logId, completion: 'completed' } }"><ion-icon
+            name="list"></ion-icon>Cases</router-link>
+        <router-link class="sidebar-item sub-item"
+          :to="{ name: 'cases', params: { logId: logId, completion: 'completed' } }"><ion-icon
             name="stats-chart"></ion-icon>Completed Cases</router-link>
-        <router-link class="sidebar-item sub-item" :to="{ name: 'cases', params: {logId: logId, completion: 'ongoing' } }"><ion-icon
+        <router-link class="sidebar-item sub-item"
+          :to="{ name: 'cases', params: { logId: logId, completion: 'ongoing' } }"><ion-icon
             name="stats-chart"></ion-icon>Ongoing Cases</router-link>
-        <router-link class="sidebar-item" :to="{logId: logId, name: 'recommendations' }"><ion-icon
+        <router-link class="sidebar-item" :to="{ logId: logId, name: 'recommendations' }"><ion-icon
             name="document-text"></ion-icon>Recommendations</router-link>
       </div>
 
@@ -35,6 +38,8 @@
 <script>
 
 import utils from '@/common/utils';
+import { useShepherd } from 'vue-shepherd';
+import { offset } from '@floating-ui/dom';
 
 export default {
   name: 'SideBarComponent',
@@ -62,6 +67,11 @@ export default {
     if (!utils.getLocal('view')) utils.setLocal('view', 'analytical', 30);
     if (!utils.getLocal('logId')) utils.setLocal('logId', this.$route.params.logId, 30);
     this.selectedView = utils.getLocal('view');
+    window.addEventListener('dashboard-onboarding-completed', this.resumeOnboarding);
+  },
+
+  beforeUnmount() {
+    window.removeEventListener('dashboard-onboarding-completed', this.resumeOnboarding);
   },
 
   methods: {
@@ -80,6 +90,42 @@ export default {
     toggleSidebar() {
       this.isCollapsed = !this.isCollapsed;
       utils.setLocal('isCollapsed', this.isCollapsed, 5);
+    },
+    resumeOnboarding() {
+
+      const tour = useShepherd({
+        useModalOverlay: true,
+        defaultStepOptions: {
+          classes: 'onboarding-kairos',
+          scrollTo: true
+        }
+      });
+      tour.addStep(
+        {
+          id: 'step5',
+          text: 'The streamed cases will show up in the cases pages.',
+          classes: 'onboarding-step',
+          attachTo: {
+            element: '.cases-sidebar-item',
+            on: 'right-end'
+          },
+          buttons: [
+            {
+              text: 'Done',
+              classes: 'shepherd-button-blue',
+              action: function () {
+                utils.setLocal('onboardingCompleted', true, 10000);
+                tour.complete();
+              }
+            }
+          ],
+          floatingUIOptions: {
+              middleware: [offset({ mainAxis: 15, crossAxis: 10 })]
+          }
+        }
+      );
+
+      tour.start();
     }
   }
 
