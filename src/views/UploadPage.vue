@@ -139,6 +139,9 @@ export default {
                 .then(response => {
                     this.isLoading = false;
                     shared.setLocal('logId', response.data.logId, 10);
+                    const uploadedLogIds = shared.getLocal('uploadedLogIds') || [];
+                    uploadedLogIds.push(response.data.logId);
+                    shared.setLocal('uploadedLogIds',uploadedLogIds,1000);
                     this.$router.push({ name: "columns" });
                 })
                 .catch(error => {

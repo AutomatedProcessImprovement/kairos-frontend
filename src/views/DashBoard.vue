@@ -4,25 +4,30 @@
     <div id="dashboard">
         <h2>Dashboard</h2>
         <div class="column">
-            <div class="row align-center">
-                <h3 class="bold blue">Event logs</h3>
-                <button class="btn-blue margin-left" @click="goToHome">Upload log</button>
-            </div>
-            <div v-if="eventlogs.length > 0" class="row">
-                <ion-icon class="input-icon" name="search"></ion-icon>
-                <input type="text" id="find-log" @keyup="findLog" placeholder="Find log...">
+            <div class="column">
+                <div class="row align-center">
+                    <h3 class="bold blue">Event logs</h3>
+                    <button class="btn-blue margin-left" @click="goToHome">Upload log</button>
+                </div>
+                <div class="row">
+                    <input type="text" id="find-log" @keyup.enter="findLog" v-model="findLogId" placeholder="Find log...">
+                    <button @click="findLog" class="btn-input">
+                        <ion-icon class="input-icon" name="search"></ion-icon>
+                    </button>
+                </div>
             </div>
             <div v-if="eventlogs.length > 0" class='wrap align-center row'>
                 <div class='log-card' :class="{ 'selected': log._id === selectedLog._id }" v-for="log in eventlogs" :key='log'
                     @click="selectLog(log._id)">
                     <p>{{ log.filename }}</p>
+                    <small>Log ID: {{ log._id }}</small>
                     <p v-if="log.test_filename">Test set: {{ log.test_filename }}</p>
                     <small>{{ log.parameters_description }}</small>
                     <small>{{ log.datetime }}</small>
                 </div>
             </div>
             <div v-else>
-                <p class="warning">No event log uploaded.</p>
+                <p class="warning">Please upload or search for an event log (ID).</p>
             </div>
             <div v-if="selectedLog" class="column">
                 <h3 class="bold blue">Event log details</h3>
@@ -122,11 +127,7 @@ export default {
             eventlogs: [],
             selectedLog: null,
             parameters: [],
-            views: [
-                { value: 'analytical', name: 'Process analyst' },
-                { value: 'operational', name: 'Operational worker' },
-                { value: 'tactical', name: 'Tactical manager' }
-            ],
+            findLogId: null,
             selectedView: shared.getLocal('view'),
             selectedLogStatus: { id: null, status: null },
         }
@@ -154,7 +155,21 @@ export default {
         },
         getLogs() {
             this.isLoading = true;
-            logsService.getLogs().then(
+            
+            const logId = shared.getLocal('logId');
+            let uploadedLogIds = shared.getLocal('uploadedLogIds');
+            
+            if (!uploadedLogIds && logId){
+                uploadedLogIds = [logId];
+                shared.setLocal('uploadedLogIds',uploadedLogIds,1000);
+            }
+
+            if (!uploadedLogIds) {
+                this.isLoading = false;
+                return;
+            }
+
+            logsService.getLogs(uploadedLogIds).then(
                 (response) => {
                     this.eventlogs = response.data.event_logs;
                     if (this.eventlogs.length === 0) {
@@ -388,20 +403,63 @@ export default {
         },
 
         findLog() {
-            var input, filter, logCards, h4, filename;
-            input = document.getElementById('find-log');
-            filter = input.value.toUpperCase();
-            logCards = document.getElementsByClassName("log-card");
-
-            for (let i = 0; i < logCards.length; i++) {
-                h4 = logCards[i].getElementsByTagName("h4")[0];
-                filename = h4.textContent || h4.innerText;
-                if (filename.toUpperCase().indexOf(filter) < 0) {
-                    logCards[i].style.display = "none";
-                } else {
-                    logCards[i].style.display = "";
-                }
+            const findLogId = this.findLogId;
+            this.findLogId = null
+            if (!findLogId || findLogId.trim() === '') {
+                this.$notify({
+                    title: 'Warning',
+                    text: `Log ID cannot be empty.`,
+                    type: 'warning',
+                });
+                return;
             }
+            this.isLoading = true;
+
+            logsService.getLog(findLogId).then(
+                (response) => {
+                    const foundLog = response.data.event_log;
+                    if (!foundLog) {
+                        this.$notify({
+                            title: 'Warning',
+                            text: `Could not find an event log with ID ${findLogId}.`,
+                            type: 'warning',
+                        });
+                        this.isLoading = false;
+                        return;
+                    }
+
+                    const uploadedLogIds = shared.getLocal('uploadedLogIds') || [];
+                    
+                    if (!(uploadedLogIds.includes(foundLog._id))){
+                        this.eventlogs.push(foundLog);
+                        uploadedLogIds.push(foundLog._id);
+                        shared.setLocal('uploadedLogIds',uploadedLogIds,1000);
+                    }
+                    this.selectLog(foundLog._id);
+
+                    if (!this.timer){
+                        this.timer = setInterval(() => {
+                            if (this.selectedLogStatus !== 'NULL') this.getProjectStatus();
+                        }, 4000);
+                    }
+
+                    this.isLoading = false;
+                },
+                (error) => {
+                    this.isLoading = false;
+                    const resMessage =
+                        (error.response &&
+                            error.response.data &&
+                            error.response.data.error) ||
+                        error.message ||
+                        error.toString();
+                    this.$notify({
+                        title: 'An error occured',
+                        text: resMessage,
+                        type: 'error'
+                    })
+                }
+            );
         }
     }
 }
