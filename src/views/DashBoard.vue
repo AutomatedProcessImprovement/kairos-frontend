@@ -10,14 +10,17 @@
                     <button class="btn-blue margin-left" @click="goToHome">Upload log</button>
                 </div>
                 <div class="row">
-                    <ion-icon class="input-icon" name="search"></ion-icon>
                     <input type="text" id="find-log" @keyup.enter="findLog" v-model="findLogId" placeholder="Find log...">
+                    <button @click="findLog" class="btn-input">
+                        <ion-icon class="input-icon" name="search"></ion-icon>
+                    </button>
                 </div>
             </div>
             <div v-if="eventlogs.length > 0" class='wrap align-center row'>
                 <div class='log-card' :class="{ 'selected': log._id === selectedLog._id }" v-for="log in eventlogs" :key='log'
                     @click="selectLog(log._id)">
                     <p>{{ log.filename }}</p>
+                    <small>Log ID: {{ log._id }}</small>
                     <p v-if="log.test_filename">Test set: {{ log.test_filename }}</p>
                     <small>{{ log.parameters_description }}</small>
                     <small>{{ log.datetime }}</small>
@@ -400,10 +403,9 @@ export default {
         },
 
         findLog() {
-            this.isLoading = true;
             const findLogId = this.findLogId;
             this.findLogId = null
-            if (!findLogId) {
+            if (!findLogId || findLogId.trim() === '') {
                 this.$notify({
                     title: 'Warning',
                     text: `Log ID cannot be empty.`,
@@ -411,6 +413,7 @@ export default {
                 });
                 return;
             }
+            this.isLoading = true;
 
             logsService.getLog(findLogId).then(
                 (response) => {
