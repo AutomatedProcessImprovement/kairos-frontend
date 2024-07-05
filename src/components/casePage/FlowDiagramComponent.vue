@@ -1,6 +1,6 @@
 <template>
   <div class="flow-diagram">
-    <div id='flow-cy'></div>
+    <div :id="uniqueId"></div>
   </div>
 </template>
 
@@ -12,117 +12,118 @@ import dagre from 'cytoscape-dagre';
 cytoscape.use(dagre);
 
 export default {
-
   name: 'vue-cytoscape',
   props: {
     currentCase: Object,
     caseCompleted: Boolean,
     parameters: Object
   },
-
   data() {
     return {
       cy: null,
       elems: [],
+      uniqueId: `flow-cy-${Math.random().toString(36).substr(2, 9)}`
     }
   },
-
   mounted() {
     this.createDiagram();
   },
-
   watch: {
     currentCase() {
       this.createNodes();
     }
   },
-
   methods: {
     displayDiagram() {
-      this.cy.layout({
-        fit: false,
-        name: 'dagre',
-        rankDir: 'LR',
-        align: 'DR',
-      }).run()
-      this.cy.zoom(1.2);
+      if (this.cy) {
+        this.cy.layout({
+          fit: false,
+          name: 'dagre',
+          rankDir: 'LR',
+          align: 'DR',
+        }).run();
+        this.cy.zoom(1.2);
+      }
     },
-
     createDiagram() {
+      // Wait until the DOM is fully rendered
+      this.$nextTick(() => {
+        const container = document.getElementById(this.uniqueId);
+        if (!container) {
+          console.error("Diagram container not found:", this.uniqueId);
+          return;
+        }
 
-      var width = 15;
-      var height = 15;
-      var lineWidth = 1;
-      var cy = cytoscape({
-        container: document.getElementById('flow-cy'),
-        // zoomingEnabled: false,
-        // panningEnabled: false,
-        autoungrabify: true,
-        // autounselectify: true,
+        var width = 15;
+        var height = 15;
+        var lineWidth = 1;
+        var cy = cytoscape({
+          container: container,
+          autoungrabify: true,
+          style: [
+            {
+              selector: 'node',
+              style: {
+                'text-halign': 'center',
+                'text-valign': 'bottom',
+                'text-margin-y': 5,
+                'shape': 'ellipse',
+                'background-color': '#d2d6da',
+                'border-width': 0,
+                'text-wrap': 'wrap',
+                'text-max-width': width - 10,
+                'height': height,
+                'width': width,
+                'font-size': 6,
+                'font-family': 'arial'
+              }
+            },
+            {
+              selector: 'edge',
+              style: {
+                'curve-style': 'straight',
+                'target-arrow-shape': 'vee',
+                'width': lineWidth,
+                'line-color': '#252F40',
+                'target-arrow-color': '#252F40',
+              }
+            },
+            {
+              selector: '.nextActivity',
+              style: {
+                'label': 'data(label)',
+                'background-color': '#EBF0FF',
+              }
+            },
+            {
+              selector: '.completedActivity',
+              style: {
+                'label': 'data(label)',
+                'background-color': '#8392AB',
+              }
+            },
+          ],
+        });
 
-        style: [
-
-          {
-            selector: 'node',
-            style: {
-              'text-halign': 'center',
-              'text-valign': 'bottom',
-              'text-margin-y': 5,
-              'shape': 'ellipse',
-              'background-color': '#d2d6da',
-              'border-width': 0,
-              'text-wrap': 'wrap',
-              'text-max-width': width - 10,
-              'height': height,
-              'width': width,
-              'font-size': 6,
-              'font-family': 'arial'
-            }
-          },
-          {
-            selector: 'edge',
-            style: {
-              'curve-style': 'straight',
-              'target-arrow-shape': 'vee',
-              'width': lineWidth,
-              'line-color': '#252F40',
-              'target-arrow-color': '#252F40',
-            }
-          },
-          {
-            selector: '.nextActivity',
-            style: {
-              'label': 'data(label)',
-              'background-color': '#EBF0FF',
-            }
-          },
-
-          {
-            selector: '.completedActivity',
-            style: {
-              'label': 'data(label)',
-              'background-color': '#8392AB',
-            }
-          },
-        ],
+        this.cy = cy;
+        this.createNodes();
       });
-
-      this.cy = cy;
-      this.createNodes();
-
     },
-
     createNodes() {
+      if (!this.cy || !this.currentCase.activities) {
+        console.error("Cytoscape instance or activities not available");
+        return;
+      }
+
       let activities = this.currentCase.activities;
-      // activities = activities.slice(-3); // display only last 3 completed activities
       const l = activities.length;
 
       var elems = [];
-      var lastNodeId = 'an' + (l - 1)
+      var lastNodeId = 'an' + (l - 1);
 
       for (let i = 0; i < l; i++) {
         const activity = activities[i];
-        let content = activity[this.parameters.columnsDefinitionReverse['ACTIVITY']]
+        let content = activity[this.parameters.columnsDefinitionReverse['ACTIVITY']];
 
         elems.push({
           group: "nodes",
@@ -144,6 +145,7 @@ export default {
           });
         }
       }
+
       let lastRecommendations = activities[l - 1].prescriptions;
       if (lastRecommendations) {
         let nextActivityRecommendation = lastRecommendations.filter(r => r.type === 'NEXT_ACTIVITY');
@@ -195,8 +197,6 @@ export default {
       this.elems = elems;
       this.displayDiagram();
     }
-
   }
 }
-
 </script>

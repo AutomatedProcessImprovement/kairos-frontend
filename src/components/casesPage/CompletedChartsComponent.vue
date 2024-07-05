@@ -135,10 +135,10 @@ export default {
           name: "Accepted",
           data: [0, 0, 0],
         },
-        {
-          name: 'Discarded',
-          data: [0, 0, 0]
-        }
+          {
+            name: 'Discarded',
+            data: [0, 0, 0]
+          }
         ],
         chartOptions: {
           colors: ['#17ad37', '#7e7e7e'],
@@ -224,17 +224,21 @@ export default {
 
     createRecommendationsStatistics() {
       this.cases.forEach(({ case_performance, activities }) => {
-        
         const outcome = utils.calculateCaseOutcome(case_performance);
         const prescriptions = activities.map(a => a.prescriptions).flat();
 
         prescriptions.forEach(p => {
+          if (!this.recommendationsStatistics.rows[outcome]) {
+            this.recommendationsStatistics.rows[outcome] = {};
+          }
+          if (!this.recommendationsStatistics.rows[outcome][p.type]) {
+            this.recommendationsStatistics.rows[outcome][p.type] = { total: 0, accepted: 0 };
+          }
           if (p.status === 'accepted') this.recommendationsStatistics.rows[outcome][p.type].accepted += 1;
-          this.recommendationsStatistics.rows[outcome][p.type].total += 1
+          this.recommendationsStatistics.rows[outcome][p.type].total += 1;
         });
       });
-
-    },
+    }
   }
 }
 

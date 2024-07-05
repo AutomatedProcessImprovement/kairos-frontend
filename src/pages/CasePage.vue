@@ -48,19 +48,20 @@
         </div>
       </div>
     </div>
-    <operational-view v-show="selectedView === 'operational' || selectedView === 'tactical'" :currentCase="currentCase"
-      :parameters="parameters"></operational-view>
-    <analytical-view v-show="selectedView === 'analytical'" :currentCase="currentCase"
-      :parameters="parameters"></analytical-view>
+
+    <manager-view v-show="selectedView === 'tactical'" :currentCase="currentCase" :parameters="parameters"></manager-view>
+    <analytical-view v-show="selectedView === 'analytical'" :currentCase="currentCase" :parameters="parameters"></analytical-view>
+    <operational-view v-show="selectedView === 'operational'" :currentCase="currentCase" :parameters="parameters"></operational-view>
   </div>
   <error v-else></error>
 </template>
-  
+
 <script>
 import casesService from "@/services/cases.service";
 import logsService from "@/services/logs.service";
 import OperationalView from '@/components/casePage/OperationalViewComponent.vue';
 import AnalyticalView from '@/components/casePage/AnalyticalViewComponent.vue';
+import ManagerView from '@/components/casePage/ManagerViewComponent.vue';
 import SideBar from '@/components/SideBarComponent.vue';
 import Loading from "@/components/LoadingComponent.vue";
 import Error from "@/components/ErrorComponent.vue";
@@ -72,6 +73,7 @@ export default {
     SideBar,
     OperationalView,
     AnalyticalView,
+    ManagerView,
     Loading,
     Error
   },
@@ -90,9 +92,8 @@ export default {
       caseKpi: { value: null, column: null, outcome: false },
       caseDetails: {},
       recommendationsAvailable: false,
-    }
+    };
   },
-
   mounted() {
     window.addEventListener('view-changed', this.changeView);
     this.selectedView = utils.getLocal('view');
@@ -101,14 +102,11 @@ export default {
       this.getProjectStatus();
     }
   },
-
   beforeUnmount() {
     window.removeEventListener('view-changed', this.changeView);
     clearInterval(this.timer);
   },
-
   methods: {
-
     getCase() {
       this.caseId = (this.$route.params.caseId);
       casesService.getCase(this.caseId).then(
@@ -135,7 +133,6 @@ export default {
         }
       );
     },
-
     getParameters() {
       logsService.getParameters(utils.getLocal('logId')).then(
         (response) => {
@@ -160,7 +157,6 @@ export default {
         }
       );
     },
-
     getAdditionalInformation() {
       this.caseDetails = this.currentCase.case_attributes;
       const caseActivities = this.currentCase.activities
@@ -172,11 +168,9 @@ export default {
       }
       this.isLoading = false;
     },
-
     changeView(event) {
       this.selectedView = event.detail.storage;
     },
-
     getProjectStatus() {
       logsService.getProjectStatus(utils.getLocal('logId')).then(
         (response) => {
@@ -192,8 +186,6 @@ export default {
         }
       );
     },
-
   },
-
 };
 </script>

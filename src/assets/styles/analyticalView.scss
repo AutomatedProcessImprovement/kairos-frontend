@@ -35,6 +35,10 @@
       border-radius: 10px;
       position: relative;
 
+      &.next_activity {
+        background-color: transparent;
+      }
+
       .recommendation-status {
         position: absolute;
         right: 0;

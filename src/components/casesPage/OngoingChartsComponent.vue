@@ -15,7 +15,6 @@
 </template>
 
 <script>
-
 import VueApexCharts from 'vue3-apexcharts';
 import utils from '@/common/utils';
 
@@ -29,7 +28,7 @@ export default {
   props: {
     cases: Array,
     casesData: Array,
-    alarmThreshold: Number,
+    alarmThreshold: Number
   },
 
   data() {
@@ -70,10 +69,10 @@ export default {
           name: "Accepted",
           data: [0, 0, 0],
         },
-        {
-          name: 'Discarded',
-          data: [0, 0, 0]
-        }
+          {
+            name: 'Discarded',
+            data: [0, 0, 0]
+          }
         ],
         chartOptions: {
           colors: ['#17ad37', '#7e7e7e'],
@@ -122,14 +121,14 @@ export default {
       },
     };
   },
-  
+
   watch: {
-    alarmThreshold(){
+    alarmThreshold() {
       this.createRecommendationTypes();
       this.createRecommendationsAcceptance();
     },
     cases() {
-      if(this.alarmThreshold){
+      if (this.alarmThreshold) {
         this.createRecommendationTypes();
         this.createRecommendationsAcceptance();
       }
@@ -137,7 +136,6 @@ export default {
   },
 
   methods: {
-
     createRecommendationsAcceptance() {
       for (let i = 0; i < Object.keys(this.recommendationsByType).length; i++) {
         const t = Object.values(this.recommendationsByType)[i];
@@ -146,24 +144,32 @@ export default {
       }
     },
 
-    async createRecommendationTypes() {
+    createRecommendationTypes() {
       this.resetRecommendationCounts();
       this.cases.forEach(({ activities }) => {
         const l = activities.length;
         if (l < 1) return;
 
-
         for (let i = 0; i < l; i++) {
           const prescriptions = activities[i].prescriptions;
           prescriptions.forEach(p => {
+            if (!this.recommendationsByType[p.type]) {
+              this.recommendationsByType[p.type] = { total: 0, accepted: 0, recommended: 0 };
+            }
             if (p.status === 'accepted') this.recommendationsByType[p.type].accepted += 1;
             this.recommendationsByType[p.type].total += 1;
-            if (i === (l - 1) && utils.prescriptionAttributes[p.type].pIsRecommended(p, this.alarmThreshold)) this.recommendationsByType[p.type].recommended += 1;
+            if (i === (l - 1) && utils.prescriptionAttributes[p.type].pIsRecommended(p, this.alarmThreshold)) {
+              this.recommendationsByType[p.type].recommended += 1;
+            }
           });
         }
       });
 
-      this.recommendationTypes.series = Object.keys(this.recommendationsByType).map(k => this.recommendationsByType[k].recommended)
+      this.recommendationTypes.series = [
+        this.recommendationsByType['ALARM'].recommended,
+        this.recommendationsByType['NEXT_ACTIVITY'].recommended,
+        this.recommendationsByType['TREATMENT_EFFECT'].recommended
+      ];
     },
 
     resetRecommendationCounts() {
@@ -176,5 +182,4 @@ export default {
     },
   }
 }
-
 </script>

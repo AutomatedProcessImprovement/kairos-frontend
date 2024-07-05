@@ -76,6 +76,14 @@ export default {
       pStatus: (p) => p.status,
       pIsRecommended: (p) => p.output.cate > 0
     },
+    'RESOURCE_ALLOCATION': {
+      pType: 'Resource allocation',
+      pColor: 'background-green',
+      pText: (p) => `Allocate resource ${p.output.resource} until ${new Date(p.output.allocated_until).toLocaleString()}`,
+      pMetric: (p) => `Causal effect: ${p.output.cate_category} (${p.output.cate})`,
+      pStatus: (p) => p.status,
+      pIsRecommended: (p) => p.output.cate > 0
+    }
   },
 
   parseDuration(duration) {
