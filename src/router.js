@@ -7,6 +7,7 @@ import DashBoardPage from './pages/DashBoardPage'
 import ParametersPage from './pages/ParametersPage'
 import ColumnsDefinitionPage from "./pages/ColumnsDefinitionPage"
 import RecommendationsPage from './pages/RecommendationsPage'
+import ResourcesPage from './pages/ResourcesPage.vue';
 
 const routes = [
     {
@@ -57,13 +58,18 @@ const routes = [
                 path: 'columns',
                 name: 'columns',
                 component: ColumnsDefinitionPage,
-            },
-            {
-                path: "recommendations",
-                name: "recommendations",
-                component: RecommendationsPage,
-            },
+            }
         ]
+    },
+    {
+        path: '/resources',
+        name: 'resources',
+        component: ResourcesPage,
+    },
+    {
+        path: "/recommendations",
+        name: "recommendations",
+        component: RecommendationsPage,
     },
 
 ];

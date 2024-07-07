@@ -23,59 +23,31 @@
         <small>Cases without recommendations</small>
         <h3 class="large-number bg-gray">{{ casesData.length - casesWithRecommendations }}</h3>
       </div>
-
-      <div v-if="completionString === 'Ongoing' && selectedView === 'tactical'">
-        <div class="stats">
-          <div v-if="parameters.kpi" class="hide-scrollbar">
-            <div v-for="(positiveOutcomeGroup, index1) in parameters.kpi" :key="index1" class="row align-center">
-              <small class="outcome-grouping" v-if="index1 > 0">or</small>
-              <div v-for="(positiveOutcomeItem, index2) in positiveOutcomeGroup" :key="index2" class="row align-center">
-                <small class="outcome-grouping" v-if="index2 > 0">and</small>
-                <PositiveOutcomeItemComponent v-if="positiveOutcomeItem" :object="positiveOutcomeItem"/>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <div class="column" v-show="!showTable">
-      <template v-if="completionString === 'Ongoing' && selectedView === 'tactical'">
-        <completed-charts-component v-if="completion" :cases="cases" :casesData="casesData"></completed-charts-component>
-        <ongoing-charts-manager-component v-if="!completion" :cases="cases" :casesData="[casesWithRecommendations, casesWithoutRecommendations]"
-                                          :alarmThreshold="alarmThreshold" recommendation-types-title="Recommendations in cases"
-                                          recommendations-acceptance-title="Recommendations acceptance"></ongoing-charts-manager-component>
-      </template>
-      <template v-else>
-        <completed-charts-component v-if="completion" :cases="cases" :casesData="casesData"></completed-charts-component>
-        <ongoing-charts-component v-if="!completion" :cases="cases" :casesData="casesData" :alarmThreshold="alarmThreshold"></ongoing-charts-component>
-      </template>
+      <completed-charts-component v-if="completion" :cases="cases" :casesData="casesData"></completed-charts-component>
+
+      <ongoing-charts-component v-if="!completion" :cases="cases" :casesData="casesData"
+                                :alarmThreshold="alarmThreshold"></ongoing-charts-component>
     </div>
 
     <div v-if="!showTable" class="cases-table-preview-heading shadow">
       <h3>Cases Overview Table</h3>
-      <button v-if="!showTable" @click="toggleShowTable" class="btn-link">Show full
-        <ion-icon
-            name="open-outline"></ion-icon>
-      </button>
+      <button v-if="!showTable" @click="toggleShowTable" class="btn-link">Show full <ion-icon
+          name="open-outline"></ion-icon></button>
     </div>
     <div class="column">
-      <button v-if="showTable" @click="toggleShowTable" class="btn-link">
-        <ion-icon name="chevron-back"></ion-icon>
-        Return
-        to overview
-      </button>
+      <button v-if="showTable" @click="toggleShowTable" class="btn-link"><ion-icon name="chevron-back"></ion-icon> Return
+        to overview</button>
 
-      <cases-table-component :completed="completion" :performanceColumns="performanceColumns"
-                             :caseAttributes="caseAttributes" :cases="casesData"
+      <cases-table-component :completed="completion" :performanceColumns="performanceColumns" :caseAttributes="caseAttributes" :cases="casesData"
                              :isFullView="showTable"></cases-table-component>
     </div>
-
   </div>
 </template>
 
 <script>
-
 import casesService from "@/services/cases.service";
 import logsService from "@/services/logs.service";
 import SideBar from '@/components/SideBarComponent.vue';
@@ -84,19 +56,15 @@ import utils from '@/common/utils';
 import CasesTableComponent from "@/components/casesPage/CasesTableComponent.vue";
 import CompletedChartsComponent from "@/components/casesPage/CompletedChartsComponent.vue";
 import OngoingChartsComponent from "@/components/casesPage/OngoingChartsComponent.vue";
-import PositiveOutcomeItemComponent from "@/components/PositiveOutcomeItemComponent";
-import OngoingChartsManagerComponent from "@/components/OngoingChartsManagerComponent";
 
 export default {
-  name: 'CasesList',
+  name: 'OngoingCasesManager',
   components: {
     SideBar,
     Loading,
     CasesTableComponent,
     CompletedChartsComponent,
-    OngoingChartsComponent,
-    PositiveOutcomeItemComponent,
-    OngoingChartsManagerComponent,
+    OngoingChartsComponent
   },
   computed: {
     completionString() {
@@ -105,9 +73,6 @@ export default {
     casesWithRecommendations() {
       return this.casesData.filter(c => c.recommendations > 0).length;
     },
-    casesWithoutRecommendations() {
-      return this.casesData.length - this.casesWithRecommendations;
-    }
   },
   data() {
     return {
@@ -123,18 +88,9 @@ export default {
       performanceColumns: undefined,
       alarmThreshold: undefined,
       columnsDefinition: undefined,
-      selectedView: null,
-      parameters: {}
     };
   },
-  watch: {
-    selectedView() {
-      this.setup();
-    }
-  },
   mounted() {
-    window.addEventListener('view-changed', this.changeView);
-    this.selectedView = utils.getLocal('view');
     if (utils.getLocal('logId')) {
       this.setup();
     }
@@ -183,7 +139,6 @@ export default {
         this.alarmThreshold = response.data.parameters.alarmThreshold || 1.0;
         this.costUnits = response.data.parameters.costUnits || {};
         this.columnsDefinition = response.data.parameters.columnsDefinition;
-        this.parameters = response.data.parameters;
       } catch (error) {
         this.isLoading = false;
         const resMessage = (error.response &&
@@ -245,10 +200,6 @@ export default {
           }
       );
     },
-    changeView(event) {
-      this.selectedView = event.detail.storage;
-      this.setup();
-    }
   }
 };
 </script>
