@@ -76,10 +76,15 @@ export default {
     async setup() {
       this.isLoading = true;
       try {
-        this.resources = await resourceService.fetchResourceData();
-        let newResource = { ...this.resources[0] };
-        newResource.status = "Busy";
-        this.resources.push(newResource);
+        const fetchedResources = await resourceService.fetchResourceData();
+        const uniqueResources = Array.from(new Set(fetchedResources.map(resource => resource.name)))
+            .map(name => fetchedResources.find(resource => resource.name === name));
+
+        if (uniqueResources.length > 0) {
+          uniqueResources[0].status = 'Busy';
+        }
+
+        this.resources = uniqueResources;
         console.log(this.resources);
       } catch (error) {
         this.$notify({

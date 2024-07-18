@@ -37,10 +37,10 @@
         </div>
         <tabs :options="tabOptions.recommendations">
           <tab name="Current" id="tab-current">
-            <operational-recommendation-manager-component :batch="lastActivity" :current="true" :selectedRec="selectedRec" :parameters="parameters" @recommendationSelected="selectRecommendation"></operational-recommendation-manager-component>
+            <operational-recommendation-manager-component :batch="lastActivity" :current="true" :selectedRec="selectedRec" :parameters="parameters" :resources="resources" :resourcesGeneral="resourcesUnique" @recommendationSelected="selectRecommendation"></operational-recommendation-manager-component>
           </tab>
           <tab name="Past" id="tab-past">
-            <operational-recommendation-manager-component v-for="activity in oldActivities" v-bind:key="activity" :batch="activity" :current="false" :parameters="parameters" :selectedRec="selectedRec" @recommendationSelected="selectRecommendation"></operational-recommendation-manager-component>
+            <operational-recommendation-manager-component v-for="activity in oldActivities" v-bind:key="activity" :batch="activity" :current="false" :parameters="parameters" :selectedRec="selectedRec" :resources="resourcesGeneral" :resourcesGeneral="resourcesGeneral" @recommendationSelected="selectRecommendation"></operational-recommendation-manager-component>
           </tab>
         </tabs>
       </div>
@@ -75,6 +75,7 @@ export default {
       selectedRecObject: null,
       resources: [],
       resourcesGeneral: [],
+      resourcesUnique:[],
       tabOptions: {
         recommendations: { defaultTabHash: 'tab-current', useUrlFragment: false },
         recommendationDetails: { defaultTabHash: 'tab-diagram', useUrlFragment: false }
@@ -99,8 +100,15 @@ export default {
     async setup() {
       this.isLoading = true;
       try {
-        this.resources = await resourceService.fetchResourceDataByCaseId(this.currentCase._id);
-        this.resourcesGeneral = await resourceService.fetchResourceData();
+        const [resources, resourcesGeneral] = await Promise.all([
+          resourceService.fetchResourceDataByCaseId(this.currentCase._id),
+          resourceService.fetchResourceData()
+        ]);
+
+        this.resources = resources;
+        this.resourcesGeneral = resourcesGeneral;
+        this.resourcesUnique = Array.from(new Set(resourcesGeneral.map(resource => resource.name)))
+            .map(name => resourcesGeneral.find(resource => resource.name === name));
       } catch (error) {
         this.$notify({
           title: 'An error occurred',

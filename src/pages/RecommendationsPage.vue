@@ -36,8 +36,8 @@
           <template v-slot:id="data">
             <p>{{ formatId(data.value.id) }}</p>
           </template>
-          <template v-slot:performance="data">
-            <p>{{ data.value.performance.value }} {{ data.value.performance.unit }}</p>
+          <template v-for="attribute in caseAttributes" :key="attribute.field" v-slot:[attribute.field]="data">
+            <p>{{ data.value[attribute.field] }}</p>
           </template>
           <template v-slot:details="data">
             <p>{{ data.value.details }}</p>
@@ -71,6 +71,7 @@ import Loading from "@/components/LoadingComponent.vue";
 import TableLite from "vue3-table-lite";
 import utils from '@/common/utils';
 import PositiveOutcomeItemComponent from "@/components/PositiveOutcomeItemComponent";
+import casesService from "@/services/cases.service";
 
 export default {
   name: 'CasesList',
@@ -86,9 +87,11 @@ export default {
       isLoading: false,
       recommendations: [],
       formattedData: [],
-      performanceColumn: undefined,
       parameters: null,
       selectedView: null,
+      caseAttributes: [],
+      cases: [],
+      casesData: [],
       tableManager: {
         isLoading: false,
         headers: [
@@ -101,7 +104,7 @@ export default {
           {
             label: "Duration",
             field: "duration",
-            width: "10%",
+            width: "5%",
             sortable: false,
           },
           {
@@ -113,15 +116,9 @@ export default {
           {
             label: "Details",
             field: "details",
-            width: "20%",
+            width: "10%",
             sortable: false,
           },
-          {
-            label: "",
-            field: "showDetails",
-            width: "5%",
-            sortable: false,
-          }
         ],
         rows: [],
       },
@@ -180,6 +177,7 @@ export default {
       this.isLoading = true;
       if (this.selectedView === 'tactical') {
         this.getParametersManager();
+        this.getCases();
       } else {
         this.getParameters();
       }
@@ -191,17 +189,62 @@ export default {
     rowClicked(row) {
       this.$router.push({name: 'case', params: {'caseId': row.id, 'completion': 'ongoing'}});
     },
+    getCases() {
+      casesService.getCasesByLogAndCompletion(utils.getLocal('logId'), 'ongoing').then(
+          (response) => {
+            if (response.data.cases && response.data.cases.length > 0) {
+              this.cases = response.data.cases;
+              console.log('Cases retrieved:', this.cases);
+              this.formatCases();
+            } else {
+              this.isLoading = false;
+            }
+          },
+          (error) => {
+            this.isLoading = false;
+            if (error.response.status === 504) return;
+            const resMessage =
+                (error.response && error.response.data && error.response.data.error) ||
+                error.message ||
+                error.toString();
+            this.$notify({
+              title: 'An error occured',
+              text: resMessage,
+              type: 'error'
+            });
+          }
+      );
+    },
+    async formatCases() {
+      if (this.cases.length > 0) {
+        await this.getParameters();
+        if (this.cases[0].case_attributes) {
+          Object.keys(this.cases[0].case_attributes).forEach(k => {
+            this.caseAttributes.push({
+              label: k + (this.costUnits[k] ? ' (' + this.costUnits[k] + ')' : ''),
+              field: k,
+              sortable: true
+            });
+          });
+          console.log('Case attributes set:', this.caseAttributes);
+        } else {
+          console.error('case_attributes is undefined');
+        }
+
+        let data = {};
+        for (const el of this.cases) {
+          data = utils.formatCase(el, this.alarmThreshold);
+          this.casesData.push(data);
+        }
+        console.log('Formatted cases data:', this.casesData);
+      } else {
+        console.error('Cases data is empty');
+      }
+      this.isLoading = false;
+    },
     doSort(offset, limit, order, sort) {
       const sortOrder = sort === 'asc' ? 1 : -1;
-      if (order === "performance" && this.performanceColumn === "DURATION") {
-        this.table.rows = this.table.rows.sort((a, b) =>
-            (utils.parseDuration(a[order]) > utils.parseDuration(b[order])) ? (1 * sortOrder) : (-1 * sortOrder));
-      } else if (order === "performance") {
-        this.table.rows = this.table.rows.sort((a, b) =>
-            (a[order].value > b[order].value) ? (1 * sortOrder) : (-1 * sortOrder));
-      } else {
-        this.table.rows = this.table.rows.sort((a, b) => (a[order] > b[order]) ? (1 * sortOrder) : (-1 * sortOrder));
-      }
+      this.table.rows = this.table.rows.sort((a, b) => (a[order] > b[order]) ? (1 * sortOrder) : (-1 * sortOrder));
       utils.setLocal('recommendationsOrder', order, 30);
       utils.setLocal('recommendationsSort', sort, 30);
       this.table.sortable.order = order;
@@ -278,7 +321,10 @@ export default {
       logsService.getParameters(utils.getLocal('logId')).then(
           (response) => {
             this.parameters = response.data.parameters;
-            this.getRecommendations();
+            this.alarmThreshold = response.data.parameters.alarmThreshold || 1.0;
+            this.costUnits = response.data.parameters.costUnits || {};
+            this.columnsDefinition = response.data.parameters.columnsDefinition;
+            console.log('Parameters retrieved:', response.data.parameters);
           },
           (error) => {
             this.isLoading = false;
@@ -328,6 +374,18 @@ export default {
           }
         }
       }
+
+      if (this.caseAttributes && this.caseAttributes.length > 0) {
+        this.caseAttributes.forEach(attribute => {
+          this.tableManager.headers.push({
+            label: attribute.label,
+            field: attribute.field,
+            width: "5%",
+            sortable: false,
+          });
+        });
+      }
+
       this.tableManager.rows = this.formattedData;
       if (this.tableManager.sortable && this.tableManager.sortable.order && this.tableManager.sortable.sort) {
         this.doSort(null, null, this.tableManager.sortable.order, this.tableManager.sortable.sort);
@@ -363,12 +421,18 @@ export default {
         details: recommendedAttr,
       };
 
+      const correspondingCase = this.cases.find(c => c._id === id);
+      if (correspondingCase && correspondingCase.case_attributes) {
+        this.caseAttributes.forEach(attribute => {
+          data[attribute.field] = correspondingCase.case_attributes[attribute.field] || 'N/A';
+        });
+      }
+
       return data;
     },
     formatRecommendations() {
       this.formattedData = [];
       for (const el of this.recommendations) {
-        if (!this.performanceColumn && el.case_performance.column !== null) this.performanceColumn = el.case_performance.column;
         var caseId = el._id;
         var casePerformance = el.case_performance;
         for (const batch of el.activities) {
@@ -378,7 +442,6 @@ export default {
           }
         }
       }
-      this.table.headers[1].label = this.performanceColumn;
       this.table.rows = this.formattedData;
       this.doSort(null, null, this.table.sortable.order, this.table.sortable.sort);
     },
