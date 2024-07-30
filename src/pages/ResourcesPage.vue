@@ -42,6 +42,7 @@ import SideBar from '@/components/SideBarComponent.vue';
 import Loading from "@/components/LoadingComponent.vue";
 import ResourcesTable from '@/components/ResourcesTableComponent.vue';
 import resourceService from '@/services/resources.service';
+import store from '@/services/store';
 
 export default {
   name: 'ResourcesPage',
@@ -77,15 +78,10 @@ export default {
       this.isLoading = true;
       try {
         const fetchedResources = await resourceService.fetchResourceData();
-        const uniqueResources = Array.from(new Set(fetchedResources.map(resource => resource.name)))
+        this.resources = Array.from(new Set(fetchedResources.map(resource => resource.name)))
             .map(name => fetchedResources.find(resource => resource.name === name));
-
-        if (uniqueResources.length > 0) {
-          uniqueResources[0].status = 'Busy';
-        }
-
-        this.resources = uniqueResources;
         console.log(this.resources);
+        await store.dispatch('setResources', this.resources);
       } catch (error) {
         this.$notify({
           title: 'An error occurred',

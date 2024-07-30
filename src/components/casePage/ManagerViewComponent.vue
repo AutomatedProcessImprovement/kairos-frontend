@@ -12,7 +12,7 @@
       <div class="resource-details shadow">
         <h4>Resources</h4>
         <p>Recommended resource</p>
-        <ResourcesTable :resources="resources" />
+        <ResourcesTable :resources="resourcesRecommended" />
         <p>All resources</p>
         <ResourcesTable :resources="resourcesGeneral" />
       </div>
@@ -37,25 +37,24 @@
         </div>
         <tabs :options="tabOptions.recommendations">
           <tab name="Current" id="tab-current">
-            <operational-recommendation-manager-component :batch="lastActivity" :current="true" :selectedRec="selectedRec" :parameters="parameters" :resources="resources" :resourcesGeneral="resourcesUnique" @recommendationSelected="selectRecommendation"></operational-recommendation-manager-component>
+            <operational-recommendation-manager-component :batch="lastActivity" :current="true" :selectedRec="selectedRec" :parameters="parameters" :id="this.currentCase._id" :resources="resourcesCase" @recommendationSelected="selectRecommendation"></operational-recommendation-manager-component>
           </tab>
           <tab name="Past" id="tab-past">
-            <operational-recommendation-manager-component v-for="activity in oldActivities" v-bind:key="activity" :batch="activity" :current="false" :parameters="parameters" :selectedRec="selectedRec" :resources="resourcesGeneral" :resourcesGeneral="resourcesGeneral" @recommendationSelected="selectRecommendation"></operational-recommendation-manager-component>
+            <operational-recommendation-manager-component v-for="activity in oldActivities" v-bind:key="activity" :batch="activity" :current="false" :parameters="parameters" :id="this.currentCase._id" :selectedRec="selectedRec" :resources="resourcesGeneral" @recommendationSelected="selectRecommendation"></operational-recommendation-manager-component>
           </tab>
         </tabs>
       </div>
     </div>
-
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import TooltipComponent from '@/components/TooltipComponent.vue';
 import OperationalRecommendationManagerComponent from './OperationalRecommendationManagerComponent.vue';
 import FlowDiagramComponent from './FlowDiagramComponent.vue';
 import utils from '@/common/utils';
-import ResourcesTable from '@/components/ResourcesTableComponent'
-import resourceService from '@/services/resources.service';
+import ResourcesTable from '@/components/ResourcesTableComponent';
 
 export default {
   name: 'ManagerView',
@@ -73,16 +72,21 @@ export default {
     return {
       selectedRec: {},
       selectedRecObject: null,
-      resources: [],
-      resourcesGeneral: [],
-      resourcesUnique:[],
+      resourcesCase: [],
       tabOptions: {
         recommendations: { defaultTabHash: 'tab-current', useUrlFragment: false },
         recommendationDetails: { defaultTabHash: 'tab-diagram', useUrlFragment: false }
-      },
+      }
     }
   },
   computed: {
+    ...mapGetters(['resources']),
+    resourcesRecommended() {
+      return this.resources.filter(resource => resource.id === this.currentCase._id);
+    },
+    resourcesGeneral() {
+      return this.resources;
+    },
     oldActivities() {
       return this.currentCase.activities.slice(0, -1);
     },
@@ -96,28 +100,25 @@ export default {
       return utils.calculateCaseOutcome(this.caseKpi);
     }
   },
+  watch: {
+    resources: {
+      handler() {
+        this.updateResourcesCase();
+      },
+      immediate: true,
+      deep: true
+    },
+    currentCase: {
+      handler() {
+        this.updateResourcesCase();
+      },
+      immediate: true,
+      deep: true
+    }
+  },
   methods: {
-    async setup() {
-      this.isLoading = true;
-      try {
-        const [resources, resourcesGeneral] = await Promise.all([
-          resourceService.fetchResourceDataByCaseId(this.currentCase._id),
-          resourceService.fetchResourceData()
-        ]);
-
-        this.resources = resources;
-        this.resourcesGeneral = resourcesGeneral;
-        this.resourcesUnique = Array.from(new Set(resourcesGeneral.map(resource => resource.name)))
-            .map(name => resourcesGeneral.find(resource => resource.name === name));
-      } catch (error) {
-        this.$notify({
-          title: 'An error occurred',
-          text: error.response?.data?.error || error.message || 'Unknown error',
-          type: 'error'
-        });
-      } finally {
-        this.isLoading = false;
-      }
+    updateResourcesCase() {
+      this.resourcesCase = this.resources.filter(resource => resource.id === this.currentCase._id);
     },
     selectRecommendation(selectedRec) {
       if (!selectedRec.index) {
@@ -130,7 +131,7 @@ export default {
     }
   },
   mounted() {
-    this.setup();
+    this.updateResourcesCase();
     console.log("currentCase", this.currentCase);
     console.log("parameters", this.parameters);
   }
