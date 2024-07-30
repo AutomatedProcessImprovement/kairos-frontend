@@ -27,7 +27,7 @@
             <modal-component v-if="openModal === index" :title="modalTitle" @closeModal="closeModal">
               <template v-slot:content>
                 <div class="column">
-                  <template v-if="!assigningResource && !showResources && resources.length > 0">
+                  <template v-if="!assigningResource && !showResources && recommendedAvailableResources.length > 0">
                     <p>The system recommends to assign resource {{ recommendedResourceName }} to this action. If followed, the probability of reaching the target goal of the process is high.</p>
                     <div class="row">
                       <button type="submit" class="btn-blue" @click="assignResource(index)">Assign</button>
@@ -38,10 +38,10 @@
                     <p>Resource assigned to the action.</p>
                     <button class="btn-blue" @click="closeModal">OK</button>
                   </template>
-                  <template v-if="!assigningResource && (showResources || resources.length === 0)">
+                  <template v-if="!assigningResource && (showResources || recommendedAvailableResources.length === 0)">
                     <p>Choose a resource to assign</p>
                     <div class="resource-selection">
-                      <div v-for="resource in resourcesGeneral" :key="resource.id" class="resource-item">
+                      <div v-for="resource in availableResources" :key="resource.id" class="resource-item">
                         <span>{{ resource.name }}</span>
                         <button type="button" class="btn-blue" @click="assignResourceToAction(resource)">Assign</button>
                       </div>
@@ -60,6 +60,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import TooltipComponent from '@/components/TooltipComponent.vue';
 import utils from '@/common/utils';
 import ModalComponent from "@/components/ModalComponent";
@@ -77,8 +78,7 @@ export default {
     current: Boolean,
     selectedRec: Object,
     parameters: Object,
-    resources: Array,
-    resourcesGeneral: Array
+    id: Text
   },
 
   data() {
@@ -93,6 +93,19 @@ export default {
   },
 
   computed: {
+    ...mapGetters(['resources']),
+    recommendedResources() {
+      return this.resources.filter(resource => resource.id === this.id);
+    },
+    recommendedAvailableResources() {
+      return this.recommendedResources.filter(resource => resource.status !== 'Busy');
+    },
+    availableResources() {
+      return this.resources.filter(resource => resource.status !== 'Busy');
+    },
+    resourcesList() {
+      return this.showResources ? this.availableResources : this.recommendedAvailableResources;
+    },
     batchRecommendations() {
       return this.formatRecommendations();
     },
@@ -131,10 +144,12 @@ export default {
     },
 
     openAssignModal(index) {
-      if (this.resources.length > 0) {
-        this.recommendedResourceName = this.resources[0].name;
+      if (this.recommendedAvailableResources.length > 0) {
+        this.recommendedResourceName = this.recommendedAvailableResources[0].name;
       }
       this.openModal = index;
+      this.showResources = this.recommendedAvailableResources.length === 0;
+      console.log("resourcesList:", this.resourcesList);
     },
 
     showResourceOptions() {

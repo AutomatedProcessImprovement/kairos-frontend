@@ -27,7 +27,7 @@ const processResourceData = (cases) => {
     const systemTimeDate = new Date(systemTime);
     const casesArray = Array.isArray(cases) ? cases : [cases];
 
-    return casesArray.flatMap(event => {
+    let resources = casesArray.flatMap(event => {
         if (!event.activities || !Array.isArray(event.activities) || event.activities.length === 0) {
             return [];
         }
@@ -55,6 +55,15 @@ const processResourceData = (cases) => {
                 });
         });
     });
+
+    // Manual update: Set the status of the resource with the same id to 'Busy' if any resources are found
+    if (resources.length > 0) {
+        let id = resources[0].id;
+        resources = resources.map(resource =>
+            resource.id === id ? { ...resource, status: 'Busy' } : resource
+        );
+    }
+    return resources;
 };
 
 const fetchResourceData = async () => {
