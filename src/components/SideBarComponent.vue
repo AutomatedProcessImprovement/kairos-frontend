@@ -52,7 +52,7 @@ export default {
       views: [
         { name: 'Process analyst', value: 'analytical', icon: 'analytics' },
         { name: 'Operational worker', value: 'operational', icon: 'albums' },
-        { name: 'Tactical manager', value: 'tactical', icon: 'people' }
+        { name: 'Operational manager', value: 'tactical', icon: 'people' }
       ],
       selectedView: utils.getLocal('view') || 'analytical',
       isCollapsed: utils.getLocal('isCollapsed') || false,
