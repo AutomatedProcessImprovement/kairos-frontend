@@ -157,7 +157,7 @@ export default {
             views: [
                 { value: 'analytical', name: 'Process analyst' },
                 { value: 'operational', name: 'Operational worker' },
-                { value: 'tactical', name: 'Tactical manager' }
+                { value: 'tactical', name: 'Operational manager' }
             ],
             selectedView: utils.getLocal('view'),
             selectedLogStatus: { id: null, status: null },
