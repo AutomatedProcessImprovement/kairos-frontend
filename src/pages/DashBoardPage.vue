@@ -16,6 +16,7 @@
                 <div class='log-card' :class="{ 'selected': log._id === selectedLog._id }" v-for="log in eventlogs"
                     :key='log' @click="selectLog(log._id)">
                     <p>{{ log.filename }}</p>
+                    <small>Log ID: {{ log._id }}</small>
                     <p v-if="log.test_filename">Test set: {{ log.test_filename }}</p>
                     <small>{{ log.parameters_description }}</small>
                     <small>{{ log.datetime }}</small>
