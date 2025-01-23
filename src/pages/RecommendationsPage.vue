@@ -28,7 +28,8 @@
         CSV
       </button>
     </div>
-    <template v-if="selectedView === 'tactical'">
+<!--    <template v-if="selectedView === 'tactical'">-->
+    <template>
       <div class="recommendations-table">
         <table-lite :is-hide-paging="true" :is-slot-mode="true" :columns="tableManager.headers"
                     :rows="tableManager.rows"
@@ -48,21 +49,21 @@
         </table-lite>
       </div>
     </template>
-    <template v-else>
-      <div class="recommendations-table">
-        <p v-if="table.rows.length === 0">No recommendations available</p>
-        <p v-else>Rendering {{ table.rows.length }} rows...</p>
-        <table-lite :is-hide-paging="true" :is-slot-mode="true" :columns="table.headers" :rows="table.rows"
-                    :total="table.rows.length" :sortable="table.sortable" @do-search="doSort" @row-clicked="rowClicked">
-          <template v-slot:id="data">
-            <p>{{ formatId(data.value.id) }}</p>
-          </template>
-          <template v-slot:performance="data">
-            <p>{{ data.value.performance.value }} {{ data.value.performance.unit }}</p>
-          </template>
-        </table-lite>
-      </div>
-    </template>
+<!--    <template v-else>-->
+<!--      <div class="recommendations-table">-->
+<!--        <p v-if="table.rows.length === 0">No recommendations available</p>-->
+<!--        <p v-else>Rendering {{ table.rows.length }} rows...</p>-->
+<!--        <table-lite :is-hide-paging="true" :is-slot-mode="true" :columns="table.headers" :rows="table.rows"-->
+<!--                    :total="table.rows.length" :sortable="table.sortable" @do-search="doSort" @row-clicked="rowClicked">-->
+<!--          <template v-slot:id="data">-->
+<!--            <p>{{ formatId(data.value.id) }}</p>-->
+<!--          </template>-->
+<!--          <template v-slot:performance="data">-->
+<!--            <p>{{ data.value.performance.value }} {{ data.value.performance.unit }}</p>-->
+<!--          </template>-->
+<!--        </table-lite>-->
+<!--      </div>-->
+<!--    </template>-->
   </div>
 </template>
 
