@@ -1,5 +1,5 @@
 <template>
-  <div class="stats-card column">
+  <div class="column">
     <p>Target</p>
     <h3 class="blue target-value">{{ object.value }} {{ object.unit }}</h3>
     <small>Case {{ object.column }} {{ object.operator }}</small>
