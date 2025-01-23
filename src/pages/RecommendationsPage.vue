@@ -159,8 +159,10 @@ export default {
     };
   },
   watch: {
-    selectedView() {
-      this.setup();
+    selectedView(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.setup();
+      }
     }
   },
   mounted() {
