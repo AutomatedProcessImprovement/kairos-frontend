@@ -17,8 +17,8 @@
         </div>
       </div>
       <div v-if="eventlogs.length > 0" class='wrap align-center row'>
-        <div class='log-card' :class="{ 'selected': log._id === selectedLog._id }" v-for="log in eventlogs"
-             :key='log' @click="selectLog(log._id)">
+        <div class='log-card' :class="{ 'selected': log._id === selectedLog?._id }" v-for="log in eventlogs"
+             :key='log._id' @click="selectLog(log._id)">
           <p>{{ log.filename }}</p>
           <small>Log ID: {{ log._id }}</small>
           <p v-if="log.test_filename">Test set: {{ log.test_filename }}</p>
@@ -31,31 +31,25 @@
       </div>
       <div v-if="selectedLog" class="column">
         <h3 class="bold blue">Event log details</h3>
-        <steps-progress-bar :options="progressBarOptions" ref="progress"/>
+        <steps-progress-bar :options="progressBarOptions" ref="progress" />
         <div class="row align-center">
           <ion-icon v-if="selectedLogStatus.status !== 'TRAINED' && selectedLogStatus.status !== 'NULL'"
                     class="rotate status-icon" name="reload-circle-outline"></ion-icon>
           <p>{{ selectedLogStatus.status }} </p>
         </div>
-
-
         <small>Event log status</small>
         <div v-if="selectedLog.result_key" class="row">
           <button :disabled="selectedLogStatus.status !== 'TRAINED' || selectedLog.got_results" class="btn-blue"
-                  @click="getStaticResults">Get results
-          </button>
+                  @click="getStaticResults">Get results</button>
           <button class="btn-blue margin-left" @click="openModal = true">Delete event log</button>
         </div>
         <div v-else class="row">
           <button :disabled="selectedLogStatus.status !== 'TRAINED'" class="btn-blue"
-                  @click="startSimulation">Start simulation
-          </button>
+                  @click="startSimulation">Start simulation</button>
           <button :disabled="selectedLogStatus.status !== 'SIMULATING'" class="btn-blue margin-left"
-                  @click="stopSimulation">Stop simulation
-          </button>
+                  @click="stopSimulation">Stop simulation</button>
           <button :disabled="selectedLogStatus.status !== 'TRAINED'" class="btn-blue margin-left"
-                  @click="clearSimulation">Clear stream data
-          </button>
+                  @click="clearSimulation">Clear stream data</button>
           <button class="btn-blue margin-left" @click="openModal = true">Delete event log</button>
         </div>
         <modal-component v-if="openModal" title="Are you sure?" @closeModal="closeModal">
@@ -82,7 +76,6 @@
             <p> {{ selectedLog.case_completion }}</p>
             <small>Case completion</small>
           </div>
-
           <div class="positive-outcome column">
             <div class="row">
               <div v-for="(positiveOutcomeGroup, index1) in selectedLog.positive_outcome" :key="index1"
@@ -93,9 +86,7 @@
                        class="row align-center">
                     <span v-if="index2 > 0">and</span>
                     <div class="positive-outcome-group parameter">
-                      <small>{{ positiveOutcomeItem.column }} {{
-                          positiveOutcomeItem.operator
-                        }}</small>
+                      <small>{{ positiveOutcomeItem.column }} {{ positiveOutcomeItem.operator }}</small>
                       <p>{{ positiveOutcomeItem.value }} {{ positiveOutcomeItem.unit }}</p>
                     </div>
                   </div>
@@ -116,7 +107,6 @@
           </div>
           <div v-if="selectedLog.additional_info" class="parameter">
             <small> Treatment Duration </small>
-
             <p>{{ selectedLog.additional_info.plugin_causallift_resource_allocation.treatment_duration.value }}
               {{ selectedLog.additional_info.plugin_causallift_resource_allocation.treatment_duration.unit }}
             </p>
@@ -124,7 +114,6 @@
           </div>
           <div v-if="selectedLog.additional_info" class="parameter">
             <small> Available Resources </small>
-
             <p>{{ selectedLog.additional_info.plugin_causallift_resource_allocation.available_resources.join(',') }}</p>
             <small>Additional Information</small>
           </div>
@@ -143,8 +132,6 @@ import SideBar from '@/components/SideBarComponent.vue';
 import Loading from "@/components/LoadingComponent.vue";
 import ModalComponent from "@/components/ModalComponent.vue";
 import utils from "@/common/utils";
-import {useShepherd} from "vue-shepherd";
-import {offset} from "@floating-ui/dom";
 
 export default {
   name: "DashBoard",
@@ -159,49 +146,27 @@ export default {
     return {
       isLoading: false,
       openModal: false,
-
-      timer: null,
       eventlogs: [],
       selectedLog: null,
-      parameters: [],
       findLogId: null,
-      selectedView: utils.getLocal('view'),
-      selectedLogStatus: {id: null, status: null},
-    }
+      selectedLogStatus: { id: null, status: null },
+    };
   },
 
   mounted() {
     this.getLogs();
   },
 
-  beforeUnmount() {
-    this.clearTimer();
-  },
-
   methods: {
     goToHome() {
-      this.$router.push({name: 'home'});
+      this.$router.push({ name: 'home' });
     },
 
-    clearTimer() {
-      if (this.timer) clearInterval(this.timer);
-    },
-
-    closeModal() {
-      this.openModal = false;
-    },
     getLogs() {
       this.isLoading = true;
+      const uploadedLogIds = utils.getLocal('uploadedLogIds') || [];
 
-      const logId = utils.getLocal('logId');
-      let uploadedLogIds = utils.getLocal('uploadedLogIds');
-
-      if (!uploadedLogIds && logId) {
-        uploadedLogIds = [logId];
-        utils.setLocal('uploadedLogIds', uploadedLogIds, 1000);
-      }
-
-      if (!uploadedLogIds) {
+      if (!uploadedLogIds.length) {
         this.isLoading = false;
         return;
       }
@@ -209,435 +174,69 @@ export default {
       logsService.getLogs(uploadedLogIds).then(
           (response) => {
             this.eventlogs = response.data.event_logs;
-            if (this.eventlogs.length === 0) {
+            if (!this.eventlogs.length) {
               utils.setLocal('logId', null);
               this.selectedLog = null;
-              this.selectedLogStatus = {id: null, status: null};
-              this.clearTimer();
+              this.selectedLogStatus = { id: null, status: null };
               this.isLoading = false;
               return;
             }
 
-            this.eventlogs.forEach(eventlog => {
-              if (eventlog.positive_outcome && !Array.isArray(eventlog.positive_outcome))
-                eventlog.positive_outcome = [[eventlog.positive_outcome]];
-            });
-
-
-            if (!utils.getLocal('logId')) {
-              utils.setLocal('logId', this.eventlogs[0]._id, 30);
-            }
-            this.selectedLog = this.eventlogs.find(e => e._id === utils.getLocal('logId'));
-
-            if (!this.selectedLog) {
-              this.selectLog(this.eventlogs[0]._id);
-            } else {
-              this.getProjectStatus(true);
-            }
-
-            this.timer = setInterval(() => {
-              if (this.selectedLogStatus !== 'NULL') this.getProjectStatus();
-            }, 4000);
-
+            const currentLogId = utils.getLocal('logId') || this.eventlogs[0]._id;
+            this.selectLog(currentLogId);
             this.isLoading = false;
-
           },
           (error) => {
-            const resMessage =
-                (error.response &&
-                    error.response.data &&
-                    error.response.data.error) ||
-                error.message ||
-                error.toString();
-            this.$notify({
-              title: 'An error occured',
-              text: resMessage,
-              type: 'error'
-            })
+            console.error(error);
+            this.isLoading = false;
           }
       );
     },
 
     selectLog(logId) {
-      if (!logId) {
-        console.error('[selectLog] No logId provided');
-        return;
-      }
-      console.log('[selectLog] Selecting log with ID:', logId);
+      if (!logId) return;
+
       utils.setLocal('logId', logId, 30);
-      this.selectedLog = this.eventlogs.find(e => e._id === logId);
-      if (!this.selectedLog) {
-        console.error('[selectLog] Log not found in eventlogs:', logId);
-      } else {
-        console.log('[selectLog] Selected log:', this.selectedLog);
-      }
-      this.getProjectStatus(true);
+      this.selectedLog = { ...this.eventlogs.find((log) => log._id === logId) };
+      this.getProjectStatus();
     },
 
-    startOnboarding() {
-      console.log(utils.getLocal('onboardingCompleted'));
-      if (utils.getLocal('onboardingCompleted') === true) return;
-
-      const tour = useShepherd({
-        useModalOverlay: true,
-        defaultStepOptions: {
-          classes: 'onboarding-kairos',
-          scrollTo: true
-        }
-      });
-
-      tour.addSteps([
-        {
-          id: 'step1',
-          title: 'Welcome to Kairos',
-          text: 'A dashboard for prescriptive process monitoring.',
-          classes: 'onboarding-step',
-          buttons: [
-            {
-              text: 'Next',
-              action: tour.next,
-              classes: 'shepherd-button-blue'
-            },
-            {
-              text: '<ion-icon name="close-outline"></ion-icon>',
-              action: function () {
-                utils.setLocal('onboardingCompleted', true, 10000)
-                tour.cancel();
-              },
-              classes: 'shepherd-button-close'
-            },
-          ],
-          arrow: false,
-        },
-        {
-          id: 'step2',
-          text: 'Here you will find the event logs uploaded by users. You may select one by clicking on it.',
-          classes: 'onboarding-step',
-          attachTo: {
-            element: '.event-logs',
-            on: 'bottom'
-          },
-          buttons: [
-            {
-              text: 'Next',
-              action: tour.next,
-              classes: 'shepherd-button-blue'
-            },
-            {
-              text: '<ion-icon name="close-outline"></ion-icon>',
-              action: function () {
-                utils.setLocal('onboardingCompleted', true, 10000)
-                tour.cancel();
-              },
-              classes: 'shepherd-button-close'
-            },
-          ],
-          floatingUIOptions: {
-            middleware: [offset({mainAxis: 15, crossAxis: 10})]
-          }
-        },
-        {
-          id: 'step3',
-          text: 'You may start simulating the streaming of events here.',
-          classes: 'onboarding-step',
-          attachTo: {
-            element: '.start-simulation',
-            on: 'right-end'
-          },
-          buttons: [
-            {
-              text: 'Next',
-              action: tour.next,
-              classes: 'shepherd-button-blue'
-            },
-            {
-              text: '<ion-icon name="close-outline"></ion-icon>',
-              action: function () {
-                utils.setLocal('onboardingCompleted', true, 10000)
-                tour.cancel();
-              },
-              classes: 'shepherd-button-close'
-            },
-          ],
-          floatingUIOptions: {
-            middleware: [offset({mainAxis: 15, crossAxis: 10})]
-          }
-        },
-        {
-          id: 'step4',
-          text: 'And stop the simulation here.',
-          classes: 'onboarding-step',
-          attachTo: {
-            element: '.stop-simulation',
-            on: 'right-end'
-          },
-          buttons: [
-            {
-              text: 'Next',
-              classes: 'shepherd-button-blue',
-              action: function () {
-                window.dispatchEvent(new CustomEvent('dashboard-onboarding-completed', {}));
-                tour.complete();
-              }
-            },
-            {
-              text: '<ion-icon name="close-outline"></ion-icon>',
-              action: function () {
-                utils.setLocal('onboardingCompleted', true, 10000)
-                tour.cancel();
-              },
-              classes: 'shepherd-button-close'
-            },
-          ],
-          floatingUIOptions: {
-            middleware: [offset({mainAxis: 15, crossAxis: 10})]
-          }
-        }
-      ]);
-
-      tour.start();
-    },
-
-    startSimulation() {
-      logsService.startSimulation(utils.getLocal('logId')).then(
-          (response) => {
-            console.log(response.data.message.message);
-          },
-          (error) => {
-            const resMessage =
-                (error.response &&
-                    error.response.data &&
-                    error.response.data.error) ||
-                error.message ||
-                error.toString();
-            this.$notify({
-              title: 'An error occured',
-              text: resMessage,
-              type: 'error'
-            })
-          }
-      );
-    },
-
-    stopSimulation() {
-      logsService.stopSimulation(utils.getLocal('logId')).then(
-          (response) => {
-            console.log(response.data.message.message);
-            this.$notify({
-              title: 'Success',
-              text: `Successfully stopped simulating log ${utils.getLocal('logId')}`,
-              type: 'success',
-            });
-          },
-          (error) => {
-            this.isLoading = false;
-            const resMessage =
-                (error.response &&
-                    error.response.data &&
-                    error.response.data.error) ||
-                error.message ||
-                error.toString();
-            this.$notify({
-              title: 'An error occured',
-              text: resMessage,
-              type: 'error'
-            })
-          }
-      );
-    },
-
-    clearSimulation() {
-      logsService.clearSimulation(utils.getLocal('logId')).then(
-          (response) => {
-            this.$notify({
-              title: 'Success',
-              text: response.data.message,
-              type: 'success'
-            })
-          },
-          (error) => {
-            this.isLoading = false;
-            const resMessage =
-                (error.response &&
-                    error.response.data &&
-                    error.response.data.error) ||
-                error.message ||
-                error.toString();
-            this.$notify({
-              title: 'An error occured',
-              text: resMessage,
-              type: 'error'
-            })
-          }
-      );
-    },
-
-    deleteLog() {
-      clearInterval(this.timer);
-      this.closeModal();
-
-      logsService.deleteLog(utils.getLocal('logId')).then(
-          (response) => {
-            this.$notify({
-              title: 'Success',
-              text: response.data.message,
-              type: 'success'
-            });
-            utils.removeLocal(`casesListClickedRows${utils.getLocal('logId')}`);
-            utils.removeLocal('logId');
-            this.selectedLogStatus.status = null;
-            this.getLogs();
-          },
-          (error) => {
-            this.isLoading = false;
-            const resMessage =
-                (error.response &&
-                    error.response.data &&
-                    error.response.data.error) ||
-                error.message ||
-                error.toString();
-            this.$notify({
-              title: 'An error occured',
-              text: resMessage,
-              type: 'error'
-            })
-          }
-      );
-    },
-
-    getStaticResults() {
-      this.$notify({
-        title: 'warning',
-        text: "Getting results may take a while, please wait...",
-        type: 'warning'
-      })
-      logsService.getStaticResults(utils.getLocal('logId')).then(
-          (response) => {
-            let type = 'success';
-            if (response.data.message === 'Ongoing dataset result is still processing') {
-              type = 'warning';
-            }
-            if (type === 'success') this.selectedLog.got_results = true;
-            this.$notify({
-              title: type,
-              text: response.data.message,
-              type: type
-            })
-          },
-          (error) => {
-            const resMessage =
-                (error.response &&
-                    error.response.data &&
-                    error.response.data.error) ||
-                error.message ||
-                error.toString();
-            this.$notify({
-              title: 'An error occured',
-              text: resMessage,
-              type: 'error'
-            })
-          }
-      );
-    },
-
-    getProjectStatus(delay = false) {
-      let oldLogstatus = this.selectedLogStatus;
-      if (delay) this.selectedLogStatus.status = null;
+    getProjectStatus() {
       logsService.getProjectStatus(utils.getLocal('logId')).then(
           (response) => {
-            let status = response.data.status;
-            let newLogStatus = {id: utils.getLocal('logId'), status: status};
-            this.notifyForNewStatus(oldLogstatus, newLogStatus);
-            this.selectedLogStatus = newLogStatus;
+            this.selectedLogStatus = { id: utils.getLocal('logId'), status: response.data.status };
           },
           (error) => {
-            this.isLoading = false;
-            const resMessage =
-                (error.response &&
-                    error.response.data &&
-                    error.response.data.error) ||
-                error.message ||
-                error.toString();
-            this.selectedLogStatus = 'NULL';
-            this.$notify({
-              title: 'An error occured',
-              text: resMessage,
-              type: 'error'
-            });
+            console.error(error);
           }
       );
-    },
-
-    notifyForNewStatus(oldLogStatus, newLogStatus) {
-      if (oldLogStatus.id !== newLogStatus.id) return;
-      if ((oldLogStatus.status === 'TRAINED' && newLogStatus.status === 'SIMULATING')) {
-        this.$notify({
-          title: 'Success',
-          text: `Successfully started simulating log ${utils.getLocal('logId')}`,
-          type: 'success',
-        });
-      }
     },
 
     findLog() {
-      const findLogId = this.findLogId;
-      this.findLogId = null
-      if (!findLogId || findLogId.trim() === '') {
-        this.$notify({
-          title: 'Warning',
-          text: `Log ID cannot be empty.`,
-          type: 'warning',
-        });
+      if (!this.findLogId?.trim()) {
+        console.warn('Log ID cannot be empty.');
         return;
       }
-      this.isLoading = true;
 
-      logsService.getLog(findLogId).then(
+      logsService.getLog(this.findLogId.trim()).then(
           (response) => {
             const foundLog = response.data.event_log;
-            if (!foundLog) {
-              this.$notify({
-                title: 'Warning',
-                text: `Could not find an event log with ID ${findLogId}.`,
-                type: 'warning',
-              });
-              this.isLoading = false;
-              return;
-            }
+            if (!foundLog) return;
 
-            const uploadedLogIds = utils.getLocal('uploadedLogIds') || [];
-
-            if (!(uploadedLogIds.includes(foundLog._id))) {
+            if (!this.eventlogs.find((log) => log._id === foundLog._id)) {
               this.eventlogs.push(foundLog);
-              uploadedLogIds.push(foundLog._id);
-              utils.setLocal('uploadedLogIds', uploadedLogIds, 1000);
             }
             this.selectLog(foundLog._id);
-
-            if (!this.timer) {
-              this.timer = setInterval(() => {
-                if (this.selectedLogStatus !== 'NULL') this.getProjectStatus();
-              }, 4000);
-            }
-
-            this.isLoading = false;
           },
           (error) => {
-            this.isLoading = false;
-            const resMessage =
-                (error.response &&
-                    error.response.data &&
-                    error.response.data.error) ||
-                error.message ||
-                error.toString();
-            this.$notify({
-              title: 'An error occured',
-              text: resMessage,
-              type: 'error'
-            })
+            console.error(error);
           }
       );
-    }
-  }
-}
+    },
+
+    closeModal() {
+      this.openModal = false;
+    },
+  },
+};
 </script>
