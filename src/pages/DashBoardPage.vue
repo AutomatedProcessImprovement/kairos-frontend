@@ -67,8 +67,8 @@
       <div v-if="selectedLog" class="parameters-container column">
         <div class="row">
           <h3 class="bold blue">Recommendation Parameters</h3>
-          <router-link class="btn-blue margin-left" :to="{ name: 'parameters' }">Change parameters</router-link>
-          <router-link class="btn-blue margin-left" :to="{ name: 'columns' }">Change column types</router-link>
+          <router-link class="btn-blue margin-left" :to="{ name: 'parameters' }" :disabled="!selectedLog">Change parameters</router-link>
+          <router-link class="btn-blue margin-left" :to="{ name: 'columns' }" :disabled="!selectedLog">Change column types</router-link>
         </div>
         <div v-if="selectedLog.case_completion" class="parameters row">
           <div class="parameter">
@@ -185,7 +185,6 @@ export default {
 
             const currentLogId = utils.getLocal('logId') || this.eventlogs[0]._id;
 
-            // Ensure logs are loaded before selecting the log
             if (this.eventlogs.find((log) => log._id === currentLogId)) {
               this.selectLog(currentLogId);
             } else {
@@ -240,6 +239,18 @@ export default {
           }
       );
     },
+
+    notifyForNewStatus(oldLogStatus, newLogStatus) {
+      if (oldLogStatus.id !== newLogStatus.id) return;
+      if ((oldLogStatus.status === 'TRAINED' && newLogStatus.status === 'SIMULATING')) {
+        this.$notify({
+          title: 'Success',
+          text: `Successfully started simulating log ${utils.getLocal('logId')}`,
+          type: 'success',
+        });
+      }
+    },
+
 
     findLog() {
       if (!this.findLogId?.trim()) {
