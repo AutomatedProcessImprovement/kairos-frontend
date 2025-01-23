@@ -174,6 +174,7 @@ export default {
       logsService.getLogs(uploadedLogIds).then(
           (response) => {
             this.eventlogs = response.data.event_logs;
+
             if (!this.eventlogs.length) {
               utils.setLocal('logId', null);
               this.selectedLog = null;
@@ -183,26 +184,49 @@ export default {
             }
 
             const currentLogId = utils.getLocal('logId') || this.eventlogs[0]._id;
-            this.selectLog(currentLogId);
+
+            // Ensure logs are loaded before selecting the log
+            if (this.eventlogs.find((log) => log._id === currentLogId)) {
+              this.selectLog(currentLogId);
+            } else {
+              console.warn("Log ID not found in loaded event logs:", currentLogId);
+              this.selectedLog = null;
+            }
+
             this.isLoading = false;
           },
           (error) => {
-            console.error(error);
+            console.error("Error fetching logs:", error);
             this.isLoading = false;
           }
       );
     },
 
     selectLog(logId) {
-      if (!logId) return;
-      utils.setLocal('logId', logId, 30);
-      this.selectedLog = this.eventlogs.find(e => e._id === logId);
-      this.getProjectStatus(true);
+      if (!logId) {
+        console.warn("No log ID provided to selectLog.");
+        return;
+      }
+
+      const selected = this.eventlogs.find((log) => log._id === logId);
+
+      if (!selected) {
+        console.warn("Log not found in eventlogs for ID:", logId);
+        this.selectedLog = null;
+        return;
+      }
+
+      utils.setLocal('logId', logId, 30); // Save log ID in local storage
+      this.selectedLog = selected;
+      console.log("Selected Log:", this.selectedLog);
+
+      this.getProjectStatus(true); // Fetch log status
     },
 
     getProjectStatus(delay = false) {
       let oldLogstatus = this.selectedLogStatus;
       if (delay) this.selectedLogStatus.status = null;
+
       logsService.getProjectStatus(utils.getLocal('logId')).then(
           (response) => {
             let status = response.data.status;
@@ -211,53 +235,35 @@ export default {
             this.selectedLogStatus = newLogStatus;
           },
           (error) => {
-            this.isLoading = false;
-            const resMessage =
-                (error.response &&
-                    error.response.data &&
-                    error.response.data.error) ||
-                error.message ||
-                error.toString();
+            console.error("Error fetching project status:", error);
             this.selectedLogStatus = 'NULL';
-            this.$notify({
-              title: 'An error occured',
-              text: resMessage,
-              type: 'error'
-            });
           }
       );
     },
 
-    notifyForNewStatus(oldLogStatus, newLogStatus) {
-      if (oldLogStatus.id !== newLogStatus.id) return;
-      if ((oldLogStatus.status === 'TRAINED' && newLogStatus.status === 'SIMULATING')) {
-        this.$notify({
-          title: 'Success',
-          text: `Successfully started simulating log ${utils.getLocal('logId')}`,
-          type: 'success',
-        });
-      }
-    },
-
-
     findLog() {
       if (!this.findLogId?.trim()) {
-        console.warn('Log ID cannot be empty.');
+        console.warn("Log ID cannot be empty.");
         return;
       }
 
       logsService.getLog(this.findLogId.trim()).then(
           (response) => {
             const foundLog = response.data.event_log;
-            if (!foundLog) return;
+
+            if (!foundLog) {
+              console.warn("No log found with ID:", this.findLogId.trim());
+              return;
+            }
 
             if (!this.eventlogs.find((log) => log._id === foundLog._id)) {
               this.eventlogs.push(foundLog);
             }
+
             this.selectLog(foundLog._id);
           },
           (error) => {
-            console.error(error);
+            console.error("Error finding log:", error);
           }
       );
     },
