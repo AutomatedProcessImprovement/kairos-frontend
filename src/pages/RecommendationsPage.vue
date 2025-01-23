@@ -449,7 +449,7 @@ export default {
       this.formattedData = [];
       for (const el of this.recommendations) {
         const caseId = el._id;
-        const casePerformance = el.case_performance;
+        const casePerformance = el.case_performance[0][0];
         for (const batch of el.activities) {
           for (const rec of batch.prescriptions) {
             const data = this.formatRecommendation(caseId, casePerformance, rec);
