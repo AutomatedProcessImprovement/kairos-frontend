@@ -196,8 +196,8 @@ export default {
     selectLog(logId) {
       if (!logId) return;
 
-      utils.setLocal('logId', logId, 30);
-      this.selectedLog = { ...this.eventlogs.find((log) => log._id === logId) };
+      utils.setLocal("logId", logId, 30);
+      this.selectedLog = this.eventlogs.find((log) => log._id === logId);
       this.getProjectStatus();
     },
 
