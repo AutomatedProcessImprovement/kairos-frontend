@@ -31,7 +31,7 @@
       </div>
       <div v-if="selectedLog" class="column">
         <h3 class="bold blue">Event log details</h3>
-        <steps-progress-bar :options="progressBarOptions" ref="progress" />
+        <steps-progress-bar :options="progressBarOptions" ref="progress"/>
         <div class="row align-center">
           <ion-icon v-if="selectedLogStatus.status !== 'TRAINED' && selectedLogStatus.status !== 'NULL'"
                     class="rotate status-icon" name="reload-circle-outline"></ion-icon>
@@ -42,16 +42,20 @@
         <small>Event log status</small>
         <div v-if="selectedLog.result_key" class="row">
           <button :disabled="selectedLogStatus.status !== 'TRAINED' || selectedLog.got_results" class="btn-blue"
-                  @click="getStaticResults">Get results</button>
+                  @click="getStaticResults">Get results
+          </button>
           <button class="btn-blue margin-left" @click="openModal = true">Delete event log</button>
         </div>
         <div v-else class="row">
           <button :disabled="selectedLogStatus.status !== 'TRAINED'" class="btn-blue"
-                  @click="startSimulation">Start simulation</button>
+                  @click="startSimulation">Start simulation
+          </button>
           <button :disabled="selectedLogStatus.status !== 'SIMULATING'" class="btn-blue margin-left"
-                  @click="stopSimulation">Stop simulation</button>
+                  @click="stopSimulation">Stop simulation
+          </button>
           <button :disabled="selectedLogStatus.status !== 'TRAINED'" class="btn-blue margin-left"
-                  @click="clearSimulation">Clear stream data</button>
+                  @click="clearSimulation">Clear stream data
+          </button>
           <button class="btn-blue margin-left" @click="openModal = true">Delete event log</button>
         </div>
         <modal-component v-if="openModal" title="Are you sure?" @closeModal="closeModal">
@@ -66,21 +70,38 @@
           </template>
         </modal-component>
       </div>
-      <div v-if="selectedLog" class="column">
+      <div v-if="selectedLog" class="parameters-container column">
         <div class="row">
           <h3 class="bold blue">Recommendation Parameters</h3>
           <router-link class="btn-blue margin-left" :to="{ name: 'parameters' }">Change parameters</router-link>
           <router-link class="btn-blue margin-left" :to="{ name: 'columns' }">Change column types</router-link>
         </div>
-        <div v-if="selectedLog.case_completion" class="row">
+        <div v-if="selectedLog.case_completion" class="parameters row">
           <div class="parameter">
             <small class="upper"> Activity EQUAL </small>
             <p> {{ selectedLog.case_completion }}</p>
             <small>Case completion</small>
           </div>
-          <div class="parameter">
-            <small>{{ selectedLog.positive_outcome.column }} {{ selectedLog.positive_outcome.operator }}</small>
-            <p>{{ selectedLog.positive_outcome.value }} {{ selectedLog.positive_outcome.unit }}</p>
+
+          <div class="positive-outcome column">
+            <div class="row">
+              <div v-for="(positiveOutcomeGroup, index1) in selectedLog.positive_outcome" :key="index1"
+                   class="row align-center">
+                <span v-if="index1 > 0">or</span>
+                <div class="positive-outcome-group container">
+                  <div v-for="(positiveOutcomeItem, index2) in positiveOutcomeGroup" :key="index2"
+                       class="row align-center">
+                    <span v-if="index2 > 0">and</span>
+                    <div class="positive-outcome-group parameter">
+                      <small>{{ positiveOutcomeItem.column }} {{
+                          positiveOutcomeItem.operator
+                        }}</small>
+                      <p>{{ positiveOutcomeItem.value }} {{ positiveOutcomeItem.unit }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <small>Positive case outcome</small>
           </div>
           <div class="parameter">
@@ -92,6 +113,20 @@
             <small> Threshold more than </small>
             <p>{{ selectedLog.alarm_threshold }}</p>
             <small>Alarm Threshold</small>
+          </div>
+          <div v-if="selectedLog.additional_info" class="parameter">
+            <small> Treatment Duration </small>
+
+            <p>{{ selectedLog.additional_info.plugin_causallift_resource_allocation.treatment_duration.value }}
+              {{ selectedLog.additional_info.plugin_causallift_resource_allocation.treatment_duration.unit }}
+            </p>
+            <small>Additional Information</small>
+          </div>
+          <div v-if="selectedLog.additional_info" class="parameter">
+            <small> Available Resources </small>
+
+            <p>{{ selectedLog.additional_info.plugin_causallift_resource_allocation.available_resources.join(',') }}</p>
+            <small>Additional Information</small>
           </div>
         </div>
         <div v-else>
@@ -108,6 +143,9 @@ import SideBar from '@/components/SideBarComponent.vue';
 import Loading from "@/components/LoadingComponent.vue";
 import ModalComponent from "@/components/ModalComponent.vue";
 import shared from "@/common/utils";
+import utils from "@/common/utils";
+import {useShepherd} from "vue-shepherd";
+import {offset} from "@floating-ui/dom";
 
 export default {
   name: "DashBoard",
@@ -129,7 +167,7 @@ export default {
       parameters: [],
       findLogId: null,
       selectedView: shared.getLocal('view'),
-      selectedLogStatus: { id: null, status: null },
+      selectedLogStatus: {id: null, status: null},
     }
   },
 
@@ -143,7 +181,7 @@ export default {
 
   methods: {
     goToHome() {
-      this.$router.push({ name: 'home' });
+      this.$router.push({name: 'home'});
     },
 
     clearTimer() {
@@ -159,9 +197,9 @@ export default {
       const logId = shared.getLocal('logId');
       let uploadedLogIds = shared.getLocal('uploadedLogIds');
 
-      if (!uploadedLogIds && logId){
+      if (!uploadedLogIds && logId) {
         uploadedLogIds = [logId];
-        shared.setLocal('uploadedLogIds',uploadedLogIds,1000);
+        shared.setLocal('uploadedLogIds', uploadedLogIds, 1000);
       }
 
       if (!uploadedLogIds) {
@@ -175,11 +213,18 @@ export default {
             if (this.eventlogs.length === 0) {
               shared.setLocal('logId', null);
               this.selectedLog = null;
-              this.selectedLogStatus = { id: null, status: null };
+              this.selectedLogStatus = {id: null, status: null};
               this.clearTimer();
               this.isLoading = false;
               return;
             }
+
+            this.eventlogs.forEach(eventlog => {
+              if (eventlog.positive_outcome && !Array.isArray(eventlog.positive_outcome))
+                eventlog.positive_outcome = [[eventlog.positive_outcome]];
+            });
+
+
             if (!shared.getLocal('logId')) {
               shared.setLocal('logId', this.eventlogs[0]._id, 30);
             }
@@ -219,6 +264,130 @@ export default {
       shared.setLocal('logId', logId, 30);
       this.selectedLog = this.eventlogs.find(e => e._id === logId);
       this.getProjectStatus(true);
+    },
+
+    startOnboarding() {
+      console.log(utils.getLocal('onboardingCompleted'));
+      if (utils.getLocal('onboardingCompleted') === true) return;
+
+      const tour = useShepherd({
+        useModalOverlay: true,
+        defaultStepOptions: {
+          classes: 'onboarding-kairos',
+          scrollTo: true
+        }
+      });
+
+      tour.addSteps([
+        {
+          id: 'step1',
+          title: 'Welcome to Kairos',
+          text: 'A dashboard for prescriptive process monitoring.',
+          classes: 'onboarding-step',
+          buttons: [
+            {
+              text: 'Next',
+              action: tour.next,
+              classes: 'shepherd-button-blue'
+            },
+            {
+              text: '<ion-icon name="close-outline"></ion-icon>',
+              action: function () {
+                utils.setLocal('onboardingCompleted', true, 10000)
+                tour.cancel();
+              },
+              classes: 'shepherd-button-close'
+            },
+          ],
+          arrow: false,
+        },
+        {
+          id: 'step2',
+          text: 'Here you will find the event logs uploaded by users. You may select one by clicking on it.',
+          classes: 'onboarding-step',
+          attachTo: {
+            element: '.event-logs',
+            on: 'bottom'
+          },
+          buttons: [
+            {
+              text: 'Next',
+              action: tour.next,
+              classes: 'shepherd-button-blue'
+            },
+            {
+              text: '<ion-icon name="close-outline"></ion-icon>',
+              action: function () {
+                utils.setLocal('onboardingCompleted', true, 10000)
+                tour.cancel();
+              },
+              classes: 'shepherd-button-close'
+            },
+          ],
+          floatingUIOptions: {
+            middleware: [offset({mainAxis: 15, crossAxis: 10})]
+          }
+        },
+        {
+          id: 'step3',
+          text: 'You may start simulating the streaming of events here.',
+          classes: 'onboarding-step',
+          attachTo: {
+            element: '.start-simulation',
+            on: 'right-end'
+          },
+          buttons: [
+            {
+              text: 'Next',
+              action: tour.next,
+              classes: 'shepherd-button-blue'
+            },
+            {
+              text: '<ion-icon name="close-outline"></ion-icon>',
+              action: function () {
+                utils.setLocal('onboardingCompleted', true, 10000)
+                tour.cancel();
+              },
+              classes: 'shepherd-button-close'
+            },
+          ],
+          floatingUIOptions: {
+            middleware: [offset({mainAxis: 15, crossAxis: 10})]
+          }
+        },
+        {
+          id: 'step4',
+          text: 'And stop the simulation here.',
+          classes: 'onboarding-step',
+          attachTo: {
+            element: '.stop-simulation',
+            on: 'right-end'
+          },
+          buttons: [
+            {
+              text: 'Next',
+              classes: 'shepherd-button-blue',
+              action: function () {
+                window.dispatchEvent(new CustomEvent('dashboard-onboarding-completed', {}));
+                tour.complete();
+              }
+            },
+            {
+              text: '<ion-icon name="close-outline"></ion-icon>',
+              action: function () {
+                utils.setLocal('onboardingCompleted', true, 10000)
+                tour.cancel();
+              },
+              classes: 'shepherd-button-close'
+            },
+          ],
+          floatingUIOptions: {
+            middleware: [offset({mainAxis: 15, crossAxis: 10})]
+          }
+        }
+      ]);
+
+      tour.start();
     },
 
     startSimulation() {
@@ -369,7 +538,7 @@ export default {
       logsService.getProjectStatus(shared.getLocal('logId')).then(
           (response) => {
             let status = response.data.status;
-            let newLogStatus = { id: shared.getLocal('logId'), status: status };
+            let newLogStatus = {id: shared.getLocal('logId'), status: status};
             this.notifyForNewStatus(oldLogstatus, newLogStatus);
             this.selectedLogStatus = newLogStatus;
           },
@@ -430,14 +599,14 @@ export default {
 
             const uploadedLogIds = shared.getLocal('uploadedLogIds') || [];
 
-            if (!(uploadedLogIds.includes(foundLog._id))){
+            if (!(uploadedLogIds.includes(foundLog._id))) {
               this.eventlogs.push(foundLog);
               uploadedLogIds.push(foundLog._id);
-              shared.setLocal('uploadedLogIds',uploadedLogIds,1000);
+              shared.setLocal('uploadedLogIds', uploadedLogIds, 1000);
             }
             this.selectLog(foundLog._id);
 
-            if (!this.timer){
+            if (!this.timer) {
               this.timer = setInterval(() => {
                 if (this.selectedLogStatus !== 'NULL') this.getProjectStatus();
               }, 4000);
