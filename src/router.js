@@ -50,9 +50,10 @@ const routes = [
                 ]
             },
             {
-                path: "parameters",
+                path: "parameters/:logId",
                 name: "parameters",
                 component: ParametersPage,
+                props: true
             },
             {
                 path: 'columns',

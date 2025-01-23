@@ -67,8 +67,8 @@
       <div v-if="selectedLog" class="parameters-container column">
         <div class="row">
           <h3 class="bold blue">Recommendation Parameters</h3>
-          <router-link class="btn-blue margin-left" :to="{ name: 'parameters' }" :disabled="!selectedLog">Change parameters</router-link>
-          <router-link class="btn-blue margin-left" :to="{ name: 'columns' }" :disabled="!selectedLog">Change column types</router-link>
+          <router-link class="btn-blue margin-left" :to="{ name: 'parameters', params: { logId: selectedLog._id } }" :disabled="!selectedLog">Change parameters</router-link>
+          <router-link class="btn-blue margin-left" :to="{ name: 'columns', params: { logId: selectedLog._id } }" :disabled="!selectedLog">Change column types</router-link>
         </div>
         <div v-if="selectedLog.case_completion" class="parameters row">
           <div class="parameter">
