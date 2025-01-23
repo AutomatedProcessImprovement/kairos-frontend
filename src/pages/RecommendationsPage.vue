@@ -8,7 +8,7 @@
         <div class="column">
           <small>Total current recommendations</small>
           <div class="row">
-            <h4>{{ formattedData.length }}</h4>
+            <h4>{{ formattedData ? formattedData.length : 0 }}</h4>
           </div>
         </div>
         <ion-icon name="albums"></ion-icon>
@@ -30,39 +30,19 @@
         CSV
       </button>
     </div>
-    <template v-if="selectedView === 'tactical'">
-      <div class="recommendations-table">
-        <table-lite :is-hide-paging="true" :is-slot-mode="true" :columns="tableManager.headers"
-                    :rows="tableManager.rows"
-                    :total="tableManager.rows.length" :sortable="tableManager.sortable" @row-clicked="rowClicked">
-          <template v-slot:id="data">
-            <p>{{ formatId(data.value.id) }}</p>
-          </template>
-          <template v-for="attribute in caseAttributes" :key="attribute.field" v-slot:[attribute.field]="data">
-            <p>{{ data.value[attribute.field] }}</p>
-          </template>
-          <template v-slot:details="data">
-            <p>{{ data.value.details }}</p>
-          </template>
-          <template v-slot:showDetails="data">
-            <button @click="rowClicked(data.value.id)" class="show-details">Show details</button>
-          </template>
-        </table-lite>
-      </div>
-    </template>
-    <template v-else>
-      <div class="recommendations-table">
-        <table-lite :is-hide-paging="true" :is-slot-mode="true" :columns="table.headers" :rows="table.rows"
-                    :total="table.rows.length" :sortable="table.sortable" @do-search="doSort" @row-clicked="rowClicked">
-          <template v-slot:id="data">
-            <p>{{ formatId(data.value.id) }}</p>
-          </template>
-          <template v-slot:performance="data">
-            <p>{{ data.value.performance.value }} {{ data.value.performance.unit }}</p>
-          </template>
-        </table-lite>
-      </div>
-    </template>
+
+    <div class="recommendations-table">
+      <table-lite :is-hide-paging="true" :is-slot-mode="true" :columns="table.headers" :rows="table.rows"
+                  :total="table.rows.length" :sortable="table.sortable" @do-search="doSort" @row-clicked="rowClicked">
+        <template v-slot:id="data">
+          <p>{{ formatId(data.value.id) }}</p>
+        </template>
+        <template v-slot:performance="data">
+          <p>{{ data.value.performance.value }} {{ data.value.performance.unit }}</p>
+        </template>
+      </table-lite>
+    </div>
+
   </div>
 </template>
 
@@ -94,36 +74,36 @@ export default {
       caseAttributes: [],
       cases: [],
       casesData: [],
-      tableManager: {
-        isLoading: false,
-        headers: [
-          {
-            label: 'Case ID',
-            field: 'id',
-            width: "5%",
-            sortable: true,
-          },
-          {
-            label: "Duration",
-            field: "duration",
-            width: "5%",
-            sortable: false,
-          },
-          {
-            label: "Recommendation",
-            field: "recommendationAttribute",
-            width: "10%",
-            sortable: false,
-          },
-          {
-            label: "Details",
-            field: "details",
-            width: "10%",
-            sortable: false,
-          },
-        ],
-        rows: [],
-      },
+      // tableManager: {
+      //   isLoading: false,
+      //   headers: [
+      //     {
+      //       label: 'Case ID',
+      //       field: 'id',
+      //       width: "5%",
+      //       sortable: true,
+      //     },
+      //     {
+      //       label: "Duration",
+      //       field: "duration",
+      //       width: "5%",
+      //       sortable: false,
+      //     },
+      //     {
+      //       label: "Recommendation",
+      //       field: "recommendationAttribute",
+      //       width: "10%",
+      //       sortable: false,
+      //     },
+      //     {
+      //       label: "Details",
+      //       field: "details",
+      //       width: "10%",
+      //       sortable: false,
+      //     },
+      //   ],
+      //   rows: [],
+      // },
       table: {
         isLoading: false,
         headers: [
