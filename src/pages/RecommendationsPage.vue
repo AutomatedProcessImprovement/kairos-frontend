@@ -13,26 +13,29 @@
         </div>
         <ion-icon name="albums"></ion-icon>
       </div>
-      <template v-if="selectedView === 'tactical'">
-        <div v-if="parameters.kpi">
-          <div v-for="(positiveOutcomeGroup, index1) in parameters.kpi" :key="index1" class="row align-center">
-            <small class="outcome-grouping" v-if="index1 > 0">or</small>
-            <div v-for="(positiveOutcomeItem, index2) in positiveOutcomeGroup" :key="index2" class="row align-center">
-              <small class="outcome-grouping" v-if="index2 > 0">and</small>
-              <PositiveOutcomeItemComponent v-if="positiveOutcomeItem" :object="positiveOutcomeItem"/>
-            </div>
+      <button :disabled="formattedData.length < 1" class="btn-blue" @click="exportData()">Export recommendations as CSV</button>
+    </div>
+
+    <template v-if="selectedView === 'tactical'">
+      <div v-if="parameters.kpi">
+        <div v-for="(positiveOutcomeGroup, index1) in parameters.kpi" :key="index1" class="row align-center">
+          <small class="outcome-grouping" v-if="index1 > 0">or</small>
+          <div v-for="(positiveOutcomeItem, index2) in positiveOutcomeGroup" :key="index2" class="row align-center">
+            <small class="outcome-grouping" v-if="index2 > 0">and</small>
+            <PositiveOutcomeItemComponent v-if="positiveOutcomeItem" :object="positiveOutcomeItem" />
           </div>
         </div>
-      </template>
-      <button :disabled="formattedData.length < 1" class="btn-blue" @click="exportData()">Export recommendations as
-        CSV
-      </button>
-    </div>
-    <template v-if="selectedView === 'tactical'">
+      </div>
       <div class="recommendations-table">
-        <table-lite :is-hide-paging="true" :is-slot-mode="true" :columns="tableManager.headers"
-                    :rows="tableManager.rows"
-                    :total="tableManager.rows.length" :sortable="tableManager.sortable" @row-clicked="rowClicked">
+        <table-lite
+            :is-hide-paging="true"
+            :is-slot-mode="true"
+            :columns="tableManager.headers"
+            :rows="tableManager.rows"
+            :total="tableManager.rows.length"
+            :sortable="tableManager.sortable"
+            @row-clicked="rowClicked"
+        >
           <template v-slot:id="data">
             <p>{{ formatId(data.value.id) }}</p>
           </template>
@@ -50,8 +53,16 @@
     </template>
     <template v-else>
       <div class="recommendations-table">
-        <table-lite :is-hide-paging="true" :is-slot-mode="true" :columns="table.headers" :rows="table.rows"
-                    :total="table.rows.length" :sortable="table.sortable" @do-search="doSort" @row-clicked="rowClicked">
+        <table-lite
+            :is-hide-paging="true"
+            :is-slot-mode="true"
+            :columns="table.headers"
+            :rows="table.rows"
+            :total="table.rows.length"
+            :sortable="table.sortable"
+            @do-search="doSort"
+            @row-clicked="rowClicked"
+        >
           <template v-slot:id="data">
             <p>{{ formatId(data.value.id) }}</p>
           </template>
@@ -63,6 +74,7 @@
     </template>
   </div>
 </template>
+
 
 <script>
 import logsService from "@/services/logs.service";
@@ -161,7 +173,7 @@ export default {
   watch: {
     selectedView() {
       this.setup();
-    }
+    },
   },
   mounted() {
     window.addEventListener('view-changed', this.changeView);
