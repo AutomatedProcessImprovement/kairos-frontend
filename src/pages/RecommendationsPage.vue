@@ -15,11 +15,13 @@
       </div>
       <template v-if="selectedView === 'tactical'">
         <div v-if="parameters.kpi">
-          <div v-for="(positiveOutcomeGroup, index1) in parameters.kpi" :key="index1" class="row align-center">
-            <small class="outcome-grouping" v-if="index1 > 0">or</small>
-            <div v-for="(positiveOutcomeItem, index2) in positiveOutcomeGroup" :key="index2" class="row align-center">
-              <small class="outcome-grouping" v-if="index2 > 0">and</small>
-              <PositiveOutcomeItemComponent v-if="positiveOutcomeItem" :object="positiveOutcomeItem"/>
+          <div class="stats-card">
+            <div v-for="(positiveOutcomeGroup, index1) in parameters.kpi" :key="index1" class="row align-center">
+              <small class="outcome-grouping" v-if="index1 > 0">or</small>
+              <div v-for="(positiveOutcomeItem, index2) in positiveOutcomeGroup" :key="index2" class="row align-center">
+                <small class="outcome-grouping" v-if="index2 > 0">and</small>
+                <PositiveOutcomeItemComponent v-if="positiveOutcomeItem" :object="positiveOutcomeItem"/>
+              </div>
             </div>
           </div>
         </div>
