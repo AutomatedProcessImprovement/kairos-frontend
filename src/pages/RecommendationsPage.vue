@@ -50,6 +50,8 @@
     </template>
     <template v-else>
       <div class="recommendations-table">
+        <p v-if="table.rows.length === 0">No recommendations available</p>
+        <p v-else>Rendering {{ table.rows.length }} rows...</p>
         <table-lite :is-hide-paging="true" :is-slot-mode="true" :columns="table.headers" :rows="table.rows"
                     :total="table.rows.length" :sortable="table.sortable" @do-search="doSort" @row-clicked="rowClicked">
           <template v-slot:id="data">
@@ -160,6 +162,7 @@ export default {
   },
   watch: {
     selectedView(newValue, oldValue) {
+      console.log('[WATCH] selectedView changed from', oldValue, 'to', newValue);
       if (newValue !== oldValue) {
         this.setup();
       }
@@ -168,6 +171,7 @@ export default {
   mounted() {
     window.addEventListener('view-changed', this.changeView);
     this.selectedView = utils.getLocal('view');
+    console.log('[MOUNTED] selectedView:', this.selectedView);
     this.setup();
   },
   beforeUnmount() {
@@ -176,11 +180,14 @@ export default {
   },
   methods: {
     setup() {
+      console.log('[SETUP] selectedView:', this.selectedView);
       this.isLoading = true;
       if (this.selectedView === 'tactical') {
+        console.log('[SETUP] Executing tactical setup...');
         this.getParametersManager();
         this.getCases();
       } else {
+        console.log('[SETUP] Executing non-tactical setup...');
         this.getParameters();
       }
     },
@@ -433,21 +440,27 @@ export default {
       return data;
     },
     formatRecommendations() {
+      console.log('[formatRecommendations] Formatting recommendations...');
       this.formattedData = [];
       for (const el of this.recommendations) {
-        var caseId = el._id;
-        var casePerformance = el.case_performance;
+        const caseId = el._id;
+        const casePerformance = el.case_performance;
         for (const batch of el.activities) {
           for (const rec of batch.prescriptions) {
-            let data = this.formatRecommendation(caseId, casePerformance, rec);
-            if (data !== null) this.formattedData.push(data);
+            const data = this.formatRecommendation(caseId, casePerformance, rec);
+            if (data !== null) {
+              console.log('[formatRecommendations] Adding formatted data:', data);
+              this.formattedData.push(data);
+            }
           }
         }
       }
+      console.log('[formatRecommendations] Final formattedData:', this.formattedData);
       this.table.rows = this.formattedData;
       this.doSort(null, null, this.table.sortable.order, this.table.sortable.sort);
     },
     formatRecommendation(id, performance, p) {
+      console.log('[formatRecommendation] Processing recommendation:', p);
       let recommendationAttr, recommendedAttr;
       if (p.type === 'NEXT_ACTIVITY') {
         recommendationAttr = 'Perform ' + p.output;
@@ -461,13 +474,13 @@ export default {
         if (p.output.cate <= 0) return null;
         recommendedAttr = 'Predicted effect is positive.';
       }
-
-      let data = {
+      const data = {
         id: id,
-        performance: {value: performance.value, unit: performance.unit},
+        performance: { value: performance.value, unit: performance.unit },
         recommendationAttribute: recommendationAttr,
         details: recommendedAttr,
       };
+      console.log('[formatRecommendation] Formatted data:', data);
       return data;
     },
     getProjectStatus() {
