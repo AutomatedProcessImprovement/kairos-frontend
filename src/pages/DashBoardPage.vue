@@ -282,6 +282,149 @@ export default {
     closeModal() {
       this.openModal = false;
     },
+
+    startSimulation() {
+      logsService.startSimulation(utils.getLocal('logId')).then(
+          (response) => {
+            console.log(response.data.message.message);
+          },
+          (error) => {
+            const resMessage =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.error) ||
+                error.message ||
+                error.toString();
+            this.$notify({
+              title: 'An error occured',
+              text: resMessage,
+              type: 'error'
+            })
+          }
+      );
+    },
+
+    stopSimulation() {
+      logsService.stopSimulation(utils.getLocal('logId')).then(
+          (response) => {
+            console.log(response.data.message.message);
+            this.$notify({
+              title: 'Success',
+              text: `Successfully stopped simulating log ${utils.getLocal('logId')}`,
+              type: 'success',
+            });
+          },
+          (error) => {
+            this.isLoading = false;
+            const resMessage =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.error) ||
+                error.message ||
+                error.toString();
+            this.$notify({
+              title: 'An error occured',
+              text: resMessage,
+              type: 'error'
+            })
+          }
+      );
+    },
+
+    clearSimulation() {
+      logsService.clearSimulation(utils.getLocal('logId')).then(
+          (response) => {
+            this.$notify({
+              title: 'Success',
+              text: response.data.message,
+              type: 'success'
+            })
+          },
+          (error) => {
+            this.isLoading = false;
+            const resMessage =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.error) ||
+                error.message ||
+                error.toString();
+            this.$notify({
+              title: 'An error occured',
+              text: resMessage,
+              type: 'error'
+            })
+          }
+      );
+    },
+
+    deleteLog() {
+      clearInterval(this.timer);
+      this.closeModal();
+
+      logsService.deleteLog(utils.getLocal('logId')).then(
+          (response) => {
+            this.$notify({
+              title: 'Success',
+              text: response.data.message,
+              type: 'success'
+            });
+            utils.removeLocal(`casesListClickedRows${utils.getLocal('logId')}`);
+            utils.removeLocal('logId');
+            this.selectedLogStatus.status = null;
+            this.getLogs();
+          },
+          (error) => {
+            this.isLoading = false;
+            const resMessage =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.error) ||
+                error.message ||
+                error.toString();
+            this.$notify({
+              title: 'An error occured',
+              text: resMessage,
+              type: 'error'
+            })
+          }
+      );
+    },
+
+    getStaticResults() {
+      this.$notify({
+        title: 'warning',
+        text: "Getting results may take a while, please wait...",
+        type: 'warning'
+      })
+      logsService.getStaticResults(utils.getLocal('logId')).then(
+          (response) => {
+            let type = 'success';
+            if (response.data.message === 'Ongoing dataset result is still processing') {
+              type = 'warning';
+            }
+            if (type === 'success') this.selectedLog.got_results = true;
+            this.$notify({
+              title: type,
+              text: response.data.message,
+              type: type
+            })
+          },
+          (error) => {
+            const resMessage =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.error) ||
+                error.message ||
+                error.toString();
+            this.$notify({
+              title: 'An error occured',
+              text: resMessage,
+              type: 'error'
+            })
+          }
+      );
+    },
+
   },
 };
 </script>
