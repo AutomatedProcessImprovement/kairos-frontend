@@ -195,22 +195,50 @@ export default {
 
     selectLog(logId) {
       if (!logId) return;
-
-      utils.setLocal("logId", logId, 30);
-      this.selectedLog = this.eventlogs.find((log) => log._id === logId);
-      this.getProjectStatus();
+      utils.setLocal('logId', logId, 30);
+      this.selectedLog = this.eventlogs.find(e => e._id === logId);
+      this.getProjectStatus(true);
     },
 
-    getProjectStatus() {
+    getProjectStatus(delay = false) {
+      let oldLogstatus = this.selectedLogStatus;
+      if (delay) this.selectedLogStatus.status = null;
       logsService.getProjectStatus(utils.getLocal('logId')).then(
           (response) => {
-            this.selectedLogStatus = { id: utils.getLocal('logId'), status: response.data.status };
+            let status = response.data.status;
+            let newLogStatus = { id: utils.getLocal('logId'), status: status };
+            this.notifyForNewStatus(oldLogstatus, newLogStatus);
+            this.selectedLogStatus = newLogStatus;
           },
           (error) => {
-            console.error(error);
+            this.isLoading = false;
+            const resMessage =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.error) ||
+                error.message ||
+                error.toString();
+            this.selectedLogStatus = 'NULL';
+            this.$notify({
+              title: 'An error occured',
+              text: resMessage,
+              type: 'error'
+            });
           }
       );
     },
+
+    notifyForNewStatus(oldLogStatus, newLogStatus) {
+      if (oldLogStatus.id !== newLogStatus.id) return;
+      if ((oldLogStatus.status === 'TRAINED' && newLogStatus.status === 'SIMULATING')) {
+        this.$notify({
+          title: 'Success',
+          text: `Successfully started simulating log ${utils.getLocal('logId')}`,
+          type: 'success',
+        });
+      }
+    },
+
 
     findLog() {
       if (!this.findLogId?.trim()) {
