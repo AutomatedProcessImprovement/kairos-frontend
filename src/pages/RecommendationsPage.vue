@@ -189,6 +189,7 @@ export default {
       } else {
         console.log('[SETUP] Executing non-tactical setup...');
         this.getParameters();
+        this.getCases();
       }
     },
     formatId(id) {
@@ -268,8 +269,10 @@ export default {
           if (this.recommendations.length > 0) {
             if (this.selectedView === 'tactical') {
               this.formatRecommendationsManager();
+              console.log("ExportData this.selectedView === 'tactical'")
             } else {
               this.formatRecommendations();
+              console.log("ExportData else")
             }
           }
           this.isLoading = false;
@@ -310,8 +313,10 @@ export default {
         this.recommendations = response.data.prescriptions;
         if (this.recommendations.length > 0) {
           if (this.selectedView === 'tactical') {
+            console.log("getRecommendations === 'tactical'")
             this.formatRecommendationsManager();
           } else {
+            console.log("getRecommendations else")
             this.formatRecommendations();
           }
         }
