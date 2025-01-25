@@ -161,9 +161,9 @@ export default {
     startPolling() {
       this.pollingInterval = setInterval(() => {
         if (this.selectedLog && this.selectedLog._id) {
-          this.getProjectStatus(false);
+          this.getProjectStatus();
         }
-      }, 1000);
+      }, 1500);
     },
 
     goToHome() {
