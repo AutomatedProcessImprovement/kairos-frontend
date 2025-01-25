@@ -254,7 +254,7 @@ export default {
         this.recommendations = response.data.prescriptions;
         if (this.recommendations.length > 0) {
           if (this.selectedView === 'tactical') {
-            this.formatRecommendations();
+            this.formatRecommendationsManager();
           } else {
             this.formatRecommendations();
           }
@@ -328,7 +328,51 @@ export default {
       this.table.rows = this.formattedData;
       this.doSort(null, null, this.table.sortable.order, this.table.sortable.sort);
     },
+
+    formatRecommendationsManager() {
+      this.formattedData = [];
+      for (const el of this.recommendations) {
+        var caseId = el._id;
+        var casePerformance = el.case_performance;
+        for (const batch of el.activities) {
+          for (const rec of batch.prescriptions) {
+            let data = this.formatRecommendationManager(caseId, casePerformance, rec);
+            if (data !== null) this.formattedData.push(data);
+          }
+        }
+      }
+      this.table.rows = this.formattedData;
+      this.doSort(null, null, this.table.sortable.order, this.table.sortable.sort);
+    },
     formatRecommendation(id, performance, p) {
+      let recommendationAttr, recommendedAttr;
+      if (p.type === 'NEXT_ACTIVITY') {
+        return null;
+      }
+
+      if (p.type === 'ALARM') {
+        recommendationAttr = 'Check the application';
+        if (p.output < this.parameters.alarmThreshold) return null;
+        recommendedAttr = 'Probability of not meeting the KPI is high. It is recommended to check on the application.';
+      } else if (p.type === 'TREATMENT_EFFECT') {
+        recommendationAttr = utils.formatIntervention(p.output, this.parameters.columnsDefinition);
+        if (p.output.cate <= 0) return null;
+
+        recommendedAttr = 'There is a high probability of reaching the KPI if you address this recommendation now.';
+      } else if (p.type === 'RESOURCE_ALLOCATION') {
+        return null;
+      }
+
+
+      let data = {
+        id: id,
+        performance: {value: performance.value, unit: performance.unit},
+        recommendationAttribute: recommendationAttr,
+        details: recommendedAttr,
+      };
+      return data;
+    },
+    formatRecommendationManager(id, performance, p) {
       let recommendationAttr, recommendedAttr;
       if (p.type === 'NEXT_ACTIVITY') {
         return null;
