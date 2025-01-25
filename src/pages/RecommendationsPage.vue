@@ -132,6 +132,7 @@ export default {
         this.getCases();
       } else {
         this.getParameters();
+        this.getCases();
       }
     },
     formatId(id) {
