@@ -253,7 +253,7 @@ export default {
         this.recommendations = response.data.prescriptions;
         if (this.recommendations.length > 0) {
           if (this.selectedView === 'tactical') {
-            this.formatRecommendationsManager();
+            this.formatRecommendations();
           } else {
             this.formatRecommendations();
           }
@@ -330,17 +330,25 @@ export default {
     formatRecommendation(id, performance, p) {
       let recommendationAttr, recommendedAttr;
       if (p.type === 'NEXT_ACTIVITY') {
-        recommendationAttr = 'Perform ' + p.output;
-        recommendedAttr = 'Recommended now';
-      } else if (p.type === 'ALARM') {
-        recommendationAttr = 'Action required';
+        return null;
+      }
+
+      if (p.type === 'ALARM') {
+        recommendationAttr = 'Check the application';
         if (p.output < this.parameters.alarmThreshold) return null;
-        recommendedAttr = 'Predicted probability of not meeting the target is high.';
+        recommendedAttr = 'Probability of not meeting the KPI is high. It is recommended to check on the application.';
       } else if (p.type === 'TREATMENT_EFFECT') {
         recommendationAttr = utils.formatIntervention(p.output, this.parameters.columnsDefinition);
         if (p.output.cate <= 0) return null;
-        recommendedAttr = 'Predicted effect is positive.';
+
+        recommendedAttr = 'There is a high probability of reaching the KPI if you address this recommendation now.';
+      } else if (p.type === 'RESOURCE_ALLOCATION') {
+        recommendationAttr = utils.formatIntervention(p.output, this.parameters.columnsDefinition);
+        if (p.output.cate <= 0) return null;
+
+        recommendedAttr = 'Resource allocation';
       }
+
 
       let data = {
         id: id,
