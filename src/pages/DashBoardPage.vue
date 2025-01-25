@@ -44,7 +44,7 @@
           <button class="btn-blue margin-left" @click="openModal = true">Delete event log</button>
         </div>
         <div v-else class="row">
-          <button :disabled="selectedLogStatus.status !== 'TRAINED' || selectedLogStatus.status == 'SIMULATING'" class="btn-blue"
+          <button :disabled="selectedLogStatus.status !== 'TRAINED' || selectedLogStatus.status === 'SIMULATING'" class="btn-blue"
                   @click="startSimulation">Start simulation</button>
           <button :disabled="selectedLogStatus.status !== 'SIMULATING'" class="btn-blue margin-left"
                   @click="stopSimulation">Stop simulation</button>
