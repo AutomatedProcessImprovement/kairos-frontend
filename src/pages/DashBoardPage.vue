@@ -163,7 +163,7 @@ export default {
         if (this.selectedLog && this.selectedLog._id) {
           this.getProjectStatus(false);
         }
-      }, 250);
+      }, 1000);
     },
 
     goToHome() {
