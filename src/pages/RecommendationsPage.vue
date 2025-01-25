@@ -74,36 +74,6 @@ export default {
       caseAttributes: [],
       cases: [],
       casesData: [],
-      // tableManager: {
-      //   isLoading: false,
-      //   headers: [
-      //     {
-      //       label: 'Case ID',
-      //       field: 'id',
-      //       width: "5%",
-      //       sortable: true,
-      //     },
-      //     {
-      //       label: "Duration",
-      //       field: "duration",
-      //       width: "5%",
-      //       sortable: false,
-      //     },
-      //     {
-      //       label: "Recommendation",
-      //       field: "recommendationAttribute",
-      //       width: "10%",
-      //       sortable: false,
-      //     },
-      //     {
-      //       label: "Details",
-      //       field: "details",
-      //       width: "10%",
-      //       sortable: false,
-      //     },
-      //   ],
-      //   rows: [],
-      // },
       table: {
         isLoading: false,
         headers: [
@@ -341,76 +311,6 @@ export default {
             });
           }
       );
-    },
-    formatRecommendationsManager() {
-      this.formattedData = [];
-      for (const el of this.recommendations) {
-        var caseId = el._id;
-        var casePerformance = el.case_performance[0][0];
-        for (const batch of el.activities) {
-          for (const rec of batch.prescriptions) {
-            let formattedRec = this.formatRecommendationManager(caseId, casePerformance, rec);
-            if (formattedRec !== null) {
-              this.formattedData.push(formattedRec);
-            }
-          }
-        }
-      }
-
-      if (this.caseAttributes && this.caseAttributes.length > 0) {
-        this.caseAttributes.forEach(attribute => {
-          this.tableManager.headers.push({
-            label: attribute.label,
-            field: attribute.field,
-            width: "5%",
-            sortable: false,
-          });
-        });
-      }
-
-      this.tableManager.rows = this.formattedData;
-      if (this.tableManager.sortable && this.tableManager.sortable.order && this.tableManager.sortable.sort) {
-        this.doSort(null, null, this.tableManager.sortable.order, this.tableManager.sortable.sort);
-      }
-    },
-    formatRecommendationManager(id, performance, p) {
-      let recommendationAttr, recommendedAttr;
-
-      if (p.type === 'NEXT_ACTIVITY') {
-        return null;
-      }
-
-      if (p.type === 'ALARM') {
-        recommendationAttr = 'Check the application';
-        if (p.output < this.parameters.alarmThreshold) return null;
-        recommendedAttr = 'Probability of not meeting the KPI is high. It is recommended to check on the application.';
-      } else if (p.type === 'TREATMENT_EFFECT') {
-        recommendationAttr = utils.formatIntervention(p.output, this.parameters.columnsDefinition);
-        if (p.output.cate <= 0) return null;
-
-        recommendedAttr = 'There is a high probability of reaching the KPI if you address this recommendation now.';
-      } else if (p.type === 'RESOURCE_ALLOCATION') {
-        recommendationAttr = utils.formatIntervention(p.output, this.parameters.columnsDefinition);
-        if (p.output.cate <= 0) return null;
-
-        recommendedAttr = 'Resource allocation';
-      }
-
-      let data = {
-        id: id,
-        duration: performance.value + " " + performance.unit,
-        recommendationAttribute: recommendationAttr,
-        details: recommendedAttr,
-      };
-
-      const correspondingCase = this.cases.find(c => c._id === id);
-      if (correspondingCase && correspondingCase.case_attributes) {
-        this.caseAttributes.forEach(attribute => {
-          data[attribute.field] = correspondingCase.case_attributes[attribute.field] || 'N/A';
-        });
-      }
-
-      return data;
     },
     formatRecommendations() {
       this.formattedData = [];
