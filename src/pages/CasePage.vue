@@ -116,21 +116,22 @@ export default {
           }
           this.currentCase = response.data.case;
           this.getAdditionalInformation();
-        },
-        (error) => {
-          this.isLoading = false;
-          const resMessage =
-            (error.response &&
-              error.response.data &&
-              error.response.data.error) ||
-            error.message ||
-            error.toString();
-          this.$notify({
-            title: 'An error occured',
-            text: resMessage,
-            type: 'error'
-          })
         }
+        // ,
+        // (error) => {
+        //   this.isLoading = false;
+        //   const resMessage =
+        //     (error.response &&
+        //       error.response.data &&
+        //       error.response.data.error) ||
+        //     error.message ||
+        //     error.toString();
+        //   this.$notify({
+        //     title: 'An error occured',
+        //     text: resMessage,
+        //     type: 'error'
+        //   })
+        // }
       );
     },
     getParameters() {

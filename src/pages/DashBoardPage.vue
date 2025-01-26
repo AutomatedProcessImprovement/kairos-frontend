@@ -164,7 +164,7 @@ export default {
         if (this.selectedLog && this.selectedLog._id) {
           this.getProjectStatus();
         }
-      }, 2500);
+      }, 3000);
     },
 
     goToHome() {
