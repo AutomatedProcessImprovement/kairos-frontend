@@ -32,14 +32,16 @@
             @recommendationSelected="selectRecommendation"
             ></recommendation-component>
         </tab>
-        <tab name="Past" id="tab-past">       
-          <recommendation-component v-for="activity in oldActivities" v-bind:key="activity"
-            :batch="activity"
-            :current="false"
-            :parameters="parameters"
-            :selectedRec="selectedRec"
-            @recommendationSelected="selectRecommendation"
-            ></recommendation-component>
+        <tab name="Past" id="tab-past">
+          <recommendation-component
+              v-for="activity in oldActivities"
+              :key="activity"
+              :batch="activity"
+              :current="false"
+              :parameters="parameters"
+              :selectedRec="selectedRec"
+              @recommendationSelected="selectRecommendation"
+          ></recommendation-component>
         </tab>
       </tabs>
     </div>
@@ -128,12 +130,21 @@ import Toggle from '@vueform/toggle'
     },
     computed: {
 
-      oldActivities(){
-        return this.currentCase.activities.slice(0,-1);
+      oldActivities() {
+        return this.currentCase.activities.map(activity => {
+          const filteredPrescriptions = activity.prescriptions.filter(
+              prescription => prescription.type !== "RESOURCE_ALLOCATION"
+          );
+          return { ...activity, prescriptions: filteredPrescriptions };
+        }).slice(0, -1);
       },
 
-      lastActivity(){
-        return this.currentCase.activities.slice(-1)[0];
+      lastActivity() {
+        const activity = this.currentCase.activities.slice(-1)[0];
+        const filteredPrescriptions = activity.prescriptions.filter(
+            prescription => prescription.type !== "RESOURCE_ALLOCATION"
+        );
+        return { ...activity, prescriptions: filteredPrescriptions };
       }
     },
     
