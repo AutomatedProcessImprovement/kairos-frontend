@@ -150,6 +150,7 @@ export default {
       selectedLog: null,
       findLogId: null,
       selectedLogStatus: { id: null, status: null },
+      lastNotifiedStatus: null,
     };
   },
 
@@ -163,7 +164,7 @@ export default {
         if (this.selectedLog && this.selectedLog._id) {
           this.getProjectStatus();
         }
-      }, 1500);
+      }, 2500);
     },
 
     goToHome() {
@@ -231,26 +232,37 @@ export default {
     },
 
     getProjectStatus(delay = false) {
-      let oldLogstatus = this.selectedLogStatus;
+      let oldLogStatus = this.selectedLogStatus;
+
       if (delay) this.selectedLogStatus.status = null;
 
       logsService.getProjectStatus(utils.getLocal('logId')).then(
           (response) => {
             let status = response.data.status;
             let newLogStatus = { id: utils.getLocal('logId'), status: status };
-            this.notifyForNewStatus(oldLogstatus, newLogStatus);
+            this.notifyForNewStatus(oldLogStatus, newLogStatus);
             this.selectedLogStatus = newLogStatus;
           },
           (error) => {
             console.error("Error fetching project status:", error);
-            this.selectedLogStatus = 'NULL';
+            this.selectedLogStatus = { id: null, status: 'NULL' };
           }
       );
     },
 
     notifyForNewStatus(oldLogStatus, newLogStatus) {
       if (oldLogStatus.id !== newLogStatus.id) return;
-      if ((oldLogStatus.status === 'TRAINED' && newLogStatus.status === 'SIMULATING')) {
+
+      if (
+          this.lastNotifiedStatus === newLogStatus.status &&
+          oldLogStatus.status === newLogStatus.status
+      ) {
+        return;
+      }
+
+      this.lastNotifiedStatus = newLogStatus.status;
+
+      if (oldLogStatus.status === 'TRAINED' && newLogStatus.status === 'SIMULATING') {
         this.$notify({
           title: 'Success',
           text: `Successfully started simulating log ${utils.getLocal('logId')}`,
